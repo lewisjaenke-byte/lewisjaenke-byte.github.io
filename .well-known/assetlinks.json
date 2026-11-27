@@ -1,10 +1,13 @@
 [
   {
-    "relation": ["delegate_permission/common.handle_all_urls"],
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
     "target": {
       "namespace": "android_app",
       "package_name": "io.github.lewisjaenke.hoarder",
       "sha256_cert_fingerprints": [
+        "07:BD:BF:0C:C3:3F:46:A5:50:04:59:1A:AD:BC:36:33:10:19:F5:B4:40:3B:AE:2D:A8:21:22:77:31:1D:E8:6C",
         "41:E3:14:2E:04:83:30:8F:77:C3:E8:07:54:33:45:27:E2:A0:CA:DB:53:93:08:AC:AD:EA:C9:96:28:9F:7E:93"
       ]
     }
