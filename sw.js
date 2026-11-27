@@ -1,5 +1,5 @@
 // Bump VERSION whenever the game changes so phones pick up the new build.
-const VERSION = 'hoarder-v0.68';
+const VERSION = 'hoarder-v0.69';
 const CORE = ['./', './index.html', './three.module.min.js', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png', './creepster.woff2', './logo.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(VERSION).then(c => c.addAll(CORE)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== VERSION).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
