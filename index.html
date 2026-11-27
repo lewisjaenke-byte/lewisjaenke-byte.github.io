@@ -328,6 +328,10 @@ body.attract #menu .card{background:rgba(30,20,40,.72);border-radius:22px;paddin
 .card h1.logo{width:100%;max-width:440px;margin:0 auto 4px;text-shadow:none;line-height:0}.card h1.logo svg{width:100%;height:auto;filter:drop-shadow(0 5px 0 #1d2a14)}
 .card h2{font:34px/1.05 'Lilita One',sans-serif;margin:0 0 4px}
 .card p{margin:6px 0 18px;opacity:.9}
+.chint{font-size:13px;margin:4px 0 8px!important;opacity:.85}
+.lobbycard h2{margin:0 0 10px;font:28px/1 'Lilita One',sans-serif}.lobcode{background:#1c1426;border-radius:16px;padding:10px 14px 12px;margin:0 auto 8px;display:inline-block}.lobcode small{display:block;font-size:12px;opacity:.7;letter-spacing:1px;text-transform:uppercase}.lobcode b{font:54px/1.05 'Lilita One',sans-serif;letter-spacing:10px;color:var(--amber)}
+.lobbycard .lobhint{font-size:14px;margin:4px 0 12px}.loblist{list-style:none;margin:0 0 14px;padding:0;text-align:left;display:grid;gap:6px}.loblist li{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.07);border-radius:12px;padding:8px 12px;font-weight:700}.loblist li i{width:16px;height:16px;border-radius:50%;flex:none}.loblist li.empty{opacity:.45;font-weight:600}.loblist li.empty i{border:2px dashed rgba(255,255,255,.5)}
+.lobbycard .lobwait[hidden]{display:none}.lobbycard .lobwait{display:flex;align-items:center;justify-content:center;gap:10px;font-weight:800;color:var(--amber)}.lobwait i{width:12px;height:12px;border-radius:50%;background:var(--amber);animation:molp 1s ease-in-out infinite}.lobbycard .btn{width:100%;margin-top:8px}
 .card .btn{font-size:18px;padding:15px 34px}
 .card .btn+.btn{margin-top:10px}
 .runs{margin:14px auto 0;font:800 14px/1.5 Nunito,sans-serif;max-width:260px}
@@ -466,6 +470,18 @@ body.attract #menu .card{background:rgba(30,20,40,.72);border-radius:22px;paddin
     <div class="detail" id="treeDetail"></div>
   </div>
 </div>
+<div class="screen" id="lobby" hidden>
+  <div class="card lobbycard">
+    <h2 id="lobTitle">Your room</h2>
+    <div class="lobcode"><small>Room code</small><b id="lobCode">----</b></div>
+    <p class="lobhint" id="lobHint"></p>
+    <ul class="loblist" id="lobList"></ul>
+    <button class="btn" id="bLobStart">Start game</button>
+    <button class="btn dark" id="bLobCont" hidden>Continue saved game</button>
+    <p class="lobwait" id="lobWait" hidden><i></i>Waiting for the host to start...</p>
+    <button class="btn dark" id="bLobLeave">Leave room</button>
+  </div>
+</div>
 <div class="screen" id="menu">
   <div class="card">
     <h1 class="logo"><svg viewBox="0 0 1000 250" role="img" aria-label="Hoarde(r)"><text x="30" y="190" font-family="Creepster, cursive" font-size="200" fill="#8fd35a" stroke="#1d2a14" stroke-width="6" paint-order="stroke" textLength="700" lengthAdjust="spacingAndGlyphs">HOARDE</text><g transform="translate(14 4) translate(800 212) scale(1.06) translate(-800 -212)"><rect x="758" y="30" width="26" height="182" rx="5" fill="#6b4524" stroke="#24160b" stroke-width="4" transform="rotate(4 771 120)"/><path d="M778 42 C 870 26, 916 62, 902 98 C 890 128, 842 134, 802 128 L 716 140 L 792 108 C 836 112, 862 102, 868 88 C 876 68, 842 56, 778 64 Z" fill="#cfcac2" stroke="#24160b" stroke-width="5" stroke-linejoin="round"/><path d="M802 128 L 716 140 L 760 122 Z" fill="#c0392b"/><path d="M742 136 C 744 152, 736 160, 740 170 C 744 160, 748 150, 746 136 Z" fill="#c0392b"/><path d="M868 88 C 872 110, 864 120, 868 134 C 874 120, 878 108, 876 92 Z" fill="#c0392b"/><path d="M800 136 L 888 204" stroke="#24160b" stroke-width="26" stroke-linecap="round"/><path d="M800 136 L 888 204" stroke="#6b4524" stroke-width="17" stroke-linecap="round"/></g></svg></h1>
@@ -480,12 +496,13 @@ body.attract #menu .card{background:rgba(30,20,40,.72);border-radius:22px;paddin
       <label class="setrow"><input type="checkbox" id="sLefty"> Left-handed controls</label>
     </div>
     <div class="coop" id="coopBox" hidden>
+      <p class="chint">Host to get a room code for friends, or type a friend's code to join.</p>
       <button class="btn" id="bHost">Host a game</button>
-      <div class="joinrow"><input id="joinCode" maxlength="4" placeholder="CODE" autocomplete="off" autocapitalize="characters"><button class="btn" id="bJoin">Join</button></div>
-      <p class="cstat" id="coopStat"></p>
+      <div class="joinrow"><input id="joinCode" maxlength="4" placeholder="CODE" aria-label="Room code" autocomplete="off" autocapitalize="characters"><button class="btn" id="bJoin">Join</button></div>
+      <p class="cstat" id="coopStat" hidden></p>
     </div>
     <div class="runs" id="runs"></div>
-    <div class="keys">Best: <span id="menuBest">Lv 0</span><br>v0.65</div>
+    <div class="keys">Best: <span id="menuBest">Lv 0</span><br>v0.66</div>
   </div>
 </div>
 <div class="screen" id="over" hidden>
@@ -1561,6 +1578,7 @@ function setPitVisual(n) {
 
 /* ---------- crystal ---------- */
 function plantAt(i, j) {
+  if (netRole === 'host' && net.guests.size && !attract) setTimeout(() => sendWorld(), 120);
   crystal.planted = true; crystal.i = i; crystal.j = j; grid[idx(i, j)] = CRYS; version++; setTimeout(updateBuildButtons, 50);
   const pn = padIdx(); if (pn >= 0 && grid[pn] !== EMPTY) removeTile(pn);
   zone.visible = false; computeFlow();
@@ -2303,7 +2321,7 @@ drawMute();
 $('bPlay').addEventListener('click', () => newGame());
 $('bContinue').addEventListener('click', () => { audioInit(); loadGame(); });
 setTimeout(refreshMenu, 0);
-$('bAgain').addEventListener('click', () => { if (netRole === 'guest') { netRole = null; try { net.conn && net.conn.close(); } catch (e) { } net.conn = null; roomPill(); $('over').hidden = true; phase = 'menu'; $('menu').hidden = false; refreshMenu(); return; } newGame(); });
+$('bAgain').addEventListener('click', () => { if (netRole === 'guest') { $('over').hidden = true; phase = 'menu'; leaveRoom(); return; } if (hostHasGuests() || (netRole === 'host' && net.guests.size)) { newGame(); autoPlant(); return; } newGame(); });
 if (matchMedia('(pointer: coarse)').matches) { lastInput = ''; setInput('touch'); }
 
 const ray = new THREE.Raycaster(), plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), hit = new THREE.Vector3(), ndc = new THREE.Vector2();
@@ -2327,7 +2345,7 @@ function clearBoard() {
 function newGame(opts) {
   if (attract) { attract = false; document.body.classList.remove('attract'); player.g.visible = true; for (const h of attractExtra) scene.remove(h); attractExtra = []; }
   clearTimeout(overTimer); $('over').hidden = true; raidPendT = -1;
-  if (netRole === 'guest' && !(opts && opts.seed !== undefined)) { netRole = null; try { net.conn && net.conn.close(); } catch (e) { } net.conn = null; for (const g of net.gz.values()) scene.remove(g.p.g); net.gz.clear(); if (net.host) net.host.g.visible = false; roomPill(); }
+  if (netRole === 'guest' && !(opts && opts.seed !== undefined)) leaveRoom();
   clearBoard(); resetExtras();
   const fromSave = opts && opts.seed !== undefined; worldSeed = fromSave ? opts.seed : (Math.random() * 1e9) | 0; swaps = [];
   const sides = seeded(worldSeed + 7, () => [0, 1, 2, 3].sort(() => Math.random() - 0.5).slice(0, 2));
@@ -2360,7 +2378,7 @@ function newGame(opts) {
 }
 function gameOver(why) {
   if (attract) return;
-  if (phase === 'over') return; phase = 'over'; if (netRole !== 'guest') clearSave(); if (netRole === 'host') netSend({ t: 'over', why }); actHeld = false; touchAct = false;
+  if (phase === 'over') return; phase = 'over'; if (netRole !== 'guest') clearSave(); if (netRole === 'host') { netSend({ t: 'over', why }); for (const G of net.guests.values()) G.inGame = false; } actHeld = false; touchAct = false;
   if (level > bestLevel || (level === bestLevel && liveTime > bestTime)) { bestLevel = level; bestTime = liveTime; try { localStorage.setItem('hoarder.bestLevel', bestLevel); localStorage.setItem('hoarder.bestTime', bestTime); } catch (e) {} }
   const runs = readRuns(), me = { lv: level, t: Math.round(liveTime), k: kills, h: hoardes }; runs.push(me); runs.sort((a, b) => b.lv - a.lv || b.t - a.t); const top = runs.slice(0, 5), isBest = top[0] === me && runs.length > 1;
   if (netRole !== 'guest') try { localStorage.setItem('hoarder.runs', JSON.stringify(top)); } catch (e) { }
@@ -2374,12 +2392,28 @@ function gameOver(why) {
 
 /* ---------- v0.23 co-op ---------- */
 let netRole = null;
-const net = { peer: null, conn: null, code: '', sendT: 0, gridT: 0, actT: 0, posT: 0, prevGrid: null, prevFill: null, p2: null, gz: new Map(), host: null, acts: {} };
+const SLOT_COL = [[0xe9c35a, 0x3fb8d6], [0xf1ead8, 0xe0705a], [0xf1ead8, 0x5fbf5a], [0xf1ead8, 0xa070e0], [0xf1ead8, 0xf09a3a]], PLAYER_NAME = ['Host', 'Player 2', 'Player 3', 'Player 4', 'Player 5'], MAX_GUESTS = 4;
+const net = { peer: null, conn: null, code: '', slot: 0, guests: new Map(), lobby: [0], sendT: 0, gridT: 0, actT: 0, posT: 0, prevGrid: null, prevFill: null, gz: new Map(), others: new Map(), chunks: null };
+const LOOP = /[?&]loop\b/.test(location.search);
+class LoopEm { on(ev, f) { ((this.h = this.h || {})[ev] = this.h[ev] || []).push(f); } emit(ev, ...a) { for (const f of (this.h && this.h[ev]) || []) f(...a); } }
+class LoopConn extends LoopEm { constructor(p, id) { super(); this.p = p; this.peer = id; this.open = false; }
+  send(d) { if (this.open) this.p.bc.postMessage({ k: 'data', to: this.peer, from: this.p.id, d: JSON.parse(JSON.stringify(d)) }); }
+  close() { if (!this.open) return; this.open = false; this.p.bc.postMessage({ k: 'close', to: this.peer, from: this.p.id }); this.emit('close'); } }
+class LoopPeer extends LoopEm { constructor(id) { super(); this.id = id || 'g' + Math.random().toString(36).slice(2, 9); this.conns = new Map(); this.bc = new BroadcastChannel('hoarder-loop');
+    this.bc.onmessage = e => { const m = e.data; if (m.to !== this.id) return; let c = this.conns.get(m.from);
+      if (m.k === 'conn') { c = new LoopConn(this, m.from); this.conns.set(m.from, c); this.emit('connection', c); setTimeout(() => { c.open = true; c.emit('open'); this.bc.postMessage({ k: 'ack', to: m.from, from: this.id }); }, 20); }
+      else if (m.k === 'ack' && c) { c.open = true; c.emit('open'); } else if (m.k === 'data' && c) c.emit('data', m.d); else if (m.k === 'close' && c) { c.open = false; this.conns.delete(m.from); c.emit('close'); } };
+    setTimeout(() => this.emit('open', this.id), 20); }
+  connect(id) { const c = new LoopConn(this, id); this.conns.set(id, c); this.bc.postMessage({ k: 'conn', to: id, from: this.id }); return c; }
+  destroy() { for (const c of [...this.conns.values()]) c.close(); this.bc.close(); } }
 let PeerCls = null;
-async function loadPeer() { if (!PeerCls) { const m = await import('https://cdn.jsdelivr.net/npm/peerjs@1.5.4/+esm'); PeerCls = m.Peer || m.default; } return PeerCls; }
-function netSend(o) { try { if (net.conn && net.conn.open) net.conn.send(o); } catch (e) { } }
-function coopStatus(t) { $('coopStat').textContent = t; }
-function roomPill() { const on = !!netRole; $('roomPill').hidden = !on; if (!on) return; $('roomPill').classList.toggle('wait', !(net.conn && net.conn.open)); $('roomTxt').textContent = netRole === 'host' ? (net.conn && net.conn.open ? 'Room ' + net.code + ' · friend in' : 'Room ' + net.code + ' · waiting') : (net.conn && net.conn.open ? 'Co-op · ' + net.code : 'Reconnecting...'); }
+async function loadPeer() { if (LOOP) return LoopPeer; if (!PeerCls) { const m = await import('https://cdn.jsdelivr.net/npm/peerjs@1.5.4/+esm'); PeerCls = m.Peer || m.default; } return PeerCls; }
+const liveGuests = () => [...net.guests.values()].filter(G => G.conn.open && G.inGame);
+function netSend(o) { try { if (netRole === 'host') { for (const G of liveGuests()) G.conn.send(o); } else if (net.conn && net.conn.open) net.conn.send(o); } catch (e) { } }
+function guestsNear(x, z, r) { if (netRole !== 'host') return false; for (const G of liveGuests()) if (G.hp > 0 && Math.hypot(G.x - x, G.z - z) < r) return true; return false; }
+const hostHasGuests = () => netRole === 'host' && liveGuests().length > 0;
+function coopStatus(t) { $('coopStat').textContent = t; $('coopStat').hidden = !t; }
+function roomPill() { const on = !!netRole && phase !== 'menu'; $('roomPill').hidden = !on; if (!on) return; const n = net.guests.size; $('roomPill').classList.toggle('wait', netRole === 'guest' ? !(net.conn && net.conn.open) : n === 0); $('roomTxt').textContent = netRole === 'host' ? 'Room ' + net.code + ' · ' + (n ? n + ' friend' + (n > 1 ? 's' : '') : 'no friends yet') : (net.conn && net.conn.open ? 'Co-op · ' + net.code : 'Reconnecting...'); }
 function makeAvatar(hatHex, bodyHex) {
   const a = makePerson(M(bodyHex)); const r = a.roll;
   for (const sx of [-1, 1]) { const e = new THREE.Mesh(geo.eye, mat.black); e.position.set(0.09 * sx, 0.2, 0.25); r.add(e); }
@@ -2388,78 +2422,111 @@ function makeAvatar(hatHex, bodyHex) {
   const blade = new THREE.Mesh(new THREE.TorusGeometry(0.3, 0.035, 4, 14, Math.PI * 0.72), mat.blade); blade.rotation.set(Math.PI / 2, 0, Math.PI * 0.5); blade.position.set(0.38, 0.3, 0.98); r.add(blade);
   a.base = a.body.material; a.g.visible = false; return a;
 }
+/* --- lobby --- */
+function showLobby() { $('menu').hidden = true; $('lobby').hidden = false; renderLobby(); }
+function hideLobby() { $('lobby').hidden = true; }
+function renderLobby() {
+  const host = netRole === 'host', slots = host ? [0, ...[...net.guests.values()].map(G => G.slot).sort()] : net.lobby, me = host ? 0 : net.slot;
+  $('lobCode').textContent = net.code || '----'; $('lobTitle').textContent = host ? 'Your room' : 'Joined room';
+  $('lobHint').textContent = host ? 'Friends tap Co-op, then type this code and tap Join.' : 'You are in! The host starts the game when everyone is here.';
+  let h = ''; for (let q = 0; q < 1 + MAX_GUESTS; q++) { const s = slots[q]; if (s === undefined) { h += '<li class="empty"><i></i>Waiting for a player...</li>'; continue; }
+    h += '<li><i style="background:#' + SLOT_COL[s][1].toString(16).padStart(6, '0') + '"></i>' + PLAYER_NAME[s] + (s === me ? ' <b>(you)</b>' : '') + '</li>'; }
+  $('lobList').innerHTML = h;
+  $('bLobStart').hidden = !host; $('bLobStart').textContent = net.guests.size ? 'Start game (' + (net.guests.size + 1) + ' players)' : 'Start game';
+  $('bLobCont').hidden = !host || !readSave(); $('lobWait').hidden = host;
+}
+function lobbyBroadcast() { const players = [0, ...[...net.guests.values()].map(G => G.slot).sort()]; for (const G of net.guests.values()) if (G.conn.open) try { G.conn.send({ t: 'lobby', you: G.slot, players, code: net.code }); } catch (e) { } if (!$('lobby').hidden) renderLobby(); roomPill(); }
+function leaveRoom(msg) {
+  for (const G of net.guests.values()) { try { G.conn.close(); } catch (e) { } scene.remove(G.av.g); } net.guests.clear();
+  try { net.conn && net.conn.close(); } catch (e) { } net.conn = null; try { net.peer && net.peer.destroy(); } catch (e) { } net.peer = null;
+  for (const a of net.others.values()) scene.remove(a.av.g); net.others.clear(); for (const g of net.gz.values()) scene.remove(g.p.g); net.gz.clear();
+  netRole = null; net.code = ''; hideLobby(); roomPill(); if (phase === 'menu') { $('menu').hidden = false; $('coopBox').hidden = false; refreshMenu(); } coopStatus(msg || '');
+}
+function autoPlant() { let bestT = null, bd = 1e9; for (let j = Z0; j < Z1; j++) for (let i = Z0; i < Z1; i++) { if (grid[idx(i, j)] !== EMPTY || spawnMask[idx(i, j)]) continue; const d = (i - HALF) ** 2 + (j - HALF) ** 2; if (d < bd) { bd = d; bestT = [i, j]; } } if (bestT) plantAt(bestT[0], bestT[1]); }
+function startCoop(cont) { if (netRole !== 'host') return; hideLobby(); audioInit(); if (cont && readSave()) loadGame(); else { newGame(); autoPlant(); } sendWorld(); roomPill(); }
 /* --- host --- */
 async function hostGame() {
-  if (typeof RTCPeerConnection === 'undefined') { coopStatus('This page blocks co-op. Open the game from lewisjaenke-byte.github.io/Hoarder instead.'); return; }
+  if (typeof RTCPeerConnection === 'undefined' && !LOOP) { coopStatus('This browser blocks co-op. Open lewisjaenke-byte.github.io instead.'); return; }
   coopStatus('Opening a room...');
   try {
-    const Peer = await loadPeer(); const code = Array.from({ length: 4 }, () => 'ABCDEFGHJKLMNPQRSTUVWXYZ'[(Math.random() * 24) | 0]).join('');
+    const Peer = await loadPeer(), code = Array.from({ length: 4 }, () => 'ABCDEFGHJKLMNPQRSTUVWXYZ'[(Math.random() * 24) | 0]).join('');
     const peer = new Peer('hoarder-' + code.toLowerCase(), { debug: 0 }); net.peer = peer; net.code = code;
-    peer.on('open', () => { netRole = 'host'; coopStatus('Room code: ' + code + '. Start a game, then your friend joins.'); roomPill(); });
-    peer.on('error', e => coopStatus(e.type === 'browser-incompatible' ? 'This page blocks co-op. Open the game from lewisjaenke-byte.github.io/Hoarder instead.' : 'Could not open a room (' + (e.type || 'error') + ').'));
+    peer.on('open', () => { netRole = 'host'; net.slot = 0; coopStatus(''); showLobby(); SFX.click(); });
+    peer.on('error', e => { if (e.type === 'unavailable-id') { try { peer.destroy(); } catch (x) { } net.peer = null; hostGame(); return; } if (!netRole) coopStatus(e.type === 'browser-incompatible' ? 'This browser blocks co-op. Open lewisjaenke-byte.github.io instead.' : 'Could not open a room. Check your internet and try again.'); });
     peer.on('connection', c => {
-      if (net.conn && net.conn.open) { c.on('open', () => { c.send({ t: 'full' }); setTimeout(() => c.close(), 500); }); return; }
-      net.conn = c;
-      c.on('open', () => { roomPill(); if (phase === 'live') sendWorld(); SFX.levelUp(); });
-      c.on('data', hostRecv); c.on('close', () => { net.conn = null; if (net.p2) net.p2.av.g.visible = false; roomPill(); });
+      c.on('open', () => {
+        if (net.guests.size >= MAX_GUESTS) { try { c.send({ t: 'full' }); } catch (e) { } setTimeout(() => c.close(), 500); return; }
+        const used = new Set([...net.guests.values()].map(G => G.slot)); let slot = 1; while (used.has(slot)) slot++;
+        const G = { conn: c, slot, x: 0, z: 0, face: 0, ax: 0, az: 1, onWall: false, rolling: false, spin: false, y: 0, hp: 100, av: makeAvatar(...SLOT_COL[slot]), swingT: 0, inGame: false };
+        scene.add(G.av.g); net.guests.set(c, G); c.on('data', m => hostRecv(G, m)); c.on('close', () => dropGuest(G));
+        lobbyBroadcast(); SFX.levelUp();
+        if (!attract && (phase === 'live' || phase === 'over') && crystal.planted) sendWorld(G);
+      });
     });
   } catch (e) { coopStatus('Co-op needs an internet connection.'); }
 }
-function sendWorld() {
-  if (!net.conn || !net.conn.open || !crystal.planted) return;
-  netSend({ t: 'world', d: buildSave() }); net.prevGrid = new Uint8Array(grid); net.prevFill = new Uint8Array(fill);
-  if (!net.p2) net.p2 = { x: tc(crystal.i) + 1.5, z: tc(crystal.j) + 1.5, face: 0, ax: 0, az: 1, onWall: false, rolling: false, spin: false, hp: 100, av: makeAvatar(0xf1ead8, 0xe0705a), swingT: 0 };
-  net.p2.hp = 100; net.p2.av.g.visible = true;
-  if (crystal2.planted) setTimeout(() => netSend({ t: 'a', npcs: [], pets: [], veh: [], nests: [], mys: null, up: [...owned], c2: [crystal2.i, crystal2.j, Math.round(crystal2.hp), crystal2.max], c1: [crystal.i, crystal.j] }), 400);
+function dropGuest(G) { if (!net.guests.has(G.conn)) return; net.guests.delete(G.conn); scene.remove(G.av.g); if (phase === 'live' && !attract) tip(PLAYER_NAME[G.slot] + ' left the game.'); lobbyBroadcast(); }
+function flushGrid() {
+  if (!net.prevGrid) return; const ch = [];
+  for (let n = 0; n < N * N; n++) if (grid[n] !== net.prevGrid[n] || fill[n] !== net.prevFill[n]) { ch.push(n, grid[n], fill[n]); net.prevGrid[n] = grid[n]; net.prevFill[n] = fill[n]; }
+  if (ch.length) netSend({ t: 'g', ch });
 }
-function hostRecv(m) {
-  const p2 = net.p2; if (!p2) return;
-  if (m.t === 'p') { p2.x = m.x; p2.z = m.z; p2.face = m.f; p2.ax = m.ax; p2.az = m.az; p2.onWall = !!m.w; p2.rolling = !!m.r; p2.spin = !!m.s; p2.y = m.y || 0; }
-  else if (m.t === 'sw' && p2.hp > 0) { asP2(() => { P.x = m.x; P.z = m.z; P.ax = m.ax; P.az = m.az; doSwing(); }); p2.swingT = 0.17; }
-  else if (m.t === 'pl') asP2(() => place(m.i, m.j, m.type));
+function sendWorld(only) {
+  if (netRole !== 'host' || !crystal.planted) return; flushGrid();
+  const s = JSON.stringify(buildSave()), CH = 16000, n = Math.ceil(s.length / CH), id = Math.random().toString(36).slice(2, 8);
+  const targets = only ? [only] : [...net.guests.values()];
+  for (const G of targets) { if (!G.conn.open) continue;
+    try { for (let q = 0; q < n; q++) G.conn.send({ t: 'wc', id, q, n, s: s.slice(q * CH, (q + 1) * CH) }); } catch (e) { continue; }
+    G.inGame = true; G.hp = 100; G.downT = 0; G.x = tc(crystal.i) + (G.slot % 2 ? 1.6 : -1.6); G.z = tc(crystal.j) + 1.6 + ((G.slot - 1) >> 1) * 0.9; G.av.g.visible = true;
+    if (crystal2.planted) setTimeout(() => { try { G.conn.send({ t: 'a', npcs: [], pets: [], veh: [], nests: [], mys: null, up: [...owned], c2: [crystal2.i, crystal2.j, Math.round(crystal2.hp), crystal2.max], c1: [crystal.i, crystal.j] }); } catch (e) { } }, 400); }
+  net.prevGrid = new Uint8Array(grid); net.prevFill = new Uint8Array(fill); roomPill();
+}
+function hostRecv(G, m) {
+  if (m.t === 'p') { G.x = m.x; G.z = m.z; G.face = m.f; G.ax = m.ax; G.az = m.az; G.onWall = !!m.w; G.rolling = !!m.r; G.spin = !!m.s; G.y = m.y || 0; }
+  else if (m.t === 'hello') lobbyBroadcast();
+  else if (!G.inGame || phase !== 'live') return;
+  else if (m.t === 'sw' && G.hp > 0) { asGuest(G, () => { P.x = m.x; P.z = m.z; P.ax = m.ax; P.az = m.az; doSwing(); }); G.swingT = 0.17; }
+  else if (m.t === 'pl') asGuest(G, () => place(m.i, m.j, m.type));
   else if (m.t === 'spin' && spinCharges > 0) spinCharges--;
   else if (m.t === 'plant' && !crystal2.planted && inb(m.i, m.j + 1) && grid[idx(m.i, m.j)] === EMPTY && !spawnMask[idx(m.i, m.j)] && !built[idx(m.i, m.j + 1)] && Math.hypot(m.i - crystal.i, m.j - crystal.j) >= 8 && Math.hypot(m.i - crystal.i, m.j - crystal.j) <= 45) plantCrystal2(m.i, m.j);
-  else if (m.t === 'hello') sendWorld();
 }
-function asP2(fn) {
-  const p2 = net.p2, keep = { x: P.x, z: P.z, ax: P.ax, az: P.az, face: P.face, swingCd: P.swingCd, swingT: P.swingT, buffer: P.buffer, onWall: P.onWall };
-  P.x = p2.x; P.z = p2.z; P.ax = p2.ax; P.az = p2.az; P.onWall = p2.onWall;
+function asGuest(G, fn) {
+  const keep = { x: P.x, z: P.z, ax: P.ax, az: P.az, face: P.face, swingCd: P.swingCd, swingT: P.swingT, buffer: P.buffer, onWall: P.onWall };
+  P.x = G.x; P.z = G.z; P.ax = G.ax; P.az = G.az; P.onWall = G.onWall;
   try { fn(); } finally { Object.assign(P, keep); }
 }
 const NOBODY = { x: 1e6, z: 1e6, onWall: true };
 function nearestPlayer(x, z) {
-  const p2 = net.p2, p2ok = p2 && netRole === 'host' && net.conn && p2.hp > 0;
-  if (P.dead) return p2ok ? p2 : NOBODY;
-  if (!p2ok) return P;
-  return Math.hypot(p2.x - x, p2.z - z) < Math.hypot(P.x - x, P.z - z) ? p2 : P;
+  let best = P.dead ? NOBODY : P, bd = P.dead ? 1e9 : Math.hypot(P.x - x, P.z - z);
+  if (netRole === 'host') for (const G of liveGuests()) { if (G.hp <= 0) continue; const d = Math.hypot(G.x - x, G.z - z); if (d < bd) { bd = d; best = G; } }
+  return best;
 }
-function p2Hurt(d) {
-  const p2 = net.p2; if (!p2 || p2.rolling || p2.spin || p2.onWall || p2.hp <= 0) return;
-  p2.hp -= d; p2.flash = 0.12; p2.hurtT = 0;
-  if (p2.hp <= 0) { p2.hp = 0; p2.downT = 30; netSend({ t: 'down' }); }
+function remoteHurt(G, d) {
+  if (!G || !G.conn || G.rolling || G.spin || G.onWall || G.hp <= 0) return;
+  G.hp -= d; G.flash = 0.12; G.hurtT = 0;
+  if (G.hp <= 0) { G.hp = 0; G.downT = 30; try { G.conn.send({ t: 'down' }); } catch (e) { } }
 }
 function hostTick(dt) {
-  const p2 = net.p2, on = net.conn && net.conn.open;
-  if (p2 && on) {
-    p2.hurtT = (p2.hurtT || 0) + dt; if (p2.hp > 0 && p2.hp < 100 && p2.hurtT > 3) p2.hp = Math.min(100, p2.hp + 6 * dt);
-    if (p2.downT > 0 && (p2.downT -= dt) <= 0) { p2.hp = 100; const C = crystal2.planted ? crystal2 : crystal; netSend({ t: 'respawn', x: tc(C.i), z: tc(C.j) + 1.5 }); }
-    const a = p2.av; a.g.visible = p2.hp > 0; a.g.position.set(p2.x, p2.y || 0, p2.z); a.g.rotation.y = p2.spin ? a.g.rotation.y + dt * 38 : p2.face;
-    a.roll.position.y = 0.5 + (p2.rolling ? 0 : Math.abs(Math.sin(time * 9)) * 0.04); a.inner.rotation.x = p2.rolling ? (a.inner.rotation.x + dt * 20) : 0;
-    if (p2.flash > 0) { p2.flash -= dt; a.body.material = p2.flash > 0 ? mat.white : a.base; }
-    if (p2.spin) { const R = 1.2 + 0.3 * scy; for (const z of zombies) { if (z.dead) continue; const d = Math.hypot(z.x - p2.x, z.z - p2.z); if (d < R) hitZombie(z, 999, (z.x - p2.x) / (d || 1), (z.z - p2.z) / (d || 1), 'spin'); } }
+  const gs = liveGuests();
+  for (const G of gs) {
+    G.hurtT = (G.hurtT || 0) + dt; if (G.hp > 0 && G.hp < 100 && G.hurtT > 3) G.hp = Math.min(100, G.hp + 6 * dt);
+    if (G.downT > 0 && (G.downT -= dt) <= 0) { G.hp = 100; const C = crystal2.planted ? crystal2 : crystal; try { G.conn.send({ t: 'respawn', x: tc(C.i), z: tc(C.j) + 1.5 }); } catch (e) { } }
+    const a = G.av; a.g.visible = G.hp > 0; a.g.position.set(G.x, G.y || 0, G.z); a.g.rotation.y = G.spin ? a.g.rotation.y + dt * 38 : G.face;
+    a.roll.position.y = 0.5 + (G.rolling ? 0 : Math.abs(Math.sin(time * 9)) * 0.04); a.inner.rotation.x = G.rolling ? (a.inner.rotation.x + dt * 20) : 0;
+    if (G.flash > 0) { G.flash -= dt; a.body.material = G.flash > 0 ? mat.white : a.base; }
+    if (G.spin) { const R = 1.2 + 0.3 * scy; for (const z of zombies) { if (z.dead) continue; const d = Math.hypot(z.x - G.x, z.z - G.z); if (d < R) hitZombie(z, 999, (z.x - G.x) / (d || 1), (z.z - G.z) / (d || 1), 'spin'); } }
   }
-  if (!on || phase === 'menu') return;
+  if (!gs.length || phase === 'menu' || attract) return;
   if ((net.sendT -= dt) <= 0) {
     net.sendT = 0.066;
     const zs = []; for (const z of zombies) if (!z.dead) zs.push(z.id, 'wrbjd'.indexOf(z.kind[0]) + 10 * (z.cut || 0), Math.round(z.x * 50) / 50, Math.round(z.z * 50) / 50, Math.round(z.face * 20) / 20, z.flash > 0 ? 1 : 0);
-    netSend({ t: 's', zs, h: [Math.round(P.x * 50) / 50, Math.round(P.z * 50) / 50, Math.round(P.face * 20) / 20, P.swingT > 0 ? 1 : 0, P.dodgeT > 0 ? 1 : 0, P.spin ? 1 : 0, +(P.y || 0).toFixed(2)],
-      hud: [scrap, level, +charge.toFixed(1), Math.ceil(levelCd), Math.round(crystal.hp), crystal.max, +hoardeT.toFixed(1), hoardeOn ? 1 : 0, hoardeLeft, stage, spinCharges, nests.length, Math.round(p2 ? p2.hp : 100), scy, combo] });
+    const r2 = v => Math.round(v * 50) / 50, pl = [[0, r2(P.x), r2(P.z), Math.round(P.face * 20) / 20, P.swingT > 0 ? 1 : 0, P.dodgeT > 0 ? 1 : 0, P.spin ? 1 : 0, +(P.y || 0).toFixed(2), P.dead ? 0 : 1]];
+    for (const G of gs) pl.push([G.slot, r2(G.x), r2(G.z), Math.round(G.face * 20) / 20, G.swingT > 0 ? 1 : 0, G.rolling ? 1 : 0, G.spin ? 1 : 0, +(G.y || 0).toFixed(2), G.hp > 0 ? 1 : 0]);
+    for (const G of gs) if (G.swingT > 0) G.swingT -= 0.066;
+    const hud = [scrap, level, +charge.toFixed(1), Math.ceil(levelCd), Math.round(crystal.hp), crystal.max, +hoardeT.toFixed(1), hoardeOn ? 1 : 0, hoardeLeft, stage, spinCharges, nests.length, 100, scy, combo];
+    for (const G of gs) { hud[12] = Math.round(G.hp); try { G.conn.send({ t: 's', zs, pl, hud }); } catch (e) { } }
   }
-  if ((net.gridT -= dt) <= 0 && net.prevGrid) {
-    net.gridT = 0.25; const ch = [];
-    for (let n = 0; n < N * N; n++) if (grid[n] !== net.prevGrid[n] || fill[n] !== net.prevFill[n]) { ch.push(n, grid[n], fill[n]); net.prevGrid[n] = grid[n]; net.prevFill[n] = fill[n]; }
-    if (ch.length) netSend({ t: 'g', ch });
-  }
+  if ((net.gridT -= dt) <= 0) { net.gridT = 0.25; flushGrid(); }
   if ((net.actT -= dt) <= 0) {
     net.actT = 0.2;
     netSend({ t: 'a', npcs: npcs.filter(n => !n.dead).map(n => [n.hero ? 'hero:' + n.heroType : n.kind, +n.x.toFixed(2), +n.z.toFixed(2), +n.face.toFixed(2), n.hostile ? 1 : 0]),
@@ -2470,28 +2537,35 @@ function hostTick(dt) {
 }
 /* --- guest --- */
 async function joinGame(code) {
-  if (typeof RTCPeerConnection === 'undefined') { coopStatus('This page blocks co-op. Open the game from lewisjaenke-byte.github.io/Hoarder instead.'); return; }
-  code = (code || '').toUpperCase().replace(/[^A-Z]/g, ''); if (code.length !== 4) { coopStatus('Enter the 4-letter code.'); return; }
-  coopStatus('Connecting...');
+  if (typeof RTCPeerConnection === 'undefined' && !LOOP) { coopStatus('This browser blocks co-op. Open lewisjaenke-byte.github.io instead.'); return; }
+  code = (code || '').toUpperCase().replace(/[^A-Z]/g, ''); if (code.length !== 4) { coopStatus('Type the 4-letter room code from the host\'s screen.'); return; }
+  if (net.peer) leaveRoom(); coopStatus('Connecting to room ' + code + '...');
   try {
     const Peer = await loadPeer(); const peer = new Peer(undefined, { debug: 0 }); net.peer = peer; net.code = code;
     peer.on('open', () => {
       const c = peer.connect('hoarder-' + code.toLowerCase(), { reliable: true, serialization: 'json' }); net.conn = c;
-      c.on('open', () => { netRole = 'guest'; coopStatus('Connected! Waiting for the host to start...'); c.send({ t: 'hello' }); roomPill(); });
-      c.on('data', guestRecv); c.on('close', () => { roomPill(); if (phase !== 'menu' && phase !== 'over') gameOver('The host left'); });
-      c.on('error', () => coopStatus('Could not reach that room.'));
+      const to = setTimeout(() => { if (!c.open && net.conn === c) leaveRoom('No room ' + code + ' found. Check the code with the host.'); }, 10000);
+      c.on('open', () => { clearTimeout(to); netRole = 'guest'; if (!net.lobby || net.lobby.length < 2) net.lobby = [0, net.slot || 1]; coopStatus(''); showLobby(); try { c.send({ t: 'hello' }); } catch (e) { } SFX.click(); });
+      c.on('data', guestRecv);
+      c.on('close', () => { if (net.conn !== c) return; const inGame = phase !== 'menu' && !attract; net.conn = null; if (inGame && phase !== 'over') { gameOver('The host left'); } leaveRoom(inGame ? '' : 'The host closed the room.'); });
     });
-    peer.on('error', e => coopStatus(e.type === 'browser-incompatible' ? 'This page blocks co-op. Open the game from lewisjaenke-byte.github.io/Hoarder instead.' : e.type === 'peer-unavailable' ? 'No room with that code.' : 'Connection failed (' + (e.type || 'error') + ').'));
+    peer.on('error', e => { if (netRole === 'guest' && phase !== 'menu') return; leaveRoom(e.type === 'browser-incompatible' ? 'This browser blocks co-op. Open lewisjaenke-byte.github.io instead.' : e.type === 'peer-unavailable' ? 'No room ' + code + ' found. Check the code with the host.' : 'Could not connect. Check your internet and try again.'); });
   } catch (e) { coopStatus('Co-op needs an internet connection.'); }
 }
 const ZK = ['walker', 'runner', 'brute', 'jumper', 'digger'], ZMAT = () => [mat.zomb, mat.runner, mat.brute, mat.jumper, DIGM], ZSC = [1, 0.85, 1.45, 0.9, 1.05];
+function handleWorld(d) {
+  for (const g of net.gz.values()) scene.remove(g.p.g); net.gz.clear(); for (const a of net.others.values()) a.av.g.visible = false;
+  hideLobby(); $('coopBox').hidden = true; loadGame(d); netRole = 'guest';
+  const sc = SLOT_COL[net.slot] || SLOT_COL[1]; tintPlayer(sc[1], sc[0]);
+  P.x = tc(crystal.i) + (net.slot % 2 ? 1.6 : -1.6); P.z = tc(crystal.j) + 1.6 + ((net.slot - 1) >> 1) * 0.9; P.dead = false; P.hp = 100; player.g.visible = true; camTarget.set(P.x, 0, P.z);
+  roomPill(); SFX.levelUp(); banner('Co-op · ' + net.code);
+}
 function guestRecv(m) {
-  if (m.t === 'world') {
-    for (const g of net.gz.values()) scene.remove(g.p.g); net.gz.clear();
-    loadGame(m.d); netRole = 'guest'; tintPlayer(0xe0705a, 0xf1ead8); P.x = tc(crystal.i) + 1.5; P.z = tc(crystal.j) + 1.5; camTarget.set(P.x, 0, P.z);
-    if (!net.host) net.host = makeAvatar(0xe9c35a, 0x3fb8d6); net.host.g.visible = true; roomPill(); SFX.levelUp(); return;
-  }
-  if (phase === 'menu') return;
+  if (m.t === 'lobby') { net.slot = m.you; net.lobby = m.players; if (m.code) net.code = m.code; if (!$('lobby').hidden) renderLobby(); return; }
+  if (m.t === 'wc') { if (!net.chunks || net.chunks.id !== m.id) net.chunks = { id: m.id, n: m.n, got: 0, parts: [] }; const ck = net.chunks; if (ck.parts[m.q] === undefined) { ck.parts[m.q] = m.s; ck.got++; }
+    if (ck.got === ck.n) { net.chunks = null; let d = null; try { d = JSON.parse(ck.parts.join('')); } catch (e) { } if (d) handleWorld(d); } return; }
+  if (m.t === 'full') { leaveRoom('That room is full (5 players max).'); return; }
+  if (phase === 'menu' || attract) return;
   if (m.t === 's') {
     const seen = new Set(), zs = m.zs;
     for (let q = 0; q < zs.length; q += 6) {
@@ -2501,10 +2575,14 @@ function guestRecv(m) {
       const cut = (zs[q + 1] / 10) | 0; if (cut !== (e.cut || 0)) { e.cut = cut; e.p.inner.scale.set(1, 1 - 0.27 * cut, 1); e.p.inner.position.y = -0.12 * cut; e.p.inner.rotation.x = 0.2 + 0.3 * cut; burst(e.x, 0.3, e.z, e.bm, 5, 2); }
     }
     for (const [id, e] of net.gz) if (!seen.has(id)) { burst(e.x, 0.5, e.z, e.bm, 6, 2); scene.remove(e.p.g); net.gz.delete(id); }
-    const h = m.h; net.hostState = h;
-    const u = m.hud; const oldScrap = scrap; scrap = u[0]; level = u[1]; charge = u[2]; levelCd = u[3]; crystal.hp = crystal2.planted ? crystal2.hp : u[4]; crystal.max = crystal2.planted ? crystal2.max : u[5]; hoardeT = u[6]; hoardeOn = !!u[7]; hoardeLeft = u[8]; stage = u[9]; spinCharges = u[10]; scy = u[12 + 1]; combo = u[14];
+    const seenP = new Set();
+    for (const r of m.pl || []) { const s = r[0]; if (s === net.slot) continue; seenP.add(s); let o = net.others.get(s);
+      if (!o) { o = { av: makeAvatar(...SLOT_COL[s]) }; scene.add(o.av.g); o.av.g.position.set(r[1], 0, r[2]); net.others.set(s, o); }
+      o.st = r; }
+    for (const [s, o] of net.others) if (!seenP.has(s)) { scene.remove(o.av.g); net.others.delete(s); }
+    const u = m.hud; const oldScrap = scrap; scrap = u[0]; level = u[1]; charge = u[2]; levelCd = u[3]; crystal.hp = crystal2.planted ? crystal2.hp : u[4]; crystal.max = crystal2.planted ? crystal2.max : u[5]; hoardeT = u[6]; hoardeOn = !!u[7]; hoardeLeft = u[8]; stage = u[9]; spinCharges = u[10]; scy = u[13]; combo = u[14];
     const hp = u[12]; if (hp < P.hp - 0.5) { shake = Math.max(shake, 0.25); SFX.hurt(); const hd = $('hurt'); hd.classList.add('show'); setTimeout(() => hd.classList.remove('show'), 120); } P.hp = hp;
-    if (nests.length !== u[11]) { } if (scrap > oldScrap) SFX.coin();
+    if (scrap > oldScrap) SFX.coin();
   } else if (m.t === 'g') {
     const ch = m.ch; loadingSave = true;
     try { for (let q = 0; q < ch.length; q += 3) { const n = ch[q], t = ch[q + 1], f = ch[q + 2], i = n % N, j = (n / N) | 0;
@@ -2518,7 +2596,6 @@ function guestRecv(m) {
   else if (m.t === 'over') gameOver(m.why);
   else if (m.t === 'lost') { banner('Crystal lost'); SFX.boom(); }
   else if (m.t === 'merge') { banner('Crystal lost'); SFX.boom(); }
-  else if (m.t === 'full') coopStatus('That room is full.');
 }
 function reconcile(list, data, make, kill, keyOf) {
   if (list.length !== data.length || list.some((o, q) => keyOf(o) !== data[q][0])) { for (const o of list) kill(o); list.length = 0; for (const d of data) list.push(make(d)); }
@@ -2548,7 +2625,7 @@ function guestStep(dt) {
   updateBuild();
   const k = 1 - Math.exp(-dt * 14);
   for (const e of net.gz.values()) { e.x += (e.tx - e.x) * k; e.z += (e.tz - e.z) * k; e.p.g.position.set(e.x, 0, e.z); e.p.g.rotation.y = e.f; e.p.roll.position.y = 0.5 + Math.abs(Math.sin(time * 7 + e.seed)) * 0.05; }
-  const h = net.hostState, a = net.host; if (h && a) { a.g.visible = true; a.g.position.x += (h[0] - a.g.position.x) * k; a.g.position.z += (h[1] - a.g.position.z) * k; a.g.position.y = h[6]; a.g.rotation.y = h[5] ? a.g.rotation.y + dt * 38 : h[2]; a.inner.rotation.x = h[4] ? a.inner.rotation.x + dt * 20 : 0; }
+  for (const o of net.others.values()) { const h = o.st, a = o.av; if (!h) continue; a.g.visible = !!h[8]; a.g.position.x += (h[1] - a.g.position.x) * k; a.g.position.z += (h[2] - a.g.position.z) * k; a.g.position.y = h[7]; a.g.rotation.y = h[6] ? a.g.rotation.y + dt * 38 : h[3]; a.inner.rotation.x = h[5] ? a.inner.rotation.x + dt * 20 : 0; a.roll.position.y = 0.5 + (h[5] ? 0 : Math.abs(Math.sin(time * 9)) * 0.04); }
   for (const n of npcs) if (n.gx !== undefined) { n.x += (n.gx - n.x) * k; n.z += (n.gz2 - n.z) * k; n.pm.g.position.set(n.x, 0, n.z); n.pm.g.rotation.y = n.face; if (n.pm.coin) n.pm.coin.rotation.z += dt * 3; }
   for (const pt of pets) if (pt.gx !== undefined) { pt.x += (pt.gx - pt.x) * k; pt.z += (pt.gz2 - pt.z) * k; pt.mesh.position.set(pt.x, 0, pt.z); pt.mesh.rotation.y = pt.face; }
   for (const v of vehicles) if (v.gx !== undefined) { v.x += (v.gx - v.x) * k; v.z += (v.gz2 - v.z) * k; v.mesh.position.set(v.x, 0, v.z); v.mesh.rotation.y = v.face; }
@@ -2567,7 +2644,8 @@ $('sShake').addEventListener('change', () => { SET.shake = $('sShake').checked; 
 $('sLefty').addEventListener('change', () => { SET.lefty = $('sLefty').checked; applySet(); });
 setTimeout(drawRuns, 0);
 if ('serviceWorker' in navigator && /github\.io$|localhost$/.test(location.hostname)) navigator.serviceWorker.register('sw.js').catch(() => { });
-$('bHost').addEventListener('click', () => { audioInit(); if (!net.peer) hostGame(); });
+$('bHost').addEventListener('click', () => { audioInit(); if (netRole === 'host') showLobby(); else { if (net.peer) leaveRoom(); hostGame(); } });
+$('bLobStart').addEventListener('click', () => startCoop(false)); $('bLobCont').addEventListener('click', () => startCoop(true)); $('bLobLeave').addEventListener('click', () => { SFX.click(); leaveRoom(); });
 $('bJoin').addEventListener('click', () => { audioInit(); joinGame($('joinCode').value); });
 $('joinCode').addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Enter') joinGame($('joinCode').value); });
 
@@ -3366,7 +3444,7 @@ function leashZombie(z) {
 const tamedCount = () => pets.filter(pt => pt.tamed).length;
 function drawDown(n) {
   const x = tc(n % N), z = tc((n / N) | 0); if (!P.dead && Math.hypot(P.x - x, P.z - z) < 3.2) return true;
-  if (netRole === 'host' && net.conn && net.conn.open && net.p2 && net.p2.hp > 0 && Math.hypot(net.p2.x - x, net.p2.z - z) < 3.2) return true; return false;
+  if (guestsNear(x, z, 3.2)) return true; return false;
 }
 function updateTraps(dt, visualOnly) {
   for (const n of spinners) { const o = tileObj[n]; if (!o) continue; o.userData.hub.rotation.y += dt * (spinFast ? 14 : 8);
@@ -3508,7 +3586,7 @@ function makeRadio() {
 }
 let tuning = null;
 function startTune() {
-  if (netRole === 'host' && net.conn && net.conn.open && net.p2 && Math.hypot(net.p2.x - radio.x, net.p2.z - radio.z) > 5) { SFX.bonk(); tempMark(radio.x, radio.z, '#5fd4ff', 'radio', 6); showLoot('gem', 'Bring your friend', 'Everyone must be at the tower', '#5fd4ff'); return; }
+  if (hostHasGuests() && !guestsNear(radio.x, radio.z, 5)) { SFX.bonk(); tempMark(radio.x, radio.z, '#5fd4ff', 'radio', 6); showLoot('gem', 'Bring your friend', 'Everyone must be at the tower', '#5fd4ff'); return; }
   tuning = { pos: 0, dir: 1, speed: 0.9, hits: 0, zone: 0.2 + Math.random() * 0.55, w: 0.18 }; $('tune').hidden = false; drawTune(); SFX.click();
 }
 function drawTune() { if (!tuning) return; $('tuneZone').style.left = (tuning.zone * 100) + '%'; $('tuneZone').style.width = (tuning.w * 100) + '%'; $('tuneNeedle').style.left = (tuning.pos * 100) + '%'; document.querySelectorAll('#tune .tdots i').forEach((d, q) => d.classList.toggle('on', q < tuning.hits)); }
@@ -4686,7 +4764,7 @@ function updateZombies(dt) {
       if (!T.onWall && dp < 1.8 && dp > 0.01) { const w = 0.6; tx = tx * (1 - w) + dpx / dp * w; tz = tz * (1 - w) + dpz / dp * w; const l = Math.hypot(tx, tz) || 1; tx /= l; tz /= l; }
       if (npcs.length && (z.npcT = (z.npcT || 0) - dt) <= 0) { z.npcT = 0.5; z.npc = null; let nb = Math.min(2, dp); for (const nn of npcs) { if (nn.dead || nn.down > 0 || nn.jump) continue; const d = Math.hypot(nn.x - z.x, nn.z - z.z); if (d < nb) { nb = d; z.npc = nn; } } }
       if (z.npc && !z.npc.dead) { const nx = z.npc.x - z.x, nz = z.npc.z - z.z, nd = Math.hypot(nx, nz) || 1; tx = nx / nd; tz = nz / nd; if (nd < 0.8 && z.hitCd <= 0) { z.hitCd = 0.9; npcHurt(z.npc, z.dmg); if (z.npc.heroType === 'ian') { z.frozen = 5; burst(z.x, 0.7, z.z, mat.ice, 6, 2); } } }
-      else if (dp < 0.72 + (z.kind === 'brute' ? 0.2 : 0) && z.hitCd <= 0 && !T.onWall && !(T === P && P.mount && P.mount.fly)) { z.hitCd = 0.9; if (T === P) hurtPlayer(z.dmg); else p2Hurt(z.dmg); }
+      else if (dp < 0.72 + (z.kind === 'brute' ? 0.2 : 0) && z.hitCd <= 0 && !T.onWall && !(T === P && P.mount && P.mount.fly)) { z.hitCd = 0.9; if (T === P) hurtPlayer(z.dmg); else remoteHurt(T, z.dmg); }
       if (T === P && P.onWall && dp < 1.35) { damageWall(idx(tt(P.x), tt(P.z)), (z.kind === 'brute' ? 30 : 7) * dt); if (spikedWalls) { z.hp -= 18 * dt; if (z.hp <= 0) killZombie(z, 'spike'); } tip("They're chewing your wall! Move or repair.", 'chew'); }
       if (z.kind === 'boomer') {
         z.sack.scale.setScalar(1 + Math.sin(time * 9 + z.seed) * 0.15);
@@ -5039,7 +5117,7 @@ function frame(now) {
   if (!isFinite(camTarget.x) || !isFinite(camTarget.z)) camTarget.set(P.x, 0, P.z);
   const raw = (now - last) / 1000, dt = Math.min(0.05, raw); last = now; time += dt; if (raw < 1) adaptQuality(raw);
   if (spinAim && (spinAimT += dt) > 4) setSpinAim(false);
-  step(spinAim && !(netRole === 'host' && net.conn) ? dt * 0.2 : dt); if (!treeOpen || !frozenDrawn) { renderer.render(scene, camera); frozenDrawn = treeOpen; } requestAnimationFrame(frame);
+  step(spinAim && !hostHasGuests() ? dt * 0.2 : dt); if (!treeOpen || !frozenDrawn) { renderer.render(scene, camera); frozenDrawn = treeOpen; } requestAnimationFrame(frame);
 }
 addEventListener('resize', () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
 window.__game = { GRAVPAD, JUMPPAD, setBuild, get buildModeV() { return buildMode; }, get MUS() { return [musGain && musGain.gain.value, musNext, musBar, musVar, muted]; }, get AC() { return ac; }, get MASTER() { return master; }, get rode() { return [...rode]; }, set gunTier(v) { gunTier = v; }, get gunTier() { return gunTier; }, W_ICON, get spawnOff() { return spawnOff; }, set chainOn(v) { chainOn = v; }, startSafari, get safGate() { return safGate && [safGate.i, safGate.j]; }, get BLt() { return BL && BL.t; }, hitZombie, get zl() { return zombies.map(z=>[+z.x.toFixed(1),+z.z.toFixed(1)]); }, get phase() { return phase; }, get level() { return level; }, get vehicles() { return vehicles; }, get npcs() { return npcs; }, get carried() { return !!carried; }, set gravOn(v) { gravOn = v; }, get quakeCd() { return quakeCd; }, menuDone, get frenzyT2() { return frenzyT; }, get attract() { return attract; }, set touchActV(v) { touchAct = v; }, get musMode() { return musMode; }, set musEventT(v) { musEventT = v; }, hitStruct, get structOff() { return [shedAt, compAt, siloAt].map(isOff); }, set uziOn(v) { uziOn = v; }, get SL() { return SL; }, set shedLvV(v) { shedLv = v; refreshShed(); }, get fades() { return fadeSet.size; }, COMPILER, BELL, get bellAt() { return bellAt; }, get compAt() { return compAt; }, set crysHp(v) { crystal.hp = v; }, get crysHp() { return crystal.hp; }, get navDbg() { return [awayHp, crysAlertT, regionAt(tt(P.x), tt(P.z)), Math.round(P.x), Math.round(P.z), crystal.max]; }, startShip, get ship() { return !!ship; }, startJet, set jetCharge(v) { jetCharge = v; }, get jetT() { return jetT; }, set jetOn(v) { jetOn = v; setJetLook(); }, get shedLv() { return shedLv; }, upgradeShed, get samKills() { return samKills; }, spitBlock, placeCosmic, openCosmic, get cosmic() { return cosmic && Math.round(cosmic.t); }, get BL() { return BL; }, sendFishing, spawnGearItem, get scyRare() { return scyRare; }, get sam() { return !!sam; }, set samT(v) { samT = v; }, get killTimes() { return killTimes.length; }, dodge, TITAN, set titanOn(v) { titanOn = v; updateBuildButtons(); }, set vetOn(v) { vetOn = v; }, petHurt, npcHurt, SHED, get shedAt() { return shedAt; }, get treeMode() { return treeMode; }, set mechWolf(v) { mechWolf = v; }, set heliGun(v) { heliGun = v; }, set skyOn(v) { skyOn = v; }, get regionBiome2() { return regionBiome; }, addVehicle, useVehicle, dismount, addPet, get zraw() { return zombies; }, get roadNextArr() { return roadNext; }, set roadOn(v) { roadOn = v; updateBuildButtons(); }, set reaperBlades(v) { reaperBlades = v; }, set spinnerMax(v) { spinnerMax = v; }, ROAD, SPINNER, get gearDrops() { return gearDrops.map(d => [d.sl, d.t]); }, equipFirst: () => gearDrops[0] && equipDrop(gearDrops[0]), get sabCamps() { return sabCamps; }, plantDecoy, get decoy() { return decoy && Math.round(decoy.t); }, get tradeTax() { return tradeTax; }, set hoardeLeftV(v) { hoardeLeft = v; }, get hoardeStall() { return hoardeStall; }, startHoarde, killBoss: () => boss && killZombie(boss, "scythe"), startPeace, spawnBoss, get boss() { return boss && Math.round(boss.hp); }, get pathLen() { return pathPts.length; }, set pathShowT(v) { pathShowT = v; }, get globs() { return globs.length; }, get buildMode() { return buildMode; }, hurtPlayer, set droneOn(v) { droneOn = v; }, get crystalIJ() { return [crystal.i, crystal.j]; }, startLure, startFrenzy, get lureT() { return lureT; }, get frenzyT() { return frenzyT; }, set frenzyCharge(v) { frenzyCharge = v; }, set lureOn(v) { lureOn = v; }, set frenzyOn(v) { frenzyOn = v; }, get peaceT() { return peaceT; }, endHoarde, get baseR() { return baseR; }, openGateway, startBonus, endBonus, get inBonus() { return inBonus; }, get gateway() { return gateway; }, get mazeF() { return mazeF; }, get goals() { return goals.map(g => g.t); }, addHero, get scares() { return [...scares.values()].map(s2 => Math.round(s2.hp)); }, set weapon(v) { weapon = v; }, get weapon() { return weapon; }, set bowOwned(v) { bowOwned = v; }, set fuel(v) { fuel = v; }, set molotovs(v) { molotovs = v; }, get net() { return net; }, get netRole() { return netRole; }, set netRole(v) { netRole = v; }, hostRecv, guestRecv, buildSave, sendWorld, saveGame, loadGame, readSave, get worldSeed() { return worldSeed; }, openCavern, get nests() { return nests; }, placeMystery, get mystery() { return mystery; }, compass, get radio() { return radio; }, spawnWanderer, useRadio, get heliOn() { return heli.t >= 0; }, addNpc, openTrade, maybeRaid, set repu(v) { repu = v; }, set wheat(v) { wheat = v; }, get wheat() { return wheat; }, set bread(v) { bread = v; }, get bread() { return bread; }, get farms() { return farms; }, SILO, FARM, get repu() { return repu; }, set level(v) { level = v; }, get pets() { return pets; }, get junks() { return junks.length; }, set fish(v) { fish = v; }, set bones(v) { bones = v; }, set spinCharges(v) { spinCharges = v; }, get spinCharges() { return spinCharges; }, get combo() { return combo; }, setSpinAim, spinAddPoint, spinRelease, get spinning() { return !!P.spin; }, set scy(v) { scy = v; }, get bones() { return bones; }, showLoot, toggleBag, get fish() { return fish; }, get gear() { return gear; }, get fishing() { return fishing && { t: fishing.t, wait: fishing.wait, bite: fishing.bite }; }, dropGear, getInteract, useVehicle, crystalDrop, startHeli, TAR, JUMPPAD, TOTEM, QSAND, WATER, get regionBiome() { return regionBiome; }, swapBiome, get pickups() { return pickups.length; }, WIRE, get points() { return points; }, set points(v) { points = v; }, buyNode, openTree, set levelCd(v) { levelCd = v; }, get levelCd() { return levelCd; }, SENTRY, SHIELD, get owned() { return owned; }, get charge() { return charge; }, set charge(v) { charge = v; }, set hoardeT(v) { hoardeT = v; }, get hoardeOn() { return hoardeOn; }, get hoardeLeft() { return hoardeLeft; }, set graceT(v) { graceT = v; }, levelUp, spawnZombie, feedCrystal, get wallHp() { return wallHp; }, get zombies() { return zombies.length; }, get scrap() { return scrap; }, set scrap(v) { scrap = v; },
