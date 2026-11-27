@@ -325,7 +325,7 @@ body.attract #menu .card{background:rgba(30,20,40,.72);border-radius:22px;paddin
 .card h1{font:clamp(52px,14vw,76px)/1 'Lilita One',sans-serif;margin:0 0 6px;color:var(--ink);text-shadow:0 5px 0 #2a1d3a}
 .card h1 span{color:var(--amber)}
 @font-face{font-family:Creepster;src:url(creepster.woff2) format('woff2');font-display:block}
-.card h1.logo{width:100%;max-width:440px;margin:0 auto 4px;text-shadow:none;line-height:0}.card h1.logo svg{width:100%;height:auto;filter:drop-shadow(0 5px 0 #1d2a14)}
+.card h1.logo{width:100%;max-width:440px;margin:0 auto 4px;text-shadow:none;line-height:0}.card h1.logo img{width:100%;height:auto;display:block}
 .card h2{font:34px/1.05 'Lilita One',sans-serif;margin:0 0 4px}
 .card p{margin:6px 0 18px;opacity:.9}
 .chint{font-size:13px;margin:4px 0 8px!important;opacity:.85}
@@ -484,7 +484,7 @@ body.attract #menu .card{background:rgba(30,20,40,.72);border-radius:22px;paddin
 </div>
 <div class="screen" id="menu">
   <div class="card">
-    <h1 class="logo"><svg viewBox="0 0 1000 250" role="img" aria-label="Hoarde(r)"><text x="30" y="190" font-family="Creepster, cursive" font-size="200" fill="#8fd35a" stroke="#1d2a14" stroke-width="6" paint-order="stroke" textLength="700" lengthAdjust="spacingAndGlyphs">HOARDE</text><g transform="translate(14 4) translate(800 212) scale(1.06) translate(-800 -212)"><rect x="758" y="30" width="26" height="182" rx="5" fill="#6b4524" stroke="#24160b" stroke-width="4" transform="rotate(4 771 120)"/><path d="M778 42 C 870 26, 916 62, 902 98 C 890 128, 842 134, 802 128 L 716 140 L 792 108 C 836 112, 862 102, 868 88 C 876 68, 842 56, 778 64 Z" fill="#cfcac2" stroke="#24160b" stroke-width="5" stroke-linejoin="round"/><path d="M802 128 L 716 140 L 760 122 Z" fill="#c0392b"/><path d="M742 136 C 744 152, 736 160, 740 170 C 744 160, 748 150, 746 136 Z" fill="#c0392b"/><path d="M868 88 C 872 110, 864 120, 868 134 C 874 120, 878 108, 876 92 Z" fill="#c0392b"/><path d="M800 136 L 888 204" stroke="#24160b" stroke-width="26" stroke-linecap="round"/><path d="M800 136 L 888 204" stroke="#6b4524" stroke-width="17" stroke-linecap="round"/></g></svg></h1>
+    <h1 class="logo"><img src="logo.png" alt="Hoarde(r)" width="880" height="237"></h1>
     <p>Fight the hoard &amp; defend your crystal</p>
     <button class="btn" id="bContinue" hidden>Continue <span id="contLv"></span></button>
     <button class="btn" id="bPlay">New game</button>
@@ -502,7 +502,7 @@ body.attract #menu .card{background:rgba(30,20,40,.72);border-radius:22px;paddin
       <p class="cstat" id="coopStat" hidden></p>
     </div>
     <div class="runs" id="runs"></div>
-    <div class="keys">Best: <span id="menuBest">Lv 0</span><br>v0.66</div>
+    <div class="keys">Best: <span id="menuBest">Lv 0</span><br>v0.67</div>
   </div>
 </div>
 <div class="screen" id="over" hidden>
