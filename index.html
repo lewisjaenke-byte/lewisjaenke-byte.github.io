@@ -120,7 +120,9 @@ body:not(.is-touch) .pcspin:not([hidden]){display:block;position:absolute;right:
 .nd svg{width:56%;height:56%}
 .nd.own{background:var(--c);box-shadow:0 0 0 3px rgba(255,255,255,.85)}
 .nd.can{background:#3a2e4c;box-shadow:0 0 0 3px var(--c);animation:ndpulse 2.2s ease-in-out infinite}
-#tapStart{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:rgba(20,12,28,.55);cursor:pointer}#tapStart[hidden]{display:none}#tapStart .ts{display:grid;justify-items:center;gap:10px;color:#fff8ec;font-size:20px;animation:tsp 1.6s ease-in-out infinite}@keyframes tsp{50%{opacity:.55;transform:scale(.96)}}
+#bMusic{position:fixed;top:calc(env(safe-area-inset-top) + 10px);right:calc(env(safe-area-inset-right) + 10px);z-index:30;width:38px;height:38px;border-radius:50%;border:0;background:rgba(20,12,28,.45);display:grid;place-items:center;padding:0;opacity:.7;cursor:pointer}#bMusic[hidden]{display:none}#bMusic svg{width:20px;height:20px}
+.card #bContinue:disabled{opacity:.38;filter:grayscale(1);cursor:default;box-shadow:none}.card #bContinue small{display:block;font-size:12px;font-weight:600;opacity:.85;margin-top:2px}
+#hintPop{position:absolute;left:50%;top:calc(env(safe-area-inset-top) + 250px);transform:translateX(-50%);background:rgba(20,12,28,.82);border:2px solid #ffd166;color:#ffe9a8;border-radius:12px;padding:8px 14px;width:max-content;max-width:calc(100vw - 32px);text-align:center;font-weight:700;font-size:15px;pointer-events:none;z-index:7;animation:hpp 1.4s ease-in-out infinite}#hintPop[hidden]{display:none}@keyframes hpp{50%{border-color:#fff8ec}}
 .na{filter:grayscale(1) brightness(.7);opacity:.55}.cbtn.on.na,.hb.on.na{opacity:.8}
 .nd.ride{background:#2a2333;filter:grayscale(1);opacity:.6;box-shadow:0 0 0 2px rgba(255,255,255,.25)}
 .nd.can.poor{animation:none;filter:grayscale(1) brightness(.75);box-shadow:0 0 0 2px rgba(255,255,255,.22)}
@@ -396,7 +398,7 @@ body.attract #menu .card{background:rgba(30,20,40,.72);border-radius:22px;paddin
   <div class="marks" id="marks"></div>
   <div class="respawn" id="respawn" hidden><b id="respawnN">30</b></div>
   <div class="room" id="roomPill" hidden><i></i><span id="roomTxt"></span></div>
-  <div class="tip" id="tip"></div>
+  <div class="tip" id="tip"></div><div id="hintPop" hidden></div>
   <div class="banner" id="banner"><div id="bannerT"></div><div class="bsub" id="bannerS"></div></div>
   <div class="hurt" id="hurt"></div>
   <div id="floaters"></div>
@@ -487,7 +489,7 @@ body.attract #menu .card{background:rgba(30,20,40,.72);border-radius:22px;paddin
   <div class="card">
     <h1 class="logo"><img src="logo.png" alt="Hoarde(r)" width="880" height="222"></h1>
     <p>Fight the hoard &amp; defend your crystal</p>
-    <button class="btn" id="bContinue" hidden>Continue <span id="contLv"></span></button>
+    <button class="btn" id="bContinue">Continue <span id="contLv"></span></button>
     <button class="btn" id="bPlay">New game</button>
     <button class="btn dark" id="bCoop">Co-op</button>
     <button class="btn dark" id="bSet">Settings</button>
@@ -503,7 +505,7 @@ body.attract #menu .card{background:rgba(30,20,40,.72);border-radius:22px;paddin
       <p class="cstat" id="coopStat" hidden></p>
     </div>
     <div class="runs" id="runs"></div>
-    <div class="keys">Best: <span id="menuBest">Lv 0</span><br>v0.69</div>
+    <div class="keys">Best: <span id="menuBest">Lv 0</span><br>v0.70</div>
   </div>
 </div>
 <div class="screen" id="over" hidden>
@@ -524,9 +526,9 @@ const $ = id => document.getElementById(id);
 /* ---------- grid ---------- */
 const N = 216, HALF = N / 2, SPAWN_R = 34, SPAWN_W = 30;
 let CAP = 5;
-const EMPTY = 0, WALL = 1, PIT = 2, CRYS = 3, HAY = 4, SCRAPPILE = 5, BARREL = 6, TREE = 7, ROCK = 8, ERASE = 9, CANYON = 10, SENTRY = 11, SHIELD = 12, WIRE = 13, CACTUS = 14, CHEST = 15, CRATE = 16, ORE = 17, RUIN = 18, CLIFF = 19, CAR = 20, WATER = 21, QSAND = 22, TAR = 23, JUMPPAD = 24, TOTEM = 25, BRIDGE = 26, LMK = 27, SILO = 28, FARM = 29, BEAR = 30, SPINNER = 31, MOAT = 32, DRAWB = 33, KENNEL = 34, SCARE = 35, ROAD = 36, SHED = 37, TITAN = 38, COMPILER = 39, BELL = 40, GRAVPAD = 41;
-const SOLID_Z = [0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0], CLIMB = [0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0];
-const PROP_TYPES = new Set([HAY, SCRAPPILE, BARREL, TREE, ROCK, CANYON, CACTUS, CHEST, CRATE, ORE, RUIN, CLIFF, CAR, WATER, QSAND, BRIDGE, LMK]);
+const EMPTY = 0, WALL = 1, PIT = 2, CRYS = 3, HAY = 4, SCRAPPILE = 5, BARREL = 6, TREE = 7, ROCK = 8, ERASE = 9, CANYON = 10, SENTRY = 11, SHIELD = 12, WIRE = 13, CACTUS = 14, CHEST = 15, CRATE = 16, ORE = 17, RUIN = 18, CLIFF = 19, CAR = 20, WATER = 21, QSAND = 22, TAR = 23, JUMPPAD = 24, TOTEM = 25, BRIDGE = 26, LMK = 27, SILO = 28, FARM = 29, BEAR = 30, SPINNER = 31, MOAT = 32, DRAWB = 33, KENNEL = 34, SCARE = 35, ROAD = 36, SHED = 37, TITAN = 38, COMPILER = 39, BELL = 40, GRAVPAD = 41, GRAVE = 42;
+const SOLID_Z = [0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1], CLIMB = [0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0];
+const PROP_TYPES = new Set([GRAVE, HAY, SCRAPPILE, BARREL, TREE, ROCK, CANYON, CACTUS, CHEST, CRATE, ORE, RUIN, CLIFF, CAR, WATER, QSAND, BRIDGE, LMK]);
 const COST = { [WALL]: 4, [PIT]: 12, [BARREL]: 15, [SENTRY]: 30, [SHIELD]: 40, [WIRE]: 6, [TAR]: 3, [JUMPPAD]: 10, [GRAVPAD]: 20, [TOTEM]: 35, [SILO]: 40, [FARM]: 5, [BEAR]: 12, [SPINNER]: 45, [MOAT]: 6, [DRAWB]: 20, [KENNEL]: 30, [SCARE]: 25, [ROAD]: 2, [SHED]: 0, [TITAN]: 90, [COMPILER]: 0, [BELL]: 0 };
 const wallHp = new Float32Array(N * N), wallMax = new Float32Array(N * N), built = new Uint8Array(N * N);
 const BIOMES = {
@@ -538,6 +540,7 @@ const BIOMES = {
   lake: { name: 'Dam lake', col: 0x86a660, decor: 0x5f8f4a, hint: '' },
   tundra: { name: 'Frozen tundra', col: 0xdce8ee, decor: 0xb8cdd8, hint: '' },
   airstrip: { name: 'Airstrip', col: 0x9a9284, decor: 0x7d776c, hint: '' },
+  graveyard: { name: 'Graveyard', col: 0x6e7360, decor: 0x4d5544, hint: '' },
   mountain: { name: 'Mountains', col: 0x8b847c, decor: 0x6f6a62, hint: 'Mountains: high ground and crystal ore that charges your crystal.' }
 };
 const DIRS = ['north-west', 'north', 'north-east', 'west', 'centre', 'east', 'south-west', 'south', 'south-east'];
@@ -769,7 +772,7 @@ const STAGE_NAME = { day: 'Day', dusk: 'Dusk', night: 'Night' };
 let bestLevel = 0, bestTime = 0, kills = 0, overTimer = 0, flowDirty = false, raidPendT = -1;
 function readRuns() { try { return JSON.parse(localStorage.getItem('hoarder.runs') || '[]'); } catch (e) { return []; } }
 function drawRuns() { const r = readRuns(); $('runs').innerHTML = r.length ? '<b>Top runs</b>' + r.map((x, q) => '<div><span>' + (q + 1) + '. Lv ' + x.lv + '</span><span>' + fmtT(x.t) + ' · ' + x.k + ' kills</span></div>').join('') : ''; }
-let scaredCats = [], peaceT = 0, peaceCd = 0, peaceFree = false, bossPeace = false, lureOn = false, lureT = 0, lureCd = 0, lureDir = 0, frenzyOn = false, frenzyCharge = 0, frenzyT = 0, scareLv = 0, scares = new Map(), kennelOn = false, leashOn = false, petCap = 3, kennelAt = -1, bearOn = false, spinnerMax = 0, spinFast = false, moatOn = false, drawOn = false, deepMoat = false, rollHit = 0, farmSpeed = 1, siloOn = false, bakeOn = false, siloAt = -1, wheat = 0, bread = 0, farms = new Map(), tarOn = false, jumpOn = false, totemMax = 0, lavaPits = false, wallsOn = false, pitsOn = false, climbOn = false, pistolOn = false, wireOn = false, electric = false, points = 0, owned = new Set(), levelCd = 0, treeOpen = false;
+let scaredCats = [], peaceT = 0, peaceCd = 0, peaceFree = false, bossPeace = false, lureOn = false, lureT = 0, lureCd = 0, lureDir = 0, frenzyOn = false, frenzyCharge = 0, frenzyT = 0, scareLv = 0, scares = new Map(), kennelOn = false, leashOn = false, petCap = 3, kennelAt = -1, bearOn = false, spinnerMax = 0, spinFast = false, moatOn = false, drawOn = false, deepMoat = false, rollHit = 0, farmSpeed = 1, siloOn = false, bakeOn = false, siloAt = -1, wheat = 0, bread = 0, farms = new Map(), tarOn = false, jumpOn = false, totemMax = 0, lavaPits = false, wallsOn = false, pitsOn = false, climbOn = false, longScy = false, wallSwap = false, wireOn = false, electric = false, points = 0, owned = new Set(), levelCd = 0, treeOpen = false;
 let runSpeed = 5.2, wallSpeed = 3.6, rollSpeed = 12.5, rollCd = 0.6, wallRunner = false, sentryMax = 0, sentryRate = 0.55, shieldMax = 0, climbTime = 0, pulseOn = false, pulseT = 8, spikedWalls = false;
 let sentries = [], shields = [];
 const levelCdFor = L => Math.round((30 + 10 * (L - 2)) * 1.25);
@@ -810,11 +813,11 @@ function burst(x, y, z, m, n, power = 3) {
 /* ---------- sound (all synthesised live, no files) ---------- */
 const PENTA = [0, 2, 4, 7, 9, 12, 14, 16, 19, 21, 24, 26, 28, 31];
 let ac = null, master = null, noiseBuf = null, muted = false;
-const SET = { vol: 0.8, shake: true, lefty: false };
+const SET = { vol: 0.8, shake: true, lefty: false, music: true };
 try { Object.assign(SET, JSON.parse(localStorage.getItem('hoarder.set') || '{}')); } catch (e) { }
 function applySet() { if (master) master.gain.value = muted ? 0 : 0.75 * SET.vol; document.body.classList.toggle('lefty', !!SET.lefty); try { localStorage.setItem('hoarder.set', JSON.stringify(SET)); } catch (e) { } }
 try { muted = localStorage.getItem('hoarder.muted') === '1'; } catch (e) {}
-const _unlockA = e => { const ts = document.getElementById('tapStart'); if (ts && !ts.hidden) { ts.hidden = true; if (e && e.target && e.target.closest && e.target.closest('#tapStart')) { e.stopPropagation(); e.preventDefault && e.cancelable && e.preventDefault(); } } audioInit(); iosPlayback(); if (ac && ac.state === 'running') for (const ev of ['pointerdown', 'touchend', 'keydown', 'click']) removeEventListener(ev, _unlockA, true); };
+const _unlockA = e => { audioInit(); iosPlayback(); if (ac && ac.state === 'running') for (const ev of ['pointerdown', 'touchend', 'keydown', 'click']) removeEventListener(ev, _unlockA, true); };
 for (const ev of ['pointerdown', 'touchend', 'keydown', 'click']) addEventListener(ev, _unlockA, true);
 let _silent = null;
 function iosPlayback() { try { if (navigator.audioSession && navigator.audioSession.type !== 'playback') navigator.audioSession.type = 'playback'; } catch (e) {}
@@ -1114,6 +1117,15 @@ function makeTree() {
   const sc = 0.85 + Math.random() * 0.4; c.scale.set(sc, sc * (0.9 + Math.random() * 0.5), sc); c.rotation.y = Math.random() * 3;
   g.add(t, c); g.rotation.y = Math.random() * 3; return g;
 }
+const GRAVEM = { stone: M(0x8d8f8a), stone2: M(0x6f726d), moss: M(0x5d6b48), dirt: M(0x4f4a38), iron: M(0x2e2b2c) };
+function makeGrave() {
+  const g = new THREE.Group(), v = Math.random(), st = Math.random() < 0.6 ? GRAVEM.stone : GRAVEM.stone2;
+  const mound = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.07, 0.62), GRAVEM.dirt); mound.position.set(0, 0.035, 0.22); mound.receiveShadow = true; g.add(mound);
+  if (v < 0.5) { const slab = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.62, 0.14), st); slab.position.set(0, 0.31, -0.18); const top = new THREE.Mesh(new THREE.CylinderGeometry(0.275, 0.275, 0.14, 12, 1, false, 0, Math.PI).rotateX(Math.PI / 2).rotateZ(Math.PI / 2), st); top.rotation.set(Math.PI / 2, 0, -Math.PI / 2); top.position.set(0, 0.62, -0.18); const moss = new THREE.Mesh(new THREE.BoxGeometry(0.57, 0.1, 0.16), GRAVEM.moss); moss.position.set(0, 0.05, -0.18); g.add(slab, top, moss); slab.castShadow = top.castShadow = true; }
+  else if (v < 0.8) { const a = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.85, 0.12), st), b = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.12, 0.12), st); a.position.set(0, 0.42, -0.18); b.position.set(0, 0.6, -0.18); a.castShadow = b.castShadow = true; g.add(a, b); }
+  else { const ob = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.2, 1.0, 4), st); ob.position.set(0, 0.5, -0.15); ob.rotation.y = Math.PI / 4; const bs = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.14, 0.42), GRAVEM.stone2); bs.position.set(0, 0.07, -0.15); ob.castShadow = true; g.add(ob, bs); }
+  g.rotation.y = (Math.random() - 0.5) * 0.25; g.rotation.z = (Math.random() - 0.5) * 0.12; return g;
+}
 function makeRock() {
   const g = new THREE.Group();
   const r = new THREE.Mesh(geo.rock, Math.random() < 0.5 ? mat.rock : mat.rock2); r.position.y = 0.28; r.scale.set(1.1, 0.75 + Math.random() * 0.4, 1.05); r.rotation.set(Math.random(), Math.random() * 3, Math.random());
@@ -1206,7 +1218,7 @@ const inScene = o => { while (o) { if (o === scene) return true; o = o.parent; }
 const animLm = [], puffs = [], puffGeo = new THREE.IcosahedronGeometry(0.22, 0);
 function puff(x, y, z, col) { if (puffs.length > 60) return; const m = new THREE.Mesh(puffGeo, new THREE.MeshLambertMaterial({ color: col || 0x8a8580, transparent: true, opacity: 0.75, flatShading: true, depthWrite: false })); m.position.set(x + (Math.random() - 0.5) * 0.15, y, z + (Math.random() - 0.5) * 0.15); scene.add(m); puffs.push({ m, t: 0 }); }
 function updatePuffs(dt) { for (const p2 of puffs) { p2.t += dt; p2.m.position.y += dt * 0.9; p2.m.position.x += dt * 0.25; p2.m.scale.setScalar(1 + p2.t * 1.6); p2.m.material.opacity = Math.max(0, 0.75 - p2.t * 0.3); if (p2.t > 2.5 && p2.m.parent) { scene.remove(p2.m); p2.m.material.dispose(); } } if (puffs.length && puffs[0].t > 2.5) { for (let q = puffs.length - 1; q >= 0; q--) if (puffs[q].t > 2.5) puffs.splice(q, 1); } }
-const MAKERS = { [QSAND]: makeQsand, [HAY]: makeHay, [SCRAPPILE]: makeScrap, [TREE]: () => { const t = makeTree(); t.userData.hp = 2; return t; }, [ROCK]: makeRock, [BARREL]: makeBarrel, [CACTUS]: makeCactus, [CHEST]: makeChest, [CRATE]: makeCrate, [ORE]: makeOre, [RUIN]: makeRuin, [CLIFF]: makeCliff, [CAR]: makeCar };
+const MAKERS = { [GRAVE]: makeGrave, [QSAND]: makeQsand, [HAY]: makeHay, [SCRAPPILE]: makeScrap, [TREE]: () => { const t = makeTree(); t.userData.hp = 2; return t; }, [ROCK]: makeRock, [BARREL]: makeBarrel, [CACTUS]: makeCactus, [CHEST]: makeChest, [CRATE]: makeCrate, [ORE]: makeOre, [RUIN]: makeRuin, [CLIFF]: makeCliff, [CAR]: makeCar };
 function spawnPickup(i, j, kind) {
   const m = new THREE.Mesh(new THREE.OctahedronGeometry(0.16, 0), kind === 'seed' ? mat.seed : mat.sap); m.position.set(tc(i), 0.45, tc(j)); scene.add(m);
   pickups.push({ m, kind, x: tc(i), z: tc(j), seed: Math.random() * 6 });
@@ -1315,12 +1327,12 @@ function genRegion(r) {
     if ((bm === 'town' || bm === 'desert') && !vehicles.some(v => v.kind === 'buggy') && Math.random() < 0.55) { const f = freeSpot(); if (f) addVehicle('buggy', tc(f[0]), tc(f[1])); }
   }
   if (bm === 'tundra') { grove(10, ROCK, 9); grove(8, ROCK, 7); for (let q = 0; q < 4; q++) { const [i, j] = rp(); put([[i, j]], ORE); } for (let q = 0; q < 3; q++) { const [i, j] = rp(); put([[i, j]], CRATE); } }
-  { const ht = { mountain: 'wizard', lake: 'merman', town: 'pat', desert: 'anubis', forest: 'caleb', tundra: 'ian' }[bm] || (home ? 'harry' : null), hc = ht === 'caleb' ? 0.2 : ht === 'ian' ? 0.05 : 0.1;
+  { const ht = { mountain: 'wizard', lake: 'merman', town: 'pat', desert: 'anubis', forest: 'caleb', tundra: 'ian', graveyard: 'wendy' }[bm] || (home ? 'harry' : null), hc = ht === 'caleb' ? 0.2 : ht === 'ian' ? 0.05 : ht === 'wendy' ? 0.35 : 0.1;
     if (ht === 'ian' && Math.random() < hc) { const st = site(3, 3); if (st) { const [i, j] = st, n2 = idx(i + 1, j + 1); grid[n2] = LMK; addObj(n2, makeIgloo()); addHero('ian', tc(i + 1), tc(j + 3)); } }
     else if (ht && ht !== 'ian' && Math.random() < hc) { let f = null; if (home) { for (let t = 0; t < 40 && !f; t++) { const a = Math.random() * 6.28, d = 14 + Math.random() * 16, i = Math.round(HALF + Math.cos(a) * d), j = Math.round(HALF + Math.sin(a) * d); if (ok(i, j)) f = [i, j]; } } else f = freeSpot(); if (f) addHero(ht, tc(f[0]), tc(f[1])); } }
   if (bm === 'town' && Math.random() < 0.5) { const f = freeSpot(); if (f) addPet('cat', tc(f[0]), tc(f[1])); }
   if (!home && Math.random() < (bm === 'town' ? 0.75 : 0.45)) { const f = freeSpot(); if (f) addNpc('trader', tc(f[0]), tc(f[1])); }
-  if (!home && Math.random() < (bm === 'desert' || bm === 'mountain' || bm === 'town' ? 0.6 : 0.35)) { const f = freeSpot(); if (f) { const c = 2 + (Math.random() * 2 | 0); for (let q = 0; q < c; q++) { const a = q * 2.1, x = tc(f[0]) + Math.cos(a) * 1.4, z = tc(f[1]) + Math.sin(a) * 1.4; if (!blocked(x, z, 0.3, true)) addNpc('raider', x, z); } const fire = new THREE.Group(); for (let q = 0; q < 5; q++) { const l = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.08, 0.08), mat.trunk); l.rotation.y = q * 1.25; l.position.y = 0.05; fire.add(l); } const fl = new THREE.Mesh(new THREE.OctahedronGeometry(0.2, 0), NPCM.flame); fl.position.y = 0.3; fl.scale.y = 1.6; fire.add(fl); const n2 = idx(f[0], f[1]); grid[n2] = LMK; addObj(n2, fire); animLm.push({ kind: 'smoke', obj: fire, x: tc(f[0]), z: tc(f[1]), y: 0.5, t: 0, col: 0x6a6460 }); sabCamps.push({ i: f[0], j: f[1], x: tc(f[0]), z: tc(f[1]), used: false }); } }
+  if (!home && Math.random() < (bm === 'desert' || bm === 'mountain' || bm === 'town' ? 0.6 : 0.35)) { const f = freeSpot(); if (f) { const c = (genVer < 2 ? 2 : 3) + (Math.random() * 2 | 0); for (let q = 0; q < c; q++) { const a = genVer < 2 ? q * 2.1 : q * 6.28 / c, x = tc(f[0]) + Math.cos(a) * 1.4, z = tc(f[1]) + Math.sin(a) * 1.4; if (!blocked(x, z, 0.3, true)) campRaider(addNpc('raider', x, z)); } const fire = new THREE.Group(); for (let q = 0; q < 5; q++) { const l = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.08, 0.08), mat.trunk); l.rotation.y = q * 1.25; l.position.y = 0.05; fire.add(l); } const fl = new THREE.Mesh(new THREE.OctahedronGeometry(0.2, 0), NPCM.flame); fl.position.y = 0.3; fl.scale.y = 1.6; fire.add(fl); const n2 = idx(f[0], f[1]); grid[n2] = LMK; addObj(n2, fire); animLm.push({ kind: 'smoke', obj: fire, x: tc(f[0]), z: tc(f[1]), y: 0.5, t: 0, col: 0x6a6460 }); sabCamps.push({ i: f[0], j: f[1], x: tc(f[0]), z: tc(f[1]), used: false }); } }
   if ((bm === 'grass' || bm === 'forest') && Math.random() < 0.25 && pets.filter(q => q.kind === 'dog' && !q.tamed).length < 2) { const f = freeSpot(); if (f) addPet('dog', tc(f[0]), tc(f[1])); }
   if (home) {
     scatter(4, canyon); scatter(10, () => grove(3 + (Math.random() * 5 | 0), TREE)); scatter(22, () => put([rp()], ROCK));
@@ -1406,6 +1418,11 @@ function genRegion(r) {
       addVehicle('dinghy', tc(si + a * len), tc(sj + b * len)); break;
     }
     scatter(10, () => grove(4, TREE)); scatter(10, () => put([rp()], ROCK)); scatter(6, () => put([rp()], SCRAPPILE));
+  } else if (bm === 'graveyard') {
+    { const st = site(6, 5); if (st) { const [i, j] = st; room(i, j, 5, 4, 's', GRAVEM.stone2, 1.3); const roof = new THREE.Group(); box(roof, GRAVEM.stone, 5.4, 0.25, 4.4, 0, 1.45, 0); const pk = new THREE.Mesh(new THREE.ConeGeometry(3.2, 1.0, 4), GRAVEM.stone2); pk.rotation.y = Math.PI / 4; pk.scale.z = 0.8; pk.position.y = 2.05; roof.add(pk); const crs = new THREE.Group(); box(crs, GRAVEM.iron, 0.1, 0.7, 0.1, 0, 2.8, 0); box(crs, GRAVEM.iron, 0.4, 0.1, 0.1, 0, 2.95, 0); roof.add(crs); roof.position.set(tc(i) + 2, 0, tc(j) + 1.5); scene.add(roof); tileObj[idx(i + 1, j + 1)] = roof; grid[idx(i + 1, j + 1)] = LMK; richCrate(i + 2, j + 2); animLm.push({ kind: 'smoke', obj: roof, x: tc(i) + 2, z: tc(j) + 1.5, y: 2.5, t: 0, col: 0x9aa39a }); } }
+    const plot = () => { const w = 9 + (Math.random() * 7 | 0), d = 7 + (Math.random() * 5 | 0), [i0, j0] = rp(); for (let y = 0; y < d; y += 2) for (let x = 0; x < w; x++) if (Math.random() < 0.78) put([[i0 + x, j0 + y]], GRAVE); };
+    scatter(13, plot); scatter(110, () => put([rp()], GRAVE)); scatter(7, () => grove(3 + (Math.random() * 3 | 0), TREE, 5)); scatter(14, () => put([rp()], ROCK));
+    scatter(10, () => put([rp()], SCRAPPILE)); scatter(5, () => put([rp()], BARREL)); scatter(3, () => put([rp()], CHEST));
   } else if (bm === 'mountain') {
     ravine(30 + (Math.random() * 20 | 0), 2); landmark(); scatter(5, () => ridge(20 + (Math.random() * 14 | 0), CLIFF, 9, true));
     scatter(10, () => blob(30 + (Math.random() * 50 | 0), CLIFF)); scatter(16, () => put([rp()], ORE)); scatter(40, () => put([rp()], ROCK)); scatter(4, () => grove(4, TREE));
@@ -1428,11 +1445,11 @@ function clearRegion(r) {
 function pickBiome(avoid) {
   const hasMtn = regionBiome.includes('mountain');
   for (;;) {
-    const x = Math.random(); let b = !regionBiome.includes('airstrip') && x > 0.955 ? 'airstrip' : x > 0.89 && x <= 0.955 && !regionBiome.includes('tundra') ? 'tundra' : !hasMtn && x < 0.1 ? 'mountain' : x < 0.32 ? 'grass' : x < 0.5 ? 'forest' : x < 0.66 ? 'desert' : x < 0.83 ? 'town' : 'lake';
+    const x = Math.random(); let b = !regionBiome.includes('airstrip') && x > 0.955 ? 'airstrip' : x > 0.89 && x <= 0.955 && !regionBiome.includes('tundra') ? 'tundra' : !hasMtn && x < 0.1 ? 'mountain' : genVer < 2 ? (x < 0.32 ? 'grass' : x < 0.5 ? 'forest' : x < 0.66 ? 'desert' : x < 0.83 ? 'town' : 'lake') : (x < 0.28 ? 'grass' : x < 0.42 ? 'forest' : x < 0.55 ? 'desert' : x < 0.68 ? 'town' : x < 0.81 ? 'graveyard' : 'lake');
     if (b === 'mountain' && hasMtn) continue; if (b === 'airstrip' && avoid === 'airstrip') continue; if (b !== avoid) return b;
   }
 }
-let worldSeed = 1, swaps = [], genGrid = new Uint8Array(N * N), loadingSave = false;
+let genVer = 2, worldSeed = 1, swaps = [], genGrid = new Uint8Array(N * N), loadingSave = false;
 function seeded(seed, fn) { let a = seed >>> 0; const orig = Math.random; Math.random = () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; try { return fn(); } finally { Math.random = orig; } }
 function snapGen() { for (let n = 0; n < N * N; n++) genGrid[n] = built[n] ? 0 : grid[n]; }
 function generateWorld() {
@@ -1601,20 +1618,20 @@ const BR_ICON = {
   Hangar: '<path d="M3 12 H21 M12 9 V12 M8 15 H16 L14 18 H10 Z" stroke="#fff" stroke-width="2.2" fill="#fff" stroke-linecap="round"/>',
   Launch: '<path d="M4 19 H20" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/><path d="M12 4 L17 10 H14 V16 H10 V10 H7 Z" fill="#fff"/>',
   Speed: '<path d="M4 8 H12 M2 12 H10 M5 16 H12" stroke="#fff" stroke-width="2" stroke-linecap="round"/><path d="M13 5 L21 12 L13 19 L16 12 Z" fill="#fff"/>',
-  Workshop: '<path d="M4 11 L12 4 L20 11 V20 H4 Z" fill="#fff"/><rect x="10" y="13" width="4" height="7" fill="#2a2138"/>',
+  Workshop: '<path d="M5.5 5 L12 1.5 L18.5 5 Z" fill="#fff"/><rect x="7" y="5" width="10" height="5.5" rx="1" fill="#fff"/><rect x="9.3" y="6.5" width="5.4" height="2.4" fill="#2a2138"/><path d="M8.5 10.5 L6.5 22.5 M15.5 10.5 L17.5 22.5 M7.6 16 H16.4 M8.2 12.5 L16.6 19.5 M15.8 12.5 L7.4 19.5" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/>',
   Offence: '<path d="M5 19 L14 6" stroke="#fff" stroke-width="2.4" stroke-linecap="round" fill="none"/><path d="M12 4 Q20 3 21 11 Q17 7 12 8 Z" fill="#fff"/>',
   Walls: '<rect x="3" y="12" width="8" height="8" rx="1" fill="#fff"/><rect x="13" y="12" width="8" height="8" rx="1" fill="#fff"/><rect x="8" y="3" width="8" height="8" rx="1" fill="#fff"/>',
   Pits: '<ellipse cx="12" cy="14" rx="9" ry="5" fill="#fff"/><ellipse cx="12" cy="14" rx="6" ry="2.8" fill="#2a2138"/>',
   Traps: '<path d="M3 8 H21 M3 13 H21 M3 18 H21" stroke="#fff" stroke-width="1.8"/><path d="M6 6 V20 M18 6 V20" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><path d="M10 7 L12 9 M14 12 L12 14" stroke="#fff" stroke-width="1.6"/>',
   Mobility: '<path d="M4 15 Q8 9 13 12 L20 8 M16 7 L20 8 L19 12" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/><circle cx="6" cy="18" r="1.6" fill="#fff"/><circle cx="11" cy="18" r="1.6" fill="#fff"/>',
-  Base: '<rect x="6" y="12" width="12" height="8" rx="1.5" fill="#fff"/><rect x="9" y="7" width="6" height="5" rx="1" fill="#fff"/><path d="M15 9 H21" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>',
+  Base: '<rect x="7" y="6" width="9" height="6" rx="1.5" fill="#fff"/><path d="M15 8.2 H22" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><path d="M11.5 12 V15 M11.5 15 L6 21.5 M11.5 15 L17 21.5 M11.5 15 V21.5" stroke="#fff" stroke-width="2" stroke-linecap="round"/>',
   Crystal: '<path d="M12 2 L18 10 L12 22 L6 10 Z" fill="#fff"/>',
   Moat: '<path d="M2 15 Q6 12 10 15 T18 15 T26 15" stroke="#fff" stroke-width="2.2" fill="none"/><path d="M2 19 Q6 16 10 19 T18 19 T26 19" stroke="#fff" stroke-width="2.2" fill="none"/><rect x="8" y="5" width="8" height="7" rx="1" fill="#fff"/>',
   Gadgets: '<circle cx="12" cy="12" r="3" fill="#fff"/><path d="M12 2 L14 9 L12 12 L10 9 Z M22 12 L15 14 L12 12 L15 10 Z M12 22 L10 15 L12 12 L14 15 Z M2 12 L9 10 L12 12 L9 14 Z" fill="#fff"/>',
-  Powers: '<path d="M2 8 H22 M12 8 V13" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><path d="M9 13 H15 L13 21 H11 Z" fill="#fff"/>',
+  Powers: '<path d="M14 1.5 L5 13.5 H11 L9.5 22.5 L19 9.5 H12.8 Z" fill="#fff" stroke="#fff" stroke-width="0.8" stroke-linejoin="round"/>',
   Scarecrow: '<path d="M12 3 V22 M4 10 H20" stroke="#fff" stroke-width="2.2"/><circle cx="12" cy="6" r="3" fill="#fff"/><path d="M8 10 H16 L15 16 H9 Z" fill="#fff"/>',
   Roll: '<circle cx="12" cy="12" r="7" fill="none" stroke="#fff" stroke-width="2.4"/><path d="M12 5 A7 7 0 0 1 19 12" stroke="#fff" stroke-width="2.4" fill="none"/><path d="M17 9 L19.5 12.5 L22 9" fill="#fff"/><path d="M2 16 H6 M1 12 H4 M2 8 H5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>',
-  Kennel: '<path d="M3 12 L12 4 L21 12 V21 H3 Z" fill="#fff"/><path d="M9 21 V16 A3 3 0 0 1 15 16 V21 Z" fill="#2a2138"/>',
+  Kennel: '<path d="M1.5 11.5 L11 3.5 L20.5 11.5" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 11 L11 5.2 L18 11 V19 H4 Z" fill="#fff"/><path d="M8 19 V14.6 A3 3 0 0 1 14 14.6 V19 Z" fill="#2a2138"/><path d="M15.5 21 H21" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/><circle cx="15.3" cy="20.2" r="1.1" fill="#fff"/><circle cx="15.3" cy="21.8" r="1.1" fill="#fff"/><circle cx="21.2" cy="20.2" r="1.1" fill="#fff"/><circle cx="21.2" cy="21.8" r="1.1" fill="#fff"/>',
   Farm: '<path d="M12 21 V8" stroke="#fff" stroke-width="2"/><ellipse cx="12" cy="6" rx="2.2" ry="3.4" fill="#fff"/><ellipse cx="8.5" cy="11" rx="1.8" ry="3" fill="#fff" transform="rotate(-30 8.5 11)"/><ellipse cx="15.5" cy="11" rx="1.8" ry="3" fill="#fff" transform="rotate(30 15.5 11)"/><ellipse cx="8.5" cy="16" rx="1.8" ry="3" fill="#fff" transform="rotate(-30 8.5 16)"/><ellipse cx="15.5" cy="16" rx="1.8" ry="3" fill="#fff" transform="rotate(30 15.5 16)"/>',
   Garage: '<rect x="3" y="11" width="18" height="6" rx="2" fill="#fff"/><circle cx="7" cy="18" r="2.6" fill="#fff"/><circle cx="17" cy="18" r="2.6" fill="#fff"/><rect x="9" y="6" width="6" height="5" rx="1" fill="#fff"/><path d="M15 8 H21" stroke="#fff" stroke-width="2"/>'
 };
@@ -1623,7 +1640,7 @@ let selNode = null;
 const UPG = [
   { name: 'Offence', nodes: [
     ['scy2', 'Scythe II', 'Harder hits, wider swing', () => { scy = 2; }],
-    ['pistol', 'Wall pistol', 'Shoot from walls and hay bales', () => { pistolOn = true; }],
+    ['longscy', 'Long scythe', 'A longer handle lets you swing your scythe from walls and hay bales', () => { longScy = true; }],
     ['scy3', 'Scythe III', 'Huge reach', () => { scy = 3; }],
     ['scy4', 'Blazing scythe', 'Burning blade, massive damage', () => { scy = 4; player.blade.material = mat.bladeHot; }]] },
   { name: 'Walls', nodes: [
@@ -1701,7 +1718,7 @@ const UPG = [
     ['fertile', 'Rich soil', 'Wheat grows twice as fast', () => { farmSpeed = 2; }],
     ['heir', 'Buried relics', 'Harvesting wheat can dig up rare scythes: Farmer\'s scythe (0.3%) or the Ancient scythe (extremely rare)', () => { heirOn = true; }]] },
   { name: 'Workshop', nodes: [
-    ['tower', 'Guard tower', 'Turn the workshop roof into a guard tower. Within 5 minutes Sniper Sam arrives and defends from the top', () => { towerOn = true; refreshShed(); if (!sam && samT < 0) samT = loadingSave ? 4 : 60 + Math.random() * 200; }],
+    ['gtower', 'Guard tower', 'Turn the workshop roof into a guard tower. Within 5 minutes Sniper Sam arrives and defends from the top', () => { towerOn = true; refreshShed(); if (!sam && samT < 0) samT = loadingSave ? 4 : 60 + Math.random() * 200; }],
     ['tesla', 'Tesla coil', 'Every 25 kills by Sniper Sam, the tower pulses electricity and freezes everything nearby. The 5 lights show his progress', () => { teslaOn = true; refreshShed(); }]] },
   { name: 'Bike', nodes: [
     ['uzi', 'Bike Uzi', 'Hold Swing while riding the bike to fire an Uzi where you aim. Roll to get off', () => { uziOn = true; }],
@@ -2003,6 +2020,7 @@ function spawnZombie(kind, px, pz) {
   z.g.position.set(z.x, 0, z.z); zombies.push(z);
   if (kind === 'runner') tip('Runners! Fast but fragile.', 'runner');
   if (kind === 'brute') tip('Brute! It smashes walls.', 'brute');
+  return z;
 }
 function setWallLook(n) {
   const o = tileObj[n]; if (!o) return; const f = Math.max(0, wallHp[n] / wallMax[n]);
@@ -2181,6 +2199,7 @@ function updateDeath(dt) {
     else if (deathBag.t <= 0) { scene.remove(deathBag.mesh); deathBag = null; }
   }
 }
+const HINT_ONE = { [SHED]: 'Workshop', [COMPILER]: 'Compiler', [BELL]: 'Bell', [KENNEL]: 'Kennel', [SILO]: 'Silo' };
 const BUILD_NAME = { [WALL]: 'Wall', [PIT]: 'Pit', [ERASE]: 'Erase', [BARREL]: 'Barrel', [SENTRY]: 'Sentry', [SHIELD]: 'Shield', [WIRE]: 'Wire', [TAR]: 'Tar', [JUMPPAD]: 'Jump', [GRAVPAD]: 'Grav pad', [TOTEM]: 'Totem', [SILO]: 'Silo', [FARM]: 'Farm', [BEAR]: 'Trap', [SPINNER]: 'Blade', [MOAT]: 'Moat', [DRAWB]: 'Bridge', [KENNEL]: 'Kennel', [SCARE]: 'Scare', [ROAD]: 'Road', [SHED]: 'Shed', [TITAN]: 'Titanium', [COMPILER]: 'Compiler', [BELL]: 'Bell' };
 function setBuild(type) {
   buildMode = buildMode === type ? 0 : type; lastPaint = -1;
@@ -2319,8 +2338,12 @@ $('treeBody').addEventListener('click', e => { const b = e.target.closest('.nd[d
 addEventListener('pointerdown', audioInit, true); addEventListener('keydown', audioInit, true);
 $('bMute').addEventListener('pointerdown', e => { e.stopPropagation(); audioInit(); setMuted(!muted); if (!muted) SFX.click(); });
 drawMute();
+function drawMusic() { const on = SET.music !== false; $('bMusic').innerHTML = '<svg viewBox="0 0 24 24"><path d="M9 17 V5 L20 3 V15" stroke="#fff8ec" stroke-width="2" fill="none" stroke-linejoin="round"/><circle cx="6.5" cy="17.5" r="2.6" fill="#fff8ec"/><circle cx="17.5" cy="15.5" r="2.6" fill="#fff8ec"/>' + (on ? '' : '<path d="M3 3 L21 21" stroke="#ff8a7a" stroke-width="2.4" stroke-linecap="round"/>') + '</svg>'; $('bMusic').setAttribute('aria-label', on ? 'Mute music' : 'Play music'); }
+drawMusic();
+$('bMusic').addEventListener('pointerdown', e => { e.stopPropagation(); e.preventDefault(); SET.music = SET.music === false; applySet(); audioInit(); if (musBus) musBus.gain.setTargetAtTime(SET.music ? 1 : 0, ac.currentTime, 0.05); drawMusic(); });
+audioInit();
 $('bPlay').addEventListener('click', () => newGame());
-$('bContinue').addEventListener('click', () => { audioInit(); loadGame(); });
+$('bContinue').addEventListener('click', () => { if (!readSave()) { refreshMenu(); return; } audioInit(); loadGame(); });
 setTimeout(refreshMenu, 0);
 $('bAgain').addEventListener('click', () => { if (netRole === 'guest') { $('over').hidden = true; phase = 'menu'; leaveRoom(); return; } if (hostHasGuests() || (netRole === 'host' && net.guests.size)) { newGame(); autoPlant(); return; } newGame(); });
 if (matchMedia('(pointer: coarse)').matches) { lastInput = ''; setInput('touch'); }
@@ -2348,7 +2371,7 @@ function newGame(opts) {
   clearTimeout(overTimer); $('over').hidden = true; raidPendT = -1;
   if (netRole === 'guest' && !(opts && opts.seed !== undefined)) leaveRoom();
   clearBoard(); resetExtras();
-  const fromSave = opts && opts.seed !== undefined; worldSeed = fromSave ? opts.seed : (Math.random() * 1e9) | 0; swaps = [];
+  const fromSave = opts && opts.seed !== undefined; worldSeed = fromSave ? opts.seed : (Math.random() * 1e9) | 0; swaps = []; genVer = fromSave ? opts.gv || 1 : 2;
   const sides = seeded(worldSeed + 7, () => [0, 1, 2, 3].sort(() => Math.random() - 0.5).slice(0, 2));
   spawnTiles = [];
   for (const s of sides) {
@@ -2369,7 +2392,7 @@ function newGame(opts) {
   kills = 0; goals = []; for (const k in cnt) cnt[k] = 0; level = 1; charge = 0; toSpawn = 0; scy = 1; regen = 0; wallTough = 100; barrelUnlocked = false; CAP = 5; crystal.max = 400; crystal.hp = 400; feeding = false;
   hoardeOn = false; hoardeLeft = 0; hoardes = 0; hoardeT = 600; stage = 'day';
   for (const n of shields) { const o = tileObj[n]; if (o && o.userData.dome) scene.remove(o.userData.dome); }
-  wallsOn = false; pitsOn = false; climbOn = false; pistolOn = false; wireOn = false; electric = false; points = 0; owned = new Set(); rode = new Set(); levelCd = 0; openTree(false); runSpeed = 5.2; wallSpeed = 3.6; rollSpeed = 12.5; rollCd = 0.6; wallRunner = false;
+  wallsOn = false; pitsOn = false; climbOn = false; longScy = false; wallSwap = false; wireOn = false; electric = false; points = 0; owned = new Set(); rode = new Set(); levelCd = 0; openTree(false); runSpeed = 5.2; wallSpeed = 3.6; rollSpeed = 12.5; rollCd = 0.6; wallRunner = false;
   sentryMax = 0; sentryRate = 0.55; shieldMax = 0; climbTime = 0; pulseOn = false; pulseT = 8; spikedWalls = false; sentries = []; shields = [];
   player.blade.material = mat.blade; updateBuildButtons(); setTowerLook(); wallHp.fill(0); wallMax.fill(0);
   scrap = 60; buildMode = 0; setBuild(0); phase = 'placing'; timer = 60; computeFlow(); recount();
@@ -2667,15 +2690,15 @@ function buildSave() {
     const fogA = new Uint8Array(N * N); for (let q = 0; q < N * N; q++) fogA[q] = fogData[q * 4 + 3];
     const mv = P.mount;
     const d = {
-      v: SAVE_VER, seed: worldSeed, swaps, level, charge, points, owned: [...owned], scrap, hp: P.hp, px: P.x, pz: P.z,
+      v: SAVE_VER, gv: genVer, seed: worldSeed, swaps, level, charge, points, owned: [...owned], scrap, hp: P.hp, px: P.x, pz: P.z,
       cr: [crystal.i, crystal.j, crystal.hp, crystal.max], bm: bloodMoon ? 1 : 0, tt: tradeTax, pd: [...padDir], rd: [...rode], qc: Math.round(quakeCd), sh: [...structHp].map(([n, st]) => [n, Math.round(st.hp), st.off ? 1 : 0]), sr: scyRare, sl: shedLv, sw: [SL.w.lv, +SL.w.ch.toFixed(1), SL.w.pts, Math.round(SL.w.cd)], sc: [SL.c.lv, +SL.c.ch.toFixed(1), SL.c.pts, Math.round(SL.c.cd)], pb: bellAt, cp: compAt, jp: jetOn ? 1 : 0, cc: cosmic ? [+cosmic.x.toFixed(2), +cosmic.z.toFixed(2), Math.round(cosmic.t)] : null, peaceCd: Math.round(peaceCd + (peaceT > 0 ? 300 : 0)), scares: [...scares].map(([n, sc]) => [n, Math.round(sc.hp)]), levelCd, hoardeT: hoardeOn ? 4 : hoardeT, hoardes: hoardeOn ? hoardes - 1 : hoardes, liveTime, kills, nights, gear, fish, bones, wheat, bread, repu, spinCharges, gunAmmo, bowOwned, fuel: Math.round(fuel), molotovs, nestNextLv, best: [bestLevel, bestTime],
       diff, fills, walls, fog: b64(fogA), visited: [...visited], farms: [...farms].map(([n, f]) => [n, +f.g.toFixed(2)]),
       veh: vehicles.map(v => [v.kind, +v.x.toFixed(2), +v.z.toFixed(2), +(v.face || 0).toFixed(2), v.fixed ? 1 : 0]),
       pets: pets.map(pt => [pt.kind, +pt.x.toFixed(2), +pt.z.toFixed(2), pt.tamed ? 1 : 0, pt.prog, +pt.hx.toFixed(1), +pt.hz.toFixed(1)]),
-      npcs: npcs.filter(n => !n.dead && !n.wanderer && !n.raid).map(n => n.hero ? ['hero', +n.x.toFixed(2), +n.z.toFixed(2), +n.hx.toFixed(1), +n.hz.toFixed(1), 0, 0, 0, 0, null, n.heroType, n.hired ? 1 : 0, n.mode, n.free ? 1 : 0] : [n.kind, +n.x.toFixed(2), +n.z.toFixed(2), +n.hx.toFixed(1), +n.hz.toFixed(1), n.hostile ? 1 : 0, n.angry ? 1 : 0, n.camp ? 1 : 0, n.calm ? 1 : 0, n.stock ? n.stock.map(st => [OFFERS.indexOf(st.o), st.left, st.o.get[0]]) : null]),
+      npcs: npcs.filter(n => !n.dead && !n.wanderer && !n.raid).map(n => n.hero ? ['hero', +n.x.toFixed(2), +n.z.toFixed(2), +n.hx.toFixed(1), +n.hz.toFixed(1), 0, 0, 0, 0, null, n.heroType, n.hired ? 1 : 0, n.mode, n.free ? 1 : 0] : [n.kind, +n.x.toFixed(2), +n.z.toFixed(2), +n.hx.toFixed(1), +n.hz.toFixed(1), n.hostile ? 1 : 0, n.angry ? 1 : 0, n.camp || n.campR ? 1 : 0, n.calm ? 1 : 0, n.stock ? n.stock.map(st => [OFFERS.indexOf(st.o), st.left, st.o.get[0]]) : null]),
       junks: junks.map(jk => [+jk.x.toFixed(2), +jk.z.toFixed(2), jk.hp]),
       pick: pickups.filter(pk => !pk.dead).map(pk => [pk.kind, +pk.x.toFixed(2), +pk.z.toFixed(2)]),
-      mys: mystery ? [mystery.x, mystery.z] : null, mysteryT, radio: radio ? [radio.fixed ? 1 : 0, Math.round(radio.cd)] : null,
+      mys: mystery ? [mystery.x, mystery.z] : null, wg: wendyGrave ? [+wendyGrave.x.toFixed(2), +wendyGrave.z.toFixed(2)] : null, mysteryT, radio: radio ? [radio.fixed ? 1 : 0, Math.round(radio.cd)] : null,
       nests: nests.filter(nt => !nt.dead).map(nt => [nt.tiles[0], Math.round(nt.hp), nt.max])
     };
     if (mv && mv.kind !== 'wolf') { const v = d.veh[vehicles.indexOf(mv)]; if (v) { v[1] = +P.x.toFixed(2); v[2] = +P.z.toFixed(2); } }
@@ -2685,7 +2708,7 @@ function buildSave() {
 }
 function readSave() { try { const d = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); return d && d.v === SAVE_VER ? d : null; } catch (e) { return null; } }
 function clearSave() { try { localStorage.removeItem(SAVE_KEY); } catch (e) { } refreshMenu(); }
-function refreshMenu() { const d = readSave(); $('bContinue').hidden = !d; if (d) $('contLv').textContent = 'Lv ' + d.level; }
+function refreshMenu() { const d = readSave(); $('bContinue').hidden = false; $('bContinue').disabled = !d; $('contLv').innerHTML = d ? 'Lv ' + d.level : '<small>No saved game</small>'; }
 function wipeDynamic() {
   for (const v of vehicles) scene.remove(v.mesh); vehicles = [];
   for (const pt of pets) scene.remove(pt.mesh); pets = [];
@@ -2698,7 +2721,7 @@ function loadGame(given) {
   const d = given || readSave(); if (!d) return;
   const wasMuted = muted; muted = true;
   try {
-    newGame({ seed: d.seed, swaps: d.swaps });
+    newGame({ seed: d.seed, swaps: d.swaps, gv: d.gv });
     wipeDynamic();
     P.x = d.cr[0] - HALF + 0.5; P.z = d.cr[1] - HALF + 2.5; plantAt(d.cr[0], d.cr[1]); wipeDynamic();
     d.veh = d.veh || []; d.pets = d.pets || []; d.npcs = d.npcs || []; d.junks = d.junks || []; d.pick = d.pick || []; d.diff = d.diff || []; d.fills = d.fills || []; d.walls = d.walls || []; d.farms = d.farms || []; d.nests = d.nests || []; d.owned = d.owned || []; d.visited = d.visited || [];
@@ -2706,7 +2729,7 @@ function loadGame(given) {
     for (const [k, x, z, tm, pr, hx, hz] of d.pets) { addPet(k, x, z); const pt = pets[pets.length - 1]; pt.tamed = !!tm; pt.prog = pr; pt.hx = hx; pt.hz = hz; }
     for (const [k, x, z, hx, hz, ho, an, cp, cl, stock, ht, hi, md, fr] of d.npcs) {
       if (k === 'hero') { const h = addHero(ht, x, z); h.hx = hx; h.hz = hz; h.hired = !!hi; h.mode = md || 'follow'; if (fr) { h.hired = false; if (!sendFishing(h)) h.hired = true; } continue; }
-      const n = addNpc(k, x, z); n.hx = hx; n.hz = hz; n.hostile = !!ho; n.camp = !!cp; n.calm = !!cl;
+      const n = addNpc(k, x, z); n.hx = hx; n.hz = hz; n.hostile = !!ho; n.camp = !!cp; n.calm = !!cl; if (k === 'raider' && cp) { n.camp = false; campRaider(n); }
       if (an) { n.angry = true; const bd = new THREE.Mesh(new THREE.TorusGeometry(0.2, 0.05, 6, 14), NPCM.band); bd.rotation.x = Math.PI / 2; bd.position.y = 0.46; n.pm.roll.add(bd); if (n.pm.coin) n.pm.coin.visible = false; }
       if (stock) n.stock = stock.map(([oi, left, g]) => ({ o: oi >= 0 ? OFFERS[oi] : g === 'recruit' ? { give: [['scrap', 80]], get: ['recruit'], txt: 'Hire a guard' } : { give: [['scrap', 120]], get: ['rare'], txt: 'Rare gear' }, left }));
     }
@@ -2721,6 +2744,7 @@ function loadGame(given) {
       else place(i, j, t);
     }
     loadingSave = false;
+    d.owned = d.owned.map(id => id === 'pistol' ? 'longscy' : id); if (d.owned.includes('tesla') && !d.owned.includes('gtower')) d.owned.push('gtower');
     for (const id of d.owned) for (const br of UPG) for (const nd of br.nodes) if (nd[0] === id && !owned.has(id)) { owned.add(id); nd[3](); }
     for (let q = 0; q < d.fills.length; q += 2) { fill[d.fills[q]] = d.fills[q + 1]; if (grid[d.fills[q]] === PIT) setPitVisual(d.fills[q]); }
     for (let q = 0; q < d.walls.length; q += 2) wallHp[d.walls[q]] = d.walls[q + 1];
@@ -2731,6 +2755,7 @@ function loadGame(given) {
     level = d.level; charge = d.charge; points = d.points; scrap = d.scrap; P.hp = d.hp; P.x = d.px; P.z = d.pz; crystal.max = d.cr[3] || crystal.max; crystal.hp = Math.min(d.cr[2], crystal.max); bloodMoon = !!d.bm;
     levelCd = d.levelCd; hoardeT = d.hoardeT; hoardes = d.hoardes; liveTime = d.liveTime; kills = d.kills || 0; nights = d.nights || 0; peaceCd = d.peaceCd || 0; tradeTax = d.tt || 0; padDir = new Map(d.pd || []); rode = new Set(d.rd || []); quakeCd = d.qc || 0; setTimeout(refreshPads, 0); structHp = new Map((d.sh || []).map(([n, hp, off]) => [n, { hp, max: 220, off: !!off }])); scyRare = d.sr || 0; setBladeLook(); if (d.pb !== undefined && d.pb >= 0 && grid[d.pb] === BELL) bellAt = d.pb; if (d.cp !== undefined && d.cp >= 0 && grid[d.cp] === COMPILER) compAt = d.cp; if (d.sw) { [SL.w.lv, SL.w.ch, SL.w.pts, SL.w.cd] = d.sw; SL.w.cd = SL.w.cd || 0; } else { SL.w.lv = d.sl || 1; SL.w.ch = 0; SL.w.pts = 0; } if (d.sc) { [SL.c.lv, SL.c.ch, SL.c.pts, SL.c.cd] = d.sc; SL.c.cd = SL.c.cd || 0; } else { SL.c.lv = 1; SL.c.ch = 0; SL.c.pts = 1; } shedLv = Math.min(6, SL.w.lv); jetOn = !!d.jp; setJetLook(); refreshShed(); if (d.cc) placeCosmic(d.cc[0], d.cc[1], Math.max(0.01, d.cc[2])); for (const [n, hp] of d.scares || []) { const sc = scares.get(n); if (sc) sc.hp = hp; } gear = d.gear || { head: 0, chest: 0, legs: 0, feet: 0 }; applyGear(); fish = d.fish || 0; bones = d.bones || 0; wheat = d.wheat || 0; bread = d.bread || 0; repu = d.repu || 0; spinCharges = d.spinCharges || 0; gunAmmo = d.gunAmmo || 0; bowOwned = !!d.bowOwned; fuel = d.fuel || 0; molotovs = d.molotovs || 0; nestNextLv = d.nestNextLv || 3;
     if (d.mys) { const { g, q } = makePresent(); g.position.set(d.mys[0], 0, d.mys[1]); scene.add(g); mystery = { x: d.mys[0], z: d.mys[1], mesh: g, q, sp: 0 }; } mysteryT = d.mysteryT || 0;
+    if (d.wg) placeWendyGrave(d.wg[0], d.wg[1]);
     if (radio && d.radio) { radio.fixed = !!d.radio[0]; radio.cd = d.radio[1]; }
     graceT = 8; stage = 600 - hoardeT < 240 ? 'day' : 600 - hoardeT < 420 ? 'dusk' : 'night';
     if (netRole === 'host' && !given) setTimeout(sendWorld, 300);
@@ -2769,7 +2794,7 @@ function openCavern() {
   }
 }
 function hitNest(nt, dmg) {
-  if (nt.dead) return; nt.hp -= dmg; nt.flash = 0.1; burst(nt.x, 0.8, nt.z, DIRT_M, 4, 2); SFX.clank(); shake = Math.max(shake, 0.12);
+  if (nt.dead) return; nt.hp -= dmg; nt.flash = 0.1; nt.angry = 6; burst(nt.x, 0.8, nt.z, DIRT_M, 4, 2); SFX.clank(); shake = Math.max(shake, 0.12);
   if (nt.hp <= 0) {
     nt.dead = true; cnt.caves++; for (const n of nt.tiles) { built[n] = 0; tileObj[n] = null; grid[n] = EMPTY; } scene.remove(nt.mesh); version++; computeFlow();
     burst(nt.x, 0.8, nt.z, DIRT_M, 18, 5); burst(nt.x, 0.8, nt.z, mat.zomb, 10, 4); SFX.boom(); shake = 0.5;
@@ -2784,7 +2809,8 @@ function updateNests(dt) {
     if (nt.dead) continue; const u = nt.mesh.userData; u.hpFg.scale.x = Math.max(0.01, nt.hp / nt.max); u.hpFg.position.x = -0.8 * (1 - u.hpFg.scale.x);
     u.eyes.visible = Math.sin(time * 2 + nt.x) > -0.6; if (nt.flash > 0) { nt.flash -= dt; nt.mesh.scale.setScalar(1 + nt.flash); }
     if ((nt.rumT = (nt.rumT || 0) - dt) <= 0) { nt.rumT = 3.5; if (Math.hypot(nt.x - P.x, nt.z - P.z) < 16) SFX.cave(); }
-    if (phase === 'live' && !hoardeOn && peaceT <= 0 && (nt.spawnT -= dt) <= 0) { nt.spawnT = Math.max(5, 13 - level * 0.4); if (zombies.length < 120) { spawnZombie(undefined, nt.mx + (Math.random() - 0.5) * 0.6, nt.mz); puff(nt.mx, 0.4, nt.mz, 0x5a4a3a); } }
+    if (nt.angry > 0) nt.angry -= dt; const near = !P.dead && Math.hypot(nt.x - P.x, nt.z - P.z) < 9;
+    if (phase === 'live' && peaceT <= 0 && (nt.spawnT -= dt) <= 0) { nt.spawnT = near || nt.angry > 0 ? 1.7 : Math.max(2.6, 5 - level * 0.12); if (zombies.length < 130) { const zz = spawnZombie(undefined, nt.mx + (Math.random() - 0.5) * 0.6, nt.mz); if (zz) { zz.hoarde = false; if (near || nt.angry > 0) zz.hunt = 12; } puff(nt.mx, 0.4, nt.mz, 0x5a4a3a); } }
   }
   if (nests.some(nt => nt.dead)) nests = nests.filter(nt => !nt.dead);
   setHidden('nestPill', true); setText('nestN', String(nests.length));
@@ -3042,7 +3068,8 @@ const HEROES = {
   harry: { name: 'Harry', full: 'Harry Hothead', cost: 120, hp: 340, speed: 3.8, col: 0xd9b98a },
   ian: { name: 'Ian', full: 'Inuit Ian', cost: 120, hp: 520, speed: 3.2, col: 0x7a4a2a },
   bruce: { name: 'Bruce', full: 'Biker Bruce', cost: 0, hp: 320, speed: 6, col: 0x2a2326 },
-  aaron: { name: 'Aaron', full: 'Astronaut Aaron', cost: 200, hp: 360, speed: 3.6, col: 0xf1ead8 }
+  aaron: { name: 'Aaron', full: 'Astronaut Aaron', cost: 200, hp: 360, speed: 3.6, col: 0xf1ead8 },
+  wendy: { name: 'Wendy', full: 'Widow Wendy', cost: 150, hp: 260, speed: 3.5, col: 0x2a2230 }
 };
 const HM = c => new THREE.MeshLambertMaterial({ color: c, flatShading: true });
 function makeHeroMesh(type) {
@@ -3081,6 +3108,11 @@ function makeHeroMesh(type) {
   } else if (type === 'caleb') {
     add(new THREE.SphereGeometry(0.22, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2), HM(0x3a6a3a), 0, 0.42, 0); add(new THREE.BoxGeometry(0.3, 0.1, 0.04), HM(0x7a4a2a), 0, 0.22, 0.19);
     const saw = new THREE.Group(); const body = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.18, 0.3), HM(0xe07b39)); const bar = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.1, 0.6), mat.metalDark); bar.position.z = 0.42; saw.add(body, bar); saw.position.set(0.3, 0.0, 0.3); r.add(saw); pm.fx = saw;
+  } else if (type === 'wendy') {
+    add(new THREE.CylinderGeometry(0.34, 0.34, 0.03, 16), HM(0x141016), 0, 0.5, 0); add(new THREE.CylinderGeometry(0.17, 0.2, 0.22, 12), HM(0x141016), 0, 0.62, 0);
+    add(new THREE.SphereGeometry(0.235, 12, 8, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshLambertMaterial({ color: 0x1a1420, transparent: true, opacity: 0.55 }), 0, 0.3, 0.01, Math.PI);
+    add(new THREE.ConeGeometry(0.3, 0.5, 10), HM(0x2a2230), 0, -0.2, 0); add(new THREE.CylinderGeometry(0.025, 0.025, 1.0, 6), mat.wood, 0.34, 0.15, 0.12); add(new THREE.BoxGeometry(0.16, 0.22, 0.04), mat.metalDark, 0.34, -0.38, 0.12);
+    pm.fx = add(new THREE.OctahedronGeometry(0.07, 0), B(0x9bff9b), -0.3, 0.1, 0.2);
   } else if (type === 'harry') {
     for (let q = 0; q < 6; q++) add(new THREE.ConeGeometry(0.06, 0.22, 4), HM(0xe0502a), Math.cos(q) * 0.12, 0.6, Math.sin(q) * 0.12 - 0.02, Math.sin(q) * 0.4, 0, Math.cos(q) * 0.4);
     add(new THREE.BoxGeometry(0.16, 0.04, 0.04), mat.black, 0, 0.47, 0.18);
@@ -3228,6 +3260,7 @@ function heroAI(n, dt, dp) {
   else { if ((n.wanderT -= dt) <= 0 || Math.hypot(n.tx - cx, n.tz - cz) > 4.5) { n.wanderT = 3 + Math.random() * 3; const a = Math.random() * 6.28; n.tx = cx + Math.cos(a) * 3; n.tz = cz + Math.sin(a) * 3; } tx = n.tx; tz = n.tz; spd = 2; }
   // abilities (hired only)
   if (n.heroType === 'bruce' && n.hired) { bruceAI(n, dt); return; }
+  if (n.heroType === 'wendy' && n.hired && phase === 'live') { const w = wendyAI(n, dt, cx, cz); if (w) { tx = w[0]; tz = w[1]; spd = H.speed; } }
   if (n.hired && phase === 'live' && n.heroType !== 'ian') {
     const t = n.heroType, home = n.mode === 'guard' ? { x: cx, z: cz } : null;
     if (t === 'caleb' || (t === 'harry' && n.hulk)) {
@@ -3249,6 +3282,45 @@ function heroAI(n, dt, dp) {
   }
   stepNpc(n, tx, tz, spd, dt, true);
   if (n.hulk) n.pm.g.scale.setScalar(2);
+}
+/* ---------- v0.70 graveyard: Widow Wendy + risers ---------- */
+let wendyGrave = null, allies = [], graveT = 2;
+function makeWendyStone() { const g = makeGrave(); g.scale.setScalar(1.25); const glow = new THREE.Mesh(new THREE.RingGeometry(0.5, 0.62, 24).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: 0x9bff9b, transparent: true, opacity: 0.5, depthWrite: false })); glow.position.y = 0.03; g.add(glow); g.userData.glow = glow; return g; }
+function placeWendyGrave(x, z) { if (wendyGrave) scene.remove(wendyGrave.mesh); const m = makeWendyStone(); m.position.set(x, 0, z); scene.add(m); wendyGrave = { x, z, mesh: m, cd: 6 }; burst(x, 0.4, z, GRAVEM.dirt, 10, 3); SFX.plant(); }
+function wendyAI(n, dt, cx, cz) {
+  if (n.pm.fx) n.pm.fx.position.y = 0.1 + Math.sin(time * 3) * 0.05;
+  if (!wendyGrave) { const gx = cx + 2.2, gz = cz - 1.4; if (Math.hypot(n.x - gx, n.z - gz) < 0.9) { placeWendyGrave(gx, gz); banner('Gravestone planted', 'A brute rises to defend your base', 2); } return [gx, gz]; }
+  const g = wendyGrave; g.cd -= dt; g.mesh.userData.glow.material.opacity = g.cd <= 0 ? 0.5 + Math.sin(time * 6) * 0.3 : 0.15;
+  if (g.cd <= 0 && !allies.length) { let threat = hoardeOn; if (!threat) for (const zb of zombies) if (!zb.dead && Math.hypot(zb.x - cx, zb.z - cz) < 10) { threat = true; break; } if (threat) { g.cd = 75; raiseAlly(g.x, g.z + 0.9); } }
+  return null;
+}
+function raiseAlly(x, z) {
+  const fm = FRIEND_M.clone(), pm = makePerson(fm); zParts(pm, fm); pm.g.scale.setScalar(1.55); pm.inner.rotation.x = 0.1; pm.g.position.set(x, -1.2, z);
+  const hrt = new THREE.Mesh(new THREE.OctahedronGeometry(0.09, 0), B(0x5fe08a)); hrt.position.y = 1.1; pm.g.add(hrt);
+  const a = { pm, x, z, vx: 0, vz: 0, face: 0, life: 30, rise: 1.2, cd: 0, r: 0.36, badge: hrt }; allies.push(a); burst(x, 0.2, z, GRAVEM.dirt, 16, 4); SFX.cave(); shake = Math.max(shake, 0.25);
+}
+function updateAllies(dt) {
+  for (const a of allies) {
+    a.badge.rotation.y += dt * 3;
+    if (a.rise > 0) { a.rise -= dt; a.pm.g.position.set(a.x, -Math.max(0, a.rise), a.z); if (Math.random() < 0.3) puff(a.x, 0.1, a.z, 0x5a4a3a); continue; }
+    a.life -= dt; if (a.life <= 0) { a.pm.g.position.y -= dt * 1.5; if (a.life < -0.8) { a.dead = true; scene.remove(a.pm.g); burst(a.x, 0.2, a.z, GRAVEM.dirt, 8, 2); } continue; }
+    const cx = tc(crystal.i), cz = tc(crystal.j); let tgt = null, bd = 12; for (const zb of zombies) { if (zb.dead || zb.under) continue; const d = Math.min(Math.hypot(zb.x - a.x, zb.z - a.z), Math.hypot(zb.x - cx, zb.z - cz) + 2); if (d < bd) { bd = d; tgt = zb; } }
+    let tx = tgt ? tgt.x : cx + Math.sin(time * 0.5) * 3, tz = tgt ? tgt.z : cz + Math.cos(time * 0.5) * 3; a.cd -= dt;
+    if (tgt && Math.hypot(tgt.x - a.x, tgt.z - a.z) < 1.3 && a.cd <= 0) { a.cd = 0.85; a.pm.inner.rotation.x = 0.6; SFX.hit(); shake = Math.max(shake, 0.12); for (const zb of zombies) { if (zb.dead) continue; const d = Math.hypot(zb.x - a.x, zb.z - a.z); if (d < 1.7) hitZombie(zb, 85 + 4 * level, (zb.x - a.x) / (d || 1), (zb.z - a.z) / (d || 1), 'npc'); } burst(a.x, 0.2, a.z, GRAVEM.dirt, 5, 3); }
+    const dx = tx - a.x, dz = tz - a.z, d = Math.hypot(dx, dz), want = d > 0.6 ? 3.2 : 0, k = 1 - Math.exp(-dt * 6);
+    a.vx += ((d > 0.01 ? dx / d : 0) * want - a.vx) * k; a.vz += ((d > 0.01 ? dz / d : 0) * want - a.vz) * k; moveEnt(a, a.vx * dt, a.vz * dt, 0.36, true);
+    if (Math.hypot(a.vx, a.vz) > 0.2) a.face = angLerp(a.face, Math.atan2(a.vx, a.vz), 1 - Math.exp(-dt * 8)); a.pm.g.position.set(a.x, 0, a.z); a.pm.g.rotation.y = a.face; a.pm.inner.rotation.x += (0.1 - a.pm.inner.rotation.x) * (1 - Math.exp(-dt * 6));
+    a.pm.roll.position.y = 0.5 + Math.abs(Math.sin(time * 7 + a.x)) * 0.05;
+  }
+  if (allies.some(a => a.dead)) allies = allies.filter(a => !a.dead);
+}
+function updateGraveyard(dt) {
+  if (phase !== 'live' || inBonus || P.dead || P.mount && P.mount.fly) return;
+  const pi = tt(P.x), pj = tt(P.z); if (!inb(pi, pj) || regionBiome[regionAt(pi, pj)] !== 'graveyard') return;
+  const moving = Math.hypot(P.vx, P.vz) > 1.5; if ((graveT -= dt * (moving ? 1 : 0.45)) > 0) return; graveT = (stage === 'night' ? 0.55 : 0.9) + Math.random() * 0.5;
+  let near = 0; for (const zb of zombies) if (!zb.dead && Math.hypot(zb.x - P.x, zb.z - P.z) < 9) near++; if (near >= 14 || zombies.length >= 140) return;
+  for (let t = 0; t < 40; t++) { const a = Math.random() * 6.28, r = 2.5 + Math.random() * 6, i = Math.round(pi + Math.cos(a) * r), j = Math.round(pj + Math.sin(a) * r); if (!inb(i, j + 1) || grid[idx(i, j)] !== GRAVE || grid[idx(i, j + 1)] !== EMPTY) continue;
+    const zz = spawnZombie(undefined, tc(i), tc(j) + 0.75); if (!zz) return; zz.hoarde = false; zz.rise = 1.1; zz.hunt = 12; zz.g.position.y = -1; burst(tc(i), 0.15, tc(j) + 0.75, GRAVEM.dirt, 8, 2.5); if (gate('riser', 500)) SFX.crumble(); return; }
 }
 const HULK_M = new THREE.MeshLambertMaterial({ color: 0x5fa04a, flatShading: true }), TRIDENT_GEO = new THREE.CylinderGeometry(0.03, 0.03, 0.9, 5).rotateX(Math.PI / 2);
 
@@ -3496,6 +3568,10 @@ const GUNS = [null, { n: 'Pistol', rate: 0.3, dmg: 46, k: 1, sp: 0.04, life: 0.5
 const pewMesh = new THREE.Group(); { const body = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.11, 1), mat.metalDark), grip = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.16, 0.08), M(0x5a3a22)); grip.position.set(0, -0.1, -0.2); pewMesh.add(body, grip); pewMesh.userData.body = body; pewMesh.position.set(0.3, 0.02, 0.3); pewMesh.visible = false; player.roll.add(pewMesh); }
 const molMesh = new THREE.Group(); { const bt = new THREE.Mesh(new THREE.CapsuleGeometry(0.07, 0.16, 3, 6), M(0x5a8f4a)), fl = new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.16, 6), new THREE.MeshBasicMaterial({ color: 0xffb03a })); fl.position.y = 0.2; molMesh.add(bt, fl); molMesh.userData.fl = fl; molMesh.position.set(0.32, 0.1, 0.18); molMesh.visible = false; player.roll.add(molMesh); }
 const molRet = new THREE.Mesh(new THREE.RingGeometry(0.7, 0.95, 24).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: 0xff8a2a, transparent: true, opacity: 0.7, depthWrite: false })); molRet.visible = false; scene.add(molRet);
+const aimBeam = (() => { const c = document.createElement('canvas'); c.width = 4; c.height = 128; const x = c.getContext('2d'), gr = x.createLinearGradient(0, 0, 0, 128); gr.addColorStop(0, 'rgba(255,80,60,0)'); gr.addColorStop(0.6, 'rgba(255,90,60,.55)'); gr.addColorStop(1, 'rgba(255,120,80,.95)'); x.fillStyle = gr; x.fillRect(0, 0, 4, 128);
+  const g = new THREE.PlaneGeometry(0.11, 1).rotateX(-Math.PI / 2).translate(0, 0, 0.5), m = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthWrite: false })); m.visible = false; m.renderOrder = 3; scene.add(m);
+  const dot = new THREE.Mesh(new THREE.CircleGeometry(0.13, 14).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: 0xff5a3c, transparent: true, opacity: 0.85, depthWrite: false })); dot.position.z = 1; m.add(dot); m.userData.dot = dot; return m; })();
+function aimRange() { if (weapon === 'minigun') return 9; if (weapon === 'bow') return gunTier ? Math.min(11, GUNS[gunTier].life * 20) : 9; return 0; }
 function fireGun() { const G = GUNS[gunTier]; gunT = G.rate; for (let q = 0; q < G.k; q++) { const sp = (Math.random() - 0.5) * G.sp, c = Math.cos(sp), s2 = Math.sin(sp); fireBullet(P.x + P.ax * 0.6, 0.55, P.z + P.az * 0.6, P.ax * c - P.az * s2, P.ax * s2 + P.az * c, G.dmg * (1 + 0.04 * level), true); const b = bullets[bullets.length - 1]; b.life = G.life * (0.85 + Math.random() * 0.3); if (G.pierce) { b.pierce = G.pierce; b.hits = new Set(); } }
   if (gunTier === 2) { noise({ t: 0.18, v: 0.2, f: 500, type: 'lowpass' }); shake = Math.max(shake, 0.18); } else if (gate('pew', 60)) SFX.gun(); }
 function fireArrow() {
@@ -3511,9 +3587,12 @@ function throwMolotov() {
 }
 function updateGun(dt) {
   if (!wOwned(weapon)) weapon = 'scythe';
+  if (P.onWall && weapon === 'scythe' && !longScy) { const w = ['bow', 'minigun', 'flamer', 'molotov'].find(wOwned); if (w) { weapon = w; wallSwap = true; } }
+  else if (!P.onWall && wallSwap) { wallSwap = false; weapon = 'scythe'; }
   gunMesh.visible = weapon === 'minigun' && !P.mount; bowMesh.visible = weapon === 'bow' && !gunTier && !P.mount; pewMesh.visible = weapon === 'bow' && gunTier > 0 && !P.mount; if (pewMesh.visible) pewMesh.userData.body.scale.z = GUNS[gunTier].len * 2;
   molMesh.visible = weapon === 'molotov' && !P.mount; molMesh.userData.fl.scale.setScalar(0.8 + Math.random() * 0.5); molRet.visible = weapon === 'molotov' && !P.mount && phase === 'live' && !P.dead; if (molRet.visible) { molRet.position.set(P.x + P.ax * 4.5, 0.06, P.z + P.az * 4.5); molRet.material.opacity = 0.45 + Math.sin(time * 8) * 0.25; } flamerMesh.visible = weapon === 'flamer' && !P.mount;
   if (weapon !== 'scythe' && !P.mount) player.scythe.visible = false; else if (!P.mount) player.scythe.visible = true;
+  { const L = aimRange(); aimBeam.visible = L > 0 && !P.mount && !P.dead && phase === 'live' && !buildMode; if (aimBeam.visible) { aimBeam.position.set(P.x + P.ax * 0.45, P.y + 0.52, P.z + P.az * 0.45); aimBeam.rotation.y = Math.atan2(P.ax, P.az); aimBeam.scale.set(1, 1, L); aimBeam.userData.dot.scale.set(1, 1, 1 / L); aimBeam.material.opacity = 0.75 + Math.sin(time * 6) * 0.15; } }
   const cnt = weapon === 'minigun' ? gunAmmo : weapon === 'flamer' ? Math.ceil(fuel) : weapon === 'molotov' ? molotovs : weapon === 'bow' ? '∞' : '';
   { const ap = $('ammoPill'); const mol = weapon === 'molotov'; if (ap.classList.contains('mol') !== mol) ap.classList.toggle('mol', mol); }
   setHidden('ammoPill', weapon === 'scythe' || phase !== 'live'); setText('ammoN', String(cnt));
@@ -3781,8 +3860,10 @@ function npcFlee(n, dp) {
   if (n.hostile && dp < bd) { bd = dp; tx = P.x; tz = P.z; } if (tx === null) return false;
   const ax = n.x - tx, az = n.z - tz, l = Math.hypot(ax, az) || 1; n.fx = n.x + ax / l * 5; n.fz = n.z + az / l * 5; if (!n.fleeTip) { n.fleeTip = 1; burst(n.x, 1.2, n.z, mat.white, 4, 1); } return true;
 }
+function campRaider(n) { n.campR = true; n.hp = n.mhp = 220; const sh = new THREE.Mesh(new THREE.CylinderGeometry(0.26, 0.26, 0.06, 10).rotateX(Math.PI / 2), M(0x7a5a3a)); const rim = new THREE.Mesh(new THREE.TorusGeometry(0.26, 0.035, 5, 12), mat.metal); sh.add(rim); sh.position.set(-0.22, 0.05, 0.3); sh.rotation.y = -0.35; n.pm.roll.add(sh); n.pm.shield = sh; return n; }
 function hitNpc(n, dmg, nx, nz, gun) {
   if (n.dead || (n.hitCd > 0 && !gun)) return; if (!gun) n.hitCd = 0.15;
+  if (n.campR) { const dpn = Math.hypot(P.x - n.x, P.z - n.z) || 1, front = (Math.sin(n.face) * (P.x - n.x) + Math.cos(n.face) * (P.z - n.z)) / dpn; if (n.alerted && front > 0.3) { dmg *= gun ? 0.45 : 0.25; burst(n.x + Math.sin(n.face) * 0.35, 0.6, n.z + Math.cos(n.face) * 0.35, mat.metal, 4, 2); if (gate('block', 160)) SFX.clank(); nx *= 0.3; nz *= 0.3; } for (const o of npcs) if (o.campR && !o.dead && o !== n && Math.hypot(o.x - n.x, o.z - n.z) < 9) { o.agro = 8; o.pack = 8; } n.pack = 8; }
   n.hp -= dmg; n.agro = 6; n.flash = 0.1; n.pm.body.material = mat.white; n.vx += nx * 6; n.vz += nz * 6; SFX.hit();
   if (n.hero) return;
   if (n.kind === 'recruit') { n.pm.body.material = NPCM.blue; return; }
@@ -3881,7 +3962,7 @@ function pauseFx(on) {
   else if (padNodes) { clearInterval(padNodes.iv); padNodes = null; [[784, 0], [1047, 0.07]].forEach(([f, d]) => tone({ type: SQ, f, t: 0.06, v: 0.05, delay: d })); }
 }
 // ---------- music: alternating procedural tracks for Hoarde / boss / raid / events
-let musGain = null, musMode = 'none', musNext = 0, musBar = 0, musVar = 0, musEventT = 0, musFade = 0;
+let musBus = null, musGain = null, musMode = 'none', musNext = 0, musBar = 0, musVar = 0, musEventT = 0, musFade = 0;
 function mnote(at, f, t, v, type, f2) { const o = ac.createOscillator(), g = ac.createGain(); o.type = type || 'square'; o.frequency.setValueAtTime(f, at); if (f2) o.frequency.exponentialRampToValueAtTime(f2, at + t); g.gain.setValueAtTime(0.0001, at); g.gain.exponentialRampToValueAtTime(v, at + 0.008); g.gain.exponentialRampToValueAtTime(0.0001, at + t); o.connect(g); g.connect(musGain); o.start(at); o.stop(at + t + 0.02); }
 let _nb = null; function mhit(at, t, v, f, type) { if (!_nb) { _nb = ac.createBuffer(1, ac.sampleRate * 0.5, ac.sampleRate); const d = _nb.getChannelData(0); for (let q = 0; q < d.length; q++) d[q] = Math.random() * 2 - 1; } const s2 = ac.createBufferSource(), fl = ac.createBiquadFilter(), g = ac.createGain(); s2.buffer = _nb; fl.type = type || 'highpass'; fl.frequency.value = f; g.gain.setValueAtTime(v, at); g.gain.exponentialRampToValueAtTime(0.0001, at + t); s2.connect(fl); fl.connect(g); g.connect(musGain); s2.start(at); s2.stop(at + t + 0.02); }
 function kick(at, v) { mnote(at, 120, 0.18, v || 0.5, 'sine', 40); }
@@ -3923,7 +4004,7 @@ function musWant() {
   if (boss && !boss.dead) return 'boss'; if (hoardeOn) return 'hoarde'; if (npcs.some(n => n.raid && !n.dead)) return 'raid'; if (musEventT > 0 || inBonus) return 'event'; return 'none';
 }
 function updateMusic(dt) {
-  if (!ac) return; if (!musGain) { musGain = ac.createGain(); musGain.gain.value = 0; musGain.connect(master); }
+  if (!ac) return; if (!musGain) { musBus = ac.createGain(); musBus.gain.value = SET.music === false ? 0 : 1; musBus.connect(master); musGain = ac.createGain(); musGain.gain.value = 0; musGain.connect(musBus); }
   if (musEventT > 0) musEventT -= dt; const want = muted ? 'none' : musWant();
   if (want === musMode && musFade > 0 && musMode !== 'none') { musFade = 0; musGain.gain.setTargetAtTime(musMode === 'event' ? 0.55 : musMode === 'title' ? 0.8 : 0.7, ac.currentTime, 0.3); }
   if (want !== musMode) { if (musMode !== 'none') { musGain.gain.setTargetAtTime(0, ac.currentTime, 0.25); musFade = 0.8; } if (musFade > 0) { musFade -= dt; if (musFade > 0) return; } musMode = want; musBar = 0; musVar = (musVar + 1 + ((Math.random() * 2) | 0)); musNext = ac.currentTime + 0.1; if (want !== 'none') musGain.gain.setTargetAtTime(want === 'event' ? 0.55 : want === 'title' ? 0.8 : 0.7, ac.currentTime, 0.4); }
@@ -3969,12 +4050,13 @@ function updateNpcs(dt) {
     if (n.eating) { stepNpc(n, n.eating.x, n.eating.z, 3, dt, true); continue; }
     if (n.calm) { n.hostile = false; }
     if (n.raid && phase === 'live') { raidAI(n, dt, dp); continue; }
-    if (n.hostile && phase === 'live' && !(P.mount && P.mount.fly) && dp < (night ? 11 : 8) && Math.hypot(n.x - n.hx, n.z - n.hz) < 22) {
-      tx = P.x; tz = P.z; spd = n.kind === 'raider' ? 3.7 : 3.2; if (!n.alerted) { n.alerted = true; if (n.kind === 'raider') tip('Raiders! They hit hard.', 'raid'); }
-      if (dp < 0.9 && n.cd <= 0) { n.cd = 1.1; hurtPlayer(n.kind === 'raider' ? 12 : 8); n.pm.inner.rotation.x = 0.5; }
+    if (n.pack > 0) n.pack -= dt;
+    if (n.hostile && phase === 'live' && !(P.mount && P.mount.fly) && dp < (n.pack > 0 ? 16 : night ? 11 : 8) && Math.hypot(n.x - n.hx, n.z - n.hz) < (n.campR ? (n.pack > 0 ? 20 : 15) : 22)) {
+      tx = P.x; tz = P.z; spd = n.campR ? 4.1 : n.kind === 'raider' ? 3.7 : 3.2; if (!n.alerted) { n.alerted = true; if (n.kind === 'raider') tip('Raiders! They hit hard.', 'raid'); }
+      if (dp < 0.9 && n.cd <= 0) { n.cd = n.campR ? 0.9 : 1.1; hurtPlayer(n.campR ? 15 : n.kind === 'raider' ? 12 : 8); n.pm.inner.rotation.x = 0.5; }
     } else {
       n.alerted = false; if ((n.wanderT -= dt) <= 0) { n.wanderT = 2 + Math.random() * 4; const a = Math.random() * 6.28, r = Math.random() * 4; n.tx = n.hx + Math.cos(a) * r; n.tz = n.hz + Math.sin(a) * r; } tx = n.tx; tz = n.tz;
-      if (n.hp < (n.kind === 'trader' ? 80 : 120)) n.hp += dt * 4;
+      if (n.hp < (n.campR ? n.mhp : n.kind === 'trader' ? 80 : 120)) n.hp += dt * (n.campR ? 10 : 4);
       if (!n.hostile && dp < 4) { tx = n.x; tz = n.z; n.face = angLerp(n.face, Math.atan2(P.x - n.x, P.z - n.z), 1 - Math.exp(-dt * 6)); }
     }
     }
@@ -4558,7 +4640,7 @@ function updateExtras(dt) {
   updateHeli(dt);
   if ((dogT -= dt) <= 0) { dogT = 1; if (phase === 'live' && !inBonus && Math.random() < 0.01) { const rb = regionBiome[regionAt(tt(P.x), tt(P.z))]; if (rb === 'forest' && pets.filter(q => q.kind === 'dog' && !q.tamed && !q.dead).length < 2) { for (let q = 0; q < 12; q++) { const a = Math.random() * 6.28, d = 10 + Math.random() * 8, x = P.x + Math.cos(a) * d, z = P.z + Math.sin(a) * d; if (inb(tt(x), tt(z)) && !blocked(x, z, 0.3, true) && grid[idx(tt(x), tt(z))] === EMPTY) { addPet('dog', x, z); break; } } } } }
   if (stage === 'night' && !hoardeOn) { roamT -= dt; if (roamT <= 0) { roamT = 35; if (regionAt(tt(P.x), tt(P.z)) !== 4) { const cnt = 3 + (Math.random() * 3 | 0), a = Math.random() * 6.28, d = 14 + Math.random() * 8; for (let q = 0; q < cnt; q++) { const x = P.x + Math.cos(a) * d + (Math.random() - 0.5) * 3, z = P.z + Math.sin(a) * d + (Math.random() - 0.5) * 3; if (inb(tt(x), tt(z)) && !SOLID_Z[grid[idx(tt(x), tt(z))]] && grid[idx(tt(x), tt(z))] !== WATER) spawnZombie(undefined, x, z); } tip('Something stirs in the dark...', 'roam'); } } }
-  updatePets(dt); updateNpcs(dt); updateFarms(dt); updateBreads(dt); updateRadio(dt);
+  updatePets(dt); updateNpcs(dt); updateAllies(dt); updateGraveyard(dt); updateFarms(dt); updateBreads(dt); updateRadio(dt);
   if (stage === 'day' && !hoardeOn && (wandT -= dt) <= 0) { wandT = 420 + Math.random() * 300; spawnWanderer(); }
   if (!hoardeOn && (slingT -= dt) <= 0) { slingT = 600 + Math.random() * 400; if (Math.random() < 0.3) spawnGunslinger(); }
   updateGun(dt);
@@ -4616,7 +4698,7 @@ function wander(pt, dt) { pt.wanderT -= dt; if (pt.wanderT <= 0) { pt.wanderT = 
 function animPet(pt, spd, dt) { const u = pt.mesh.userData, w = Math.min(1, spd / 3); (u.legs || []).forEach((l, q) => { l.rotation.x = Math.sin(time * 14 + q * Math.PI) * 0.6 * w; }); if (u.tail) u.tail.rotation.y = Math.sin(time * (pt.tamed ? 12 : 4)) * 0.5; else pt.mesh.rotation.z = Math.sin(time * 6) * 0.08 * w; }
 function resetExtras() {
   goldenT = 0; if (cosmic) scene.remove(cosmic.mesh); cosmic = null; lastPK = -1;
-  for (const d of gearDrops) scene.remove(d.mesh); gearDrops = []; if (decoy) scene.remove(decoy.mesh); decoy = null; decoyCd = 0; tradeTax = 0; sabCamps = []; hoardeStall = 0;
+  for (const d of gearDrops) scene.remove(d.mesh); gearDrops = []; if (decoy) scene.remove(decoy.mesh); decoy = null; decoyCd = 0; tradeTax = 0; sabCamps = []; hoardeStall = 0; if (wendyGrave) scene.remove(wendyGrave.mesh); wendyGrave = null; for (const a of allies) scene.remove(a.pm.g); allies = []; graveT = 2;
   for (const g of globs) scene.remove(g.m); globs = []; boss = null; pathShowT = 0; if (pathMesh) pathMesh.visible = false;
   if (inBonus) endBonus(false); if (gateway) { scene.remove(gateway.mesh); gateway = null; } if (safGate) { scene.remove(safGate.mesh); safGate = null; }
   if (crystal2.planted) loseCrystal2(); crystal2.planted = false; crystal2.g.visible = false;
@@ -4695,13 +4777,13 @@ function updatePlayer(dt) {
   const it = phase === 'live' && !onPad() ? getInteract() : null;
   if (it && it.act && (touchAct || (P.buffer > 0 && lastInput !== 'mouse'))) { P.buffer = 0; touchAct = false; it.act(); }
   else if (wantAct && padAct && (!buildMode || lastInput !== 'mouse') && (touchAct || (P.buffer > 0 && lastInput !== 'mouse'))) { P.buffer = 0; touchAct = false; openTree(true); }
-  else if (weapon !== 'scythe' && !P.onWall && netRole !== 'guest') { P.buffer = 0; }
-  else if (wantAct && P.swingCd <= 0 && !(lastInput === 'mouse' && buildMode)) { if (P.onWall) { if (pistolOn) shoot(); else { P.buffer = 0; tip('Unlock the Pistol to shoot from up here.', 'nopistol'); } } else doSwing(); }
+  else if (weapon !== 'scythe' && netRole !== 'guest') { P.buffer = 0; }
+  else if (wantAct && P.swingCd <= 0 && !(lastInput === 'mouse' && buildMode)) { if (P.onWall && !longScy) { P.buffer = 0; if (gate('nowallw', 2500)) floater(P.x, P.z, 'Get a gun or the Long scythe', '#ffd166'); } else doSwing(); }
   if (P.hurtT > 3 && P.hp < 100) P.hp = Math.min(100, P.hp + 6 * dt);
 
   // visuals
   const g = player.g; g.position.set(P.x, P.y, P.z); g.rotation.y = P.face;
-  player.gun.visible = P.onWall && pistolOn; player.scythe.visible = !P.onWall;
+  player.gun.visible = false; if (P.onWall && !longScy && !P.mount) player.scythe.visible = false;
   const sp = Math.hypot(P.vx, P.vz) / SPEED;
   player.roll.position.y = 0.5 + Math.abs(Math.sin(time * 14)) * 0.06 * Math.min(1, sp);
   const fwd = (P.vx * Math.sin(P.face) + P.vz * Math.cos(P.face)) / SPEED, side = (P.vx * Math.cos(P.face) - P.vz * Math.sin(P.face)) / SPEED;
@@ -4710,7 +4792,7 @@ function updatePlayer(dt) {
   const s = P.swingT > 0 ? P.swingT / 0.17 : 0;
   player.pivot.rotation.y = P.swingT > 0 ? -1.4 + s * 2.8 : player.pivot.rotation.y + (0.25 - player.pivot.rotation.y) * (1 - Math.exp(-dt * 12));
   trailMesh.material.opacity = Math.max(0, trailMesh.material.opacity - dt * 5);
-  setAct(padAct ? 'Crystal' : it ? it.label : P.onWall ? (pistolOn ? 'Shoot' : 'No gun') : 'Swing', padAct || !!(it && it.act));
+  setAct(padAct ? 'Crystal' : it ? it.label : P.onWall && weapon !== 'scythe' ? 'Shoot' : P.onWall && !longScy ? 'No weapon' : weapon !== 'scythe' ? 'Shoot' : 'Swing', padAct || !!(it && it.act));
   updateQuicksand(dt);
 }
 
@@ -4725,6 +4807,7 @@ function updateZombies(dt) {
     z.hitCd -= dt; if (z.flash > 0 && (z.flash -= dt) <= 0) z.body.material = z.baseMat;
     const i = tt(z.x), j = tt(z.z), n = inb(i, j) ? idx(i, j) : -1;
     if (z.sinkT > 0) { z.sinkT -= dt; z.g.position.y = -(1.1 - z.sinkT) * 0.8; z.inner.rotation.z = Math.sin(time * 25) * 0.25; if (z.sinkT <= 0) { z.sinkT = 0; killZombie(z, 'npc'); } continue; }
+    if (z.rise > 0) { z.rise -= dt; z.g.position.set(z.x, -Math.max(0, z.rise) * 0.9, z.z); z.inner.rotation.z = Math.sin(time * 18) * 0.2; if (Math.random() < 0.25) puff(z.x, 0.1, z.z, 0x5a4a3a); continue; }
     if (z.frozen > 0) { z.frozen -= dt; z.body.material = z.frozen > 0 ? mat.ice : z.baseMat; z.g.position.set(z.x, 0, z.z); continue; }
     if (z.kind === 'digger') {
       const ccx = cx, ccz = cz, ddx = ccx - z.x, ddz = ccz - z.z, dd = Math.hypot(ddx, ddz) || 1, ux = ddx / dd, uz = ddz / dd;
@@ -4762,6 +4845,7 @@ function updateZombies(dt) {
         if (sd < 1.2) { tx = sx / sd * 0.05; tz = sz / sd * 0.05; const sc = scares.get(sn); if (sc) { sc.hp -= z.dps * dt * 0.8; const o = tileObj[sn]; if (o) { const f = Math.max(0.01, sc.hp / sc.max); o.userData.hpFg.scale.x = f; o.userData.hpFg.position.x = -0.45 * (1 - f); o.rotation.z = Math.sin(time * 30) * 0.03; } if (sc.hp <= 0) scareBreak(sn); } }
         else if (sd < 4 || !(nt >= 0)) { tx = sx / sd; tz = sz / sd; } else { tx = tx * 0.3 + sx / sd * 0.7; tz = tz * 0.3 + sz / sd * 0.7; const l = Math.hypot(tx, tz) || 1; tx /= l; tz /= l; } } }
       const T = nearestPlayer(z.x, z.z), dpx = T.x - z.x, dpz = T.z - z.z, dp = Math.hypot(dpx, dpz);
+      if (z.hunt > 0) { z.hunt -= dt; if (!T.onWall && dp < 11 && dp > 0.01) { tx = dpx / dp; tz = dpz / dp; } }
       if (!T.onWall && dp < 1.8 && dp > 0.01) { const w = 0.6; tx = tx * (1 - w) + dpx / dp * w; tz = tz * (1 - w) + dpz / dp * w; const l = Math.hypot(tx, tz) || 1; tx /= l; tz /= l; }
       if (npcs.length && (z.npcT = (z.npcT || 0) - dt) <= 0) { z.npcT = 0.5; z.npc = null; let nb = Math.min(2, dp); for (const nn of npcs) { if (nn.dead || nn.down > 0 || nn.jump) continue; const d = Math.hypot(nn.x - z.x, nn.z - z.z); if (d < nb) { nb = d; z.npc = nn; } } }
       if (z.npc && !z.npc.dead) { const nx = z.npc.x - z.x, nz = z.npc.z - z.z, nd = Math.hypot(nx, nz) || 1; tx = nx / nd; tz = nz / nd; if (nd < 0.8 && z.hitCd <= 0) { z.hitCd = 0.9; npcHurt(z.npc, z.dmg); if (z.npc.heroType === 'ian') { z.frozen = 5; burst(z.x, 0.7, z.z, mat.ice, 6, 2); } } }
@@ -4992,6 +5076,7 @@ function updateHud(dt) {
   if (phase === 'placing') { ph = 'Plant in ' + Math.ceil(timer) + 's'; setHidden('bPlant', !plantTile()); }
   else if (phase === 'live') ph = hoardeOn ? 'Hold the line!' : '';
   setText('phase', ph); setHidden('phase', !ph);
+  { const tap = lastInput === 'mouse' ? 'Click' : 'Tap'; const hp = phase === 'placing' && netRole !== 'guest' && !attract ? 'Choose your home base: plant your Crystal inside the glowing area' : phase === 'live' && HINT_ONE[buildMode] ? tap + ' the tile where you want your ' + HINT_ONE[buildMode] : ''; if (hudCache.hint !== hp) { hudCache.hint = hp; $('hintPop').textContent = hp; setHidden('hintPop', !hp); } }
   if ((tipTimer -= dt) <= 0) $('tip').classList.remove('show');
   if ((bannerTimer -= dt) <= 0) $('banner').classList.remove('show');
 }
@@ -5044,7 +5129,7 @@ function step(dt) {
       if (toSpawn <= 0 && spawnBias !== null) spawnBias = null;
       if (peaceful) { }
       else if (toSpawn > 0) { spawnT -= dt; if (spawnT <= 0 && zombies.length < cap) { spawnZombie(); toSpawn--; spawnT = hoardeOn ? 0.18 : 0.28; } }
-      else if (!hoardeOn) { trickleT -= dt; if (trickleT <= 0 && zombies.length < cap) { spawnZombie(); trickleT = 1.25 * Math.max(0.5, 4.2 * Math.pow(0.86, level - 1)) * (stage === 'day' ? 3.2 : stage === 'night' ? 0.7 : 1) / (1 + 0.35 * nests.length) / (bloodMoon ? 2 : 1); } }
+      else if (!hoardeOn) { trickleT -= dt; if (trickleT <= 0 && zombies.length < cap) { spawnZombie(); trickleT = 1.25 * Math.max(0.5, 4.2 * Math.pow(0.86, level - 1)) * (stage === 'day' ? 3.2 : stage === 'night' ? 0.7 : 1) / (1 + 0.15 * nests.length) / (bloodMoon ? 2 : 1); } }
     }
     if (regen && crystal.hp < crystal.max) crystal.hp = Math.min(crystal.max, crystal.hp + regen * dt);
     if (feeding) { feedT -= dt; if (feedT <= 0) { feedT = 0.11; feedCrystal(); } }
@@ -5118,6 +5203,7 @@ function frame(now) {
   if (!isFinite(camTarget.x) || !isFinite(camTarget.z)) camTarget.set(P.x, 0, P.z);
   const raw = (now - last) / 1000, dt = Math.min(0.05, raw); last = now; time += dt; if (raw < 1) adaptQuality(raw);
   if (spinAim && (spinAimT += dt) > 4) setSpinAim(false);
+  { const mh = $('menu').hidden; if (hudCache.mm !== mh) { hudCache.mm = mh; $('bMusic').hidden = mh; } }
   step(spinAim && !hostHasGuests() ? dt * 0.2 : dt); if (!treeOpen || !frozenDrawn) { renderer.render(scene, camera); frozenDrawn = treeOpen; } requestAnimationFrame(frame);
 }
 addEventListener('resize', () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
@@ -5128,6 +5214,6 @@ try { startAttract(); } catch (e) { console.warn('attract', e); attract = false;
 requestAnimationFrame(frame);
 }
 </script>
-<div id="tapStart"><div class="ts"><svg viewBox="0 0 24 24" width="54" height="54"><path d="M4 9 H8 L13 5 V19 L8 15 H4 Z" fill="#fff8ec"/><path d="M16 9 Q18.5 12 16 15 M18.5 6.5 Q23 12 18.5 17.5" stroke="#fff8ec" stroke-width="2" fill="none" stroke-linecap="round"/></svg><b>Tap to start</b></div></div>
+<button id="bMusic" aria-label="Menu music"></button>
 </body>
 </html>
