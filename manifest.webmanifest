@@ -1,0 +1,18 @@
+{
+  "id": "./",
+  "name": "Hoarde(r)",
+  "short_name": "Hoarde(r)",
+  "description": "Saint Scyther must defend the crystal. Build a maze, funnel the horde, survive.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#281c36",
+  "theme_color": "#281c36",
+  "categories": ["games"],
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
