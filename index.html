@@ -41,7 +41,7 @@ canvas{display:block;position:fixed;inset:0;width:100%;height:100%}
 .tree{position:fixed;inset:0;background:rgba(24,14,32,.97);display:grid;grid-template-rows:auto minmax(0,1fr) auto;justify-items:center;padding:calc(env(safe-area-inset-top) + 12px) 12px calc(env(safe-area-inset-bottom) + 12px);z-index:5;height:100dvh}
 .tclose{position:absolute;right:calc(env(safe-area-inset-right) + 12px);top:calc(env(safe-area-inset-top) + 12px);width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.1);display:grid;place-items:center;cursor:pointer;z-index:2}
 .tclose svg{width:20px;height:20px}
-.thead{text-align:center}
+.thead{text-align:center}.nestp.hurt{animation:dpp .5s ease-in-out infinite}@keyframes dpp{50%{transform:scale(1.12);box-shadow:0 0 12px #b36bff}}.lowscrap{display:inline-block;margin:2px auto 0;padding:3px 10px;border-radius:10px;background:rgba(192,57,43,.85);color:#fff8ec;font-weight:800;font-size:13px;animation:lsp 1.2s ease-in-out infinite}.lowscrap[hidden]{display:none}@keyframes lsp{50%{opacity:.6}}
 .ttabs{display:flex;gap:6px;justify-content:center;margin:2px 0 4px;min-height:36px;width:max-content}
 .ttabs button{position:relative;flex:0 0 auto;min-width:88px;height:34px;display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:999px;padding:0 14px;background:rgba(255,255,255,.1);color:#fff8ec;font:800 14px/1 Nunito,sans-serif;cursor:pointer}
 .ttabs button.on{background:var(--amber);color:#2a1d10}
@@ -381,7 +381,7 @@ body.attract #menu .card{background:rgba(30,20,40,.72);border-radius:22px;paddin
       <div id="onceBar" hidden></div><div id="lowhp"></div><div id="crysAlert" hidden><div class="glow"></div><svg viewBox="0 0 48 48" width="64" height="64"><path d="M6 24 H34 M24 10 L40 24 L24 38" stroke="#fff" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 24 H34 M24 10 L40 24 L24 38" stroke="#ff4a4a" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div id="reveal" hidden><div class="rays"></div><div class="rcard"><div id="revIcon"></div><b id="revName"></b><span id="revRar"></span></div></div><div class="pill phase nestp" id="bonusPill" hidden style="color:#e2b8ff"><svg viewBox="0 0 24 24" width="15" height="15"><path d="M5 21 V9 A7 7 0 0 1 19 9 V21" stroke="#e2b8ff" stroke-width="3" fill="none"/></svg><span id="bonusN"></span></div><div class="pill phase nestp" id="mazePill" hidden style="color:#ffe9a8"><span id="mazeN"></span><svg viewBox="0 0 24 24" width="14" height="14" style="margin-left:3px"><path d="M12 2 L20.5 7 V17 L12 22 L3.5 17 V7 Z" fill="#c9ccd2"/><circle cx="12" cy="12" r="3.6" fill="#7b818a"/></svg></div><div id="mazeTip" hidden>Longer zombie path = more scrap per kill<br><span style="color:#fff8ec;font-weight:600">Green arrows show their route</span></div><div id="bossBar" hidden style="position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 178px);transform:translateX(-50%);width:min(70vw,320px);height:14px;border-radius:8px;background:rgba(0,0,0,.55);border:2px solid #ffd166;overflow:hidden;z-index:6;pointer-events:none"><div id="bossFill" style="height:100%;width:100%;background:linear-gradient(90deg,#c0392b,#ff6b3d)"></div><svg viewBox="0 0 24 24" width="22" height="22" style="position:absolute;left:-2px;top:-5px"><path d="M3 18 L5 7 L9 12 L12 5 L15 12 L19 7 L21 18 Z" fill="#ffd166"/></svg></div><div class="pill phase nestp" id="goldPill" hidden style="color:#ffd166"><b>×3</b><span id="goldN"></span></div><div class="pill phase nestp" id="decoyPill" hidden style="color:#d9b3ff"><svg viewBox="0 0 24 24" width="15" height="15"><path d="M12 2 L18 12 L12 22 L6 12 Z" fill="#d9b3ff"/></svg><span id="decoyN"></span></div><div class="pill phase nestp" id="lurePill" hidden style="color:#ffb0a0"><svg viewBox="0 0 24 24" width="15" height="15"><path d="M3 10 H7 L15 4 V20 L7 14 H3 Z" fill="#ffb0a0"/></svg><span id="lureN"></span></div><div class="pill phase nestp" id="peacePill" hidden style="color:#bdf5c8"><svg viewBox="0 0 24 24" width="15" height="15"><path d="M12 3 Q18 4 18 12 V16 L20 18 H4 L6 16 V12 Q6 4 12 3 Z" fill="#bdf5c8"/></svg><span id="peaceN"></span></div><div class="pill phase nestp" id="ammoPill" hidden style="color:#ffd166"><span id="ammoN">0</span></div><div class="pill phase nestp" id="nestPill" hidden><svg viewBox="0 0 24 24" width="18" height="18"><path d="M2 20 Q12 2 22 20 Z" fill="#6b5240"/><ellipse cx="12" cy="17" rx="4" ry="3" fill="#120a08"/><circle cx="10.5" cy="16.5" r=".9" fill="#9bff5a"/><circle cx="13.5" cy="16.5" r=".9" fill="#9bff5a"/></svg><span id="nestN">1</span></div><div class="pill phase hoarde" id="hoarde" hidden><svg class="sky" viewBox="0 0 48 27"><path id="skyArc" d="M4 24 A20 20 0 0 1 44 24" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="2" stroke-dasharray="2 3"/><line x1="1" y1="24.5" x2="47" y2="24.5" stroke="rgba(255,255,255,.3)" stroke-width="1"/><g id="skyBody"><circle id="skySun" r="4.6" fill="#ffd166"/><g id="skyMoon" style="display:none"><circle r="4.6" id="moonLit" fill="#e9eeff"/><circle r="4.6" id="moonDark" fill="#2a1d3a"/></g></g></svg><span id="hoardeT"></span></div>
     </div>
   </div>
-  <button class="btn dark mute" id="bMute" aria-label="Sound"></button>
+  <button class="btn dark mute" id="bHome" aria-label="Main menu" style="top:auto;bottom:calc(env(safe-area-inset-bottom) + 200px);width:34px;height:34px;opacity:.75"><svg viewBox="0 0 24 24"><path d="M3 11 L12 3 L21 11 V21 H14 V15 H10 V21 H3 Z" fill="#fff8ec"/></svg></button><button class="btn dark mute" id="bMute" aria-label="Sound"></button><div class="screen" id="quitBox" hidden><div class="card"><h2>Return to main menu?</h2><p>Your game is saved and you can Continue later.</p><button class="btn" id="bQuitYes">Main menu</button><button class="btn dark" id="bQuitNo">Keep playing</button></div></div>
   <button class="btn dark mute bagbtn" id="bBag" aria-label="Inventory"><svg viewBox="0 0 24 24"><path d="M6 8 H18 L19 21 H5 Z" fill="#c99a5b"/><path d="M9 8 V6 a3 3 0 0 1 6 0 V8" fill="none" stroke="#e8c48a" stroke-width="2"/><rect x="10" y="11" width="4" height="3" rx="1" fill="#6b4a2b"/></svg><i class="bagdot" id="bagDot" hidden></i></button>
   <div class="bag" id="bag" hidden>
     <div class="bagrow" id="bagGear"></div>
@@ -425,7 +425,7 @@ body.attract #menu .card{background:rgba(30,20,40,.72);border-radius:22px;paddin
       <button class="cbtn" id="bDrawb" hidden>Bridge<small><svg><use href="#nut"/></svg>20</small></button>
       <button class="cbtn" id="bBear" hidden>Trap<small><svg><use href="#nut"/></svg>12</small></button>
       <button class="cbtn" id="bSpinner" hidden>Blade<small><svg><use href="#nut"/></svg>45</small></button>
-      <button class="cbtn" id="bTitan" hidden>Titan<small><svg><use href="#nut"/></svg>90</small></button><button class="cbtn" id="bBell" hidden>Bell<small>free</small></button><button class="cbtn" id="bComp" hidden>Compiler<small>free</small></button><button class="cbtn" id="bShed" hidden>Shed<small>free</small></button><button class="cbtn" id="bRoad" hidden>Road<small><svg><use href="#nut"/></svg>2</small></button><button class="cbtn" id="bScare" hidden>Scare<small><svg><use href="#nut"/></svg>25</small></button>
+      <button class="cbtn" id="bTitan" hidden>Titan<small><svg><use href="#nut"/></svg>90</small></button><button class="cbtn" id="bBell" hidden>Bell<small>free</small></button><button class="cbtn" id="bComp" hidden>Compiler<small>free</small></button><button class="cbtn" id="bShed" hidden>Shed<small>free</small></button><button class="cbtn" id="bCact" hidden>Cactus<small id="cactN">0</small></button><button class="cbtn" id="bRoad" hidden>Road<small><svg><use href="#nut"/></svg>2</small></button><button class="cbtn" id="bScare" hidden>Scare<small><svg><use href="#nut"/></svg>25</small></button>
       <button class="cbtn" id="bKennel" hidden>Kennel<small><svg><use href="#nut"/></svg>30</small></button>
       <button class="cbtn" id="bSilo" hidden>Silo<small><svg><use href="#nut"/></svg>40</small></button>
       <button class="cbtn" id="bFarm" hidden>Farm<small><svg><use href="#nut"/></svg>5</small></button>
@@ -448,7 +448,7 @@ body.attract #menu .card{background:rgba(30,20,40,.72);border-radius:22px;paddin
     <button class="hb" id="pDrawb" hidden><b class="key">X</b><span class="nm">Bridge</span><small><svg class="nut" style="width:12px;height:12px"><use href="#nut"/></svg>20</small></button>
     <button class="hb" id="pBear" hidden><b class="key">C</b><span class="nm">Trap</span><small><svg class="nut" style="width:12px;height:12px"><use href="#nut"/></svg>12</small></button>
     <button class="hb" id="pSpinner" hidden><b class="key">V</b><span class="nm">Blade</span><small><svg class="nut" style="width:12px;height:12px"><use href="#nut"/></svg>45</small></button>
-    <button class="hb" id="pTitan" hidden><b class="key">T</b><span class="nm">Titan</span><small><svg class="nut" style="width:12px;height:12px"><use href="#nut"/></svg>90</small></button><button class="hb" id="pBell" hidden><b class="key">L</b><span class="nm">Bell</span><small>free</small></button><button class="hb" id="pComp" hidden><b class="key">K</b><span class="nm">Compiler</span><small>free</small></button><button class="hb" id="pShed" hidden><b class="key">G</b><span class="nm">Shed</span><small>free</small></button><button class="hb" id="pRoad" hidden><b class="key">H</b><span class="nm">Road</span><small><svg class="nut" style="width:12px;height:12px"><use href="#nut"/></svg>2</small></button><button class="hb" id="pScare" hidden><b class="key">N</b><span class="nm">Scare</span><small><svg class="nut" style="width:12px;height:12px"><use href="#nut"/></svg>25</small></button>
+    <button class="hb" id="pTitan" hidden><b class="key">T</b><span class="nm">Titan</span><small><svg class="nut" style="width:12px;height:12px"><use href="#nut"/></svg>90</small></button><button class="hb" id="pBell" hidden><b class="key">L</b><span class="nm">Bell</span><small>free</small></button><button class="hb" id="pComp" hidden><b class="key">K</b><span class="nm">Compiler</span><small>free</small></button><button class="hb" id="pShed" hidden><b class="key">G</b><span class="nm">Shed</span><small>free</small></button><button class="hb" id="pCact" hidden><b class="key">·</b><span class="nm">Cactus</span><small id="cactN2">0</small></button><button class="hb" id="pRoad" hidden><b class="key">H</b><span class="nm">Road</span><small><svg class="nut" style="width:12px;height:12px"><use href="#nut"/></svg>2</small></button><button class="hb" id="pScare" hidden><b class="key">N</b><span class="nm">Scare</span><small><svg class="nut" style="width:12px;height:12px"><use href="#nut"/></svg>25</small></button>
     <button class="hb" id="pKennel" hidden><b class="key">B</b><span class="nm">Kennel</span><small><svg class="nut" style="width:12px;height:12px"><use href="#nut"/></svg>30</small></button>
     <button class="hb" id="pSilo" hidden><b class="key">-</b><span class="nm">Silo</span><small><svg class="nut" style="width:12px;height:12px"><use href="#nut"/></svg>40</small></button>
     <button class="hb" id="pFarm" hidden><b class="key">=</b><span class="nm">Farm</span><small><svg class="nut" style="width:12px;height:12px"><use href="#nut"/></svg>5</small></button>
@@ -461,13 +461,13 @@ body.attract #menu .card{background:rgba(30,20,40,.72);border-radius:22px;paddin
 
 <div class="tree" id="tree" hidden>
   <button class="tclose" id="bTreeClose" aria-label="Back to the fight"><svg viewBox="0 0 24 24"><path d="M6 6 L18 18 M18 6 L6 18" stroke="#fff8ec" stroke-width="2.6" stroke-linecap="round"/></svg></button>
-  <div class="thead"><div class="paused"><svg viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor"/></svg>Paused</div><h2>Crystal</h2><div class="tscrap"><span id="tLv" class="tlv">Lv 1</span><svg><use href="#nut"/></svg><span id="tScrap">0</span></div><p class="pts" id="treePts" hidden></p></div>
+  <div class="thead"><div class="paused"><svg viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor"/></svg>Paused</div><h2>Crystal</h2><div class="lowscrap" id="lowScrap" hidden></div><div class="tscrap"><span id="tLv" class="tlv">Lv 1</span><svg><use href="#nut"/></svg><span id="tScrap">0</span></div><p class="pts" id="treePts" hidden></p></div>
   <div class="ttabs" id="tTabs" style="display:none"><button data-t="0">Combat</button><button data-t="1">Base</button><button data-t="2">Economy</button></div>
   <div class="tmid"><div class="map" id="treeBody"></div></div>
   <div class="tfoot">
     <button class="peacebtn" id="bPeace"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M12 3 Q18 4 18 12 V16 L20 18 H4 L6 16 V12 Q6 4 12 3 Z" fill="#fff8ec"/><circle cx="12" cy="20.5" r="1.8" fill="#fff8ec"/></svg><span id="peaceTxt">Peace</span></button>
     <button class="peacebtn" id="bLure" hidden style="background:#b0412e"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M3 10 H7 L15 4 V20 L7 14 H3 Z" fill="#fff8ec"/><path d="M18 8 Q21 12 18 16" stroke="#fff8ec" stroke-width="2" fill="none"/></svg><span id="lureTxt">Lure</span></button>
-    <button class="peacebtn" id="bQuake" style="display:none;background:#8a5a3a"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M2 14 L6 10 L9 15 L13 8 L16 13 L19 11 L22 14" stroke="#fff8ec" stroke-width="2.4" fill="none" stroke-linejoin="round"/><path d="M3 19 H21" stroke="#fff8ec" stroke-width="2" stroke-dasharray="3 2"/></svg><span id="quakeTxt">Earthquake</span></button>
+    <button class="peacebtn" id="bQuake" style="display:none;background:#8a5a3a"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M2 14 L6 10 L9 15 L13 8 L16 13 L19 11 L22 14" stroke="#fff8ec" stroke-width="2.4" fill="none" stroke-linejoin="round"/><path d="M3 19 H21" stroke="#fff8ec" stroke-width="2" stroke-dasharray="3 2"/></svg><span id="quakeTxt">Earthquake 750</span></button>
     <button class="feedbtn" id="bFeedHold"><span class="ring"><i id="feedFill"></i></span><span class="ftxt"><b id="feedTitle">Hold to feed</b><small id="treeStatus"></small></span></button>
     <button class="peacebtn" id="bShedUp" hidden style="background:#a8703f"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M12 3 L20 11 H15 V21 H9 V11 H4 Z" fill="#fff8ec"/></svg><span>Build</span></button>
     <div class="detail" id="treeDetail"></div>
@@ -505,7 +505,7 @@ body.attract #menu .card{background:rgba(30,20,40,.72);border-radius:22px;paddin
       <p class="cstat" id="coopStat" hidden></p>
     </div>
     <div class="runs" id="runs"></div>
-    <div class="keys">Best: <span id="menuBest">Lv 0</span><br>v0.71</div>
+    <div class="keys">Best: <span id="menuBest">Lv 0</span><br>v0.72</div>
   </div>
 </div>
 <div class="screen" id="over" hidden>
@@ -529,7 +529,7 @@ let CAP = 5;
 const EMPTY = 0, WALL = 1, PIT = 2, CRYS = 3, HAY = 4, SCRAPPILE = 5, BARREL = 6, TREE = 7, ROCK = 8, ERASE = 9, CANYON = 10, SENTRY = 11, SHIELD = 12, WIRE = 13, CACTUS = 14, CHEST = 15, CRATE = 16, ORE = 17, RUIN = 18, CLIFF = 19, CAR = 20, WATER = 21, QSAND = 22, TAR = 23, JUMPPAD = 24, TOTEM = 25, BRIDGE = 26, LMK = 27, SILO = 28, FARM = 29, BEAR = 30, SPINNER = 31, MOAT = 32, DRAWB = 33, KENNEL = 34, SCARE = 35, ROAD = 36, SHED = 37, TITAN = 38, COMPILER = 39, BELL = 40, GRAVPAD = 41, GRAVE = 42;
 const SOLID_Z = [0, 1, 0, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1], CLIMB = [0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0];
 const PROP_TYPES = new Set([GRAVE, HAY, SCRAPPILE, BARREL, TREE, ROCK, CANYON, CACTUS, CHEST, CRATE, ORE, RUIN, CLIFF, CAR, WATER, QSAND, BRIDGE, LMK]);
-const COST = { [WALL]: 4, [PIT]: 12, [BARREL]: 15, [SENTRY]: 30, [SHIELD]: 40, [WIRE]: 6, [TAR]: 3, [JUMPPAD]: 10, [GRAVPAD]: 20, [TOTEM]: 35, [SILO]: 40, [FARM]: 5, [BEAR]: 12, [SPINNER]: 45, [MOAT]: 6, [DRAWB]: 20, [KENNEL]: 30, [SCARE]: 25, [ROAD]: 2, [SHED]: 0, [TITAN]: 90, [COMPILER]: 0, [BELL]: 0 };
+const COST = { [WALL]: 4, [PIT]: 12, [BARREL]: 15, [SENTRY]: 30, [SHIELD]: 40, [WIRE]: 6, [TAR]: 3, [JUMPPAD]: 10, [GRAVPAD]: 20, [TOTEM]: 35, [SILO]: 40, [FARM]: 5, [BEAR]: 12, [SPINNER]: 45, [MOAT]: 6, [DRAWB]: 20, [KENNEL]: 30, [SCARE]: 25, [ROAD]: 2, [CACTUS]: 0, [SHED]: 0, [TITAN]: 90, [COMPILER]: 0, [BELL]: 0 };
 const wallHp = new Float32Array(N * N), wallMax = new Float32Array(N * N), built = new Uint8Array(N * N);
 const BIOMES = {
   home: { name: 'Home fields', col: 0xb38a55, decor: 0xe2c06a, hint: 'Plant your crystal anywhere in here.' },
@@ -604,12 +604,12 @@ const geo = {
 };
 const tallyCache = {};
 function tallyTex(k, full) {
-  const key = k + (full ? 'f' : ''); if (tallyCache[key]) return tallyCache[key];
+  const sm = CAP <= 5, key = k + (full ? 'f' : '') + (sm ? 's' : ''); if (tallyCache[key]) return tallyCache[key];
   const c = document.createElement('canvas'); c.width = 192; c.height = 80; const x = c.getContext('2d');
-  x.fillStyle = 'rgba(24,14,32,.72)'; x.beginPath(); x.roundRect(4, 6, 184, 68, 18); x.fill();
+  x.fillStyle = 'rgba(24,14,32,.72)'; x.beginPath(); if (sm) x.roundRect(50, 6, 92, 68, 18); else x.roundRect(4, 6, 184, 68, 18); x.fill();
   x.strokeStyle = full ? '#ff6a5a' : '#fff8ec'; x.lineWidth = 7; x.lineCap = 'round'; x.beginPath();
   for (let m = 0; m < k; m++) {
-    const g = Math.floor(m / 5), q = m % 5, gx = 26 + g * 92;
+    const g = Math.floor(m / 5), q = m % 5, gx = sm ? 70 : 26 + g * 92;
     if (q < 4) { x.moveTo(gx + q * 17, 22); x.lineTo(gx + q * 17, 58); } else { x.moveTo(gx - 8, 54); x.lineTo(gx + 60, 26); }
   }
   x.stroke(); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return (tallyCache[key] = t);
@@ -654,8 +654,10 @@ zone.add(new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(zpts), new 
 zone.position.set(0, 0, 0); scene.add(zone);
 
 let decor = null;
+const decorByTile = new Map(), _zeroM = new THREE.Matrix4().makeScale(0, 0, 0);
+function clearDecorAt(n) { const l = decorByTile.get(n); if (!l || !decor) return; for (const k of l) decor.setMatrixAt(k, _zeroM); decor.instanceMatrix.needsUpdate = true; decorByTile.delete(n); }
 function buildDecor() {
-  if (decor) scene.remove(decor);
+  if (decor) scene.remove(decor); decorByTile.clear();
   const stalk = new THREE.BoxGeometry(0.05, 0.5, 0.05).translate(0, 0.25, 0), MAXW = 12000;
   decor = new THREE.InstancedMesh(stalk, new THREE.MeshLambertMaterial({ color: 0xffffff, flatShading: true }), MAXW);
   const d = new THREE.Object3D(); let n = 0;
@@ -668,7 +670,7 @@ function buildDecor() {
       for (let s2 = 0; s2 < 18 && n < MAXW; s2++) {
         d.position.set(ci - HALF + (Math.random() - 0.5) * 2.4, 0, cj - HALF + (Math.random() - 0.5) * 2.4);
         d.rotation.set((Math.random() - 0.5) * 0.4, Math.random() * 3, (Math.random() - 0.5) * 0.4);
-        d.scale.setScalar(0.7 + Math.random() * 0.6); d.updateMatrix(); decor.setMatrixAt(n, d.matrix); decor.setColorAt(n, tmpCol); n++;
+        d.scale.setScalar(0.7 + Math.random() * 0.6); d.updateMatrix(); { const tn = idx(tt(d.position.x), tt(d.position.z)); if (built[tn] && grid[tn] !== EMPTY) { d.scale.setScalar(0); d.updateMatrix(); } else { let l = decorByTile.get(tn); if (!l) decorByTile.set(tn, l = []); l.push(n); } } decor.setMatrixAt(n, d.matrix); decor.setColorAt(n, tmpCol); n++;
       }
     }
   }
@@ -779,7 +781,7 @@ let runSpeed = 5.2, wallSpeed = 3.6, rollSpeed = 12.5, rollCd = 0.6, wallRunner 
 let sentries = [], shields = [];
 const levelCdFor = L => Math.round((30 + 10 * (L - 2)) * 1.25);
 const danPits = () => npcs.some(n => n.heroType === 'dan' && n.hired && !n.dead) ? 3 : 0;
-const limitFor = t => t === WALL ? Math.min(110, 15 + 8 * (level - 1)) : t === PIT ? Math.min(30, 3 + 2 * (level - 1)) + danPits() : t === WIRE ? Math.min(20, 5 + 2 * (level - 1)) : t === TAR ? Math.min(8, 4 + (level - 1)) : t === JUMPPAD ? (jumpOn ? jumpMax : 0) : t === GRAVPAD ? (gravOn ? 4 : 0) : t === TOTEM ? totemMax : t === SILO ? (siloOn ? 1 : 0) : t === BEAR ? (bearOn ? 6 + 2 * Math.floor(level / 3) : 0) : t === SPINNER ? spinnerMax : t === MOAT ? (moatOn ? 24 + 12 * (level - 1) : 0) : t === DRAWB ? (drawOn ? 4 : 0) : t === KENNEL ? (kennelOn ? 1 : 0) : t === SCARE ? (scareLv ? 2 + scareLv : 0) : t === ROAD ? (roadOn ? 40 + 6 * level : 0) : t === SHED || t === COMPILER || t === BELL ? 1 : t === TITAN ? (titanOn ? 5 : 0) : t === FARM ? (siloOn ? 6 + 2 * Math.floor(level / 3) : 0) : t === SENTRY ? sentryMax : t === SHIELD ? shieldMax : 999;
+const limitFor = t => t === WALL ? Math.min(110, 15 + 8 * (level - 1)) : t === PIT ? Math.min(30, 3 + 2 * (level - 1)) + danPits() : t === WIRE ? Math.min(20, 5 + 2 * (level - 1)) : t === TAR ? Math.min(8, 4 + (level - 1)) : t === JUMPPAD ? (jumpOn ? jumpMax : 0) : t === GRAVPAD ? (gravOn ? 4 : 0) : t === TOTEM ? totemMax : t === SILO ? (siloOn ? 1 : 0) : t === BEAR ? (bearOn ? 6 + 2 * Math.floor(level / 3) : 0) : t === SPINNER ? spinnerMax : t === MOAT ? (moatOn ? (deepMoat ? 25 : 15) : 0) : t === DRAWB ? (drawOn ? (deepMoat ? 3 : 2) : 0) : t === KENNEL ? (kennelOn ? 1 : 0) : t === SCARE ? (scareLv ? 2 + scareLv : 0) : t === ROAD ? (roadOn ? 40 + 6 * level : 0) : t === SHED || t === COMPILER || t === BELL ? 1 : t === CACTUS ? (landOn ? 24 : 0) : t === TITAN ? (titanOn ? 5 : 0) : t === FARM ? (siloOn ? 6 + 2 * Math.floor(level / 3) : 0) : t === SENTRY ? sentryMax : t === SHIELD ? shieldMax : 999;
 const counts = {};
 function countType(t) { let c = 0; for (let n = 0; n < N * N; n++) if (grid[n] === t) c++; return c; }
 function recount() { for (const t of [WALL, PIT, SENTRY, SHIELD, WIRE, TAR, JUMPPAD, GRAVPAD, TOTEM, SILO, FARM, BEAR, SPINNER, MOAT, DRAWB, KENNEL, SCARE, ROAD, SHED, TITAN, COMPILER, BELL]) counts[t] = countType(t); }
@@ -1043,7 +1045,7 @@ function wouldSeal(n) {
 /* ---------- collision ---------- */
 function solid(i, j, forPlayer) {
   if (!inb(i, j)) return inBonus ? bSolid(i, j) : true; const n = idx(i, j), g = grid[n];
-  return SOLID_Z[g] === 1 || (forPlayer === true && g === PIT && fill[n] < CAP) || (!!forPlayer && (g === MOAT || (g === DRAWB && !drawDown(n))));
+  return SOLID_Z[g] === 1 || (forPlayer === true && g === PIT && fill[n] < CAP) || (!!forPlayer && ((g === MOAT && !(forPlayer === 'air' && rollHit >= 1)) || (g === DRAWB && !drawDown(n))));
 }
 function blocked(x, z, r, fp) {
   for (let i = tt(x - r); i <= tt(x + r); i++) for (let j = tt(z - r); j <= tt(z + r); j++) {
@@ -1053,8 +1055,9 @@ function blocked(x, z, r, fp) {
   }
   return false;
 }
+function moatAt(x, z, r) { for (let i = tt(x - r); i <= tt(x + r); i++) for (let j = tt(z - r); j <= tt(z + r); j++) { if (!inb(i, j)) continue; const n = idx(i, j), g = grid[n]; if (g === MOAT || (g === DRAWB && !drawDown(n))) { const x0 = i - HALF, z0 = j - HALF, cx = Math.max(x0, Math.min(x, x0 + 1)), cz = Math.max(z0, Math.min(z, z0 + 1)); if ((x - cx) ** 2 + (z - cz) ** 2 < r * r) return true; } } return false; }
 function moveEnt(e, dx, dz, r, fp) {
-  if (blocked(e.x, e.z, r, fp)) { e.x += dx; e.z += dz; return; }
+  if (blocked(e.x, e.z, r, fp)) { if (fp === true && moatAt(e.x + dx, e.z + dz, r) && !moatAt(e.x, e.z, r)) { e.vx *= 0.2; e.vz *= 0.2; return; } e.x += dx; e.z += dz; return; }
   let mv = false;
   if (!blocked(e.x + dx, e.z, r, fp)) { e.x += dx; mv = true; } else e.vx *= 0.2;
   if (!blocked(e.x, e.z + dz, r, fp)) { e.z += dz; mv = true; } else e.vz *= 0.2;
@@ -1270,7 +1273,7 @@ function genRegion(r) {
     for (const [px, py] of pts) for (let dj = -2; dj <= 2; dj++) for (let di = -2; di <= 2; di++) { if (di * di + dj * dj > 2.6) continue; const i = Math.round(px + di), j = Math.round(py + dj); cells.set(i + ',' + j, [i, j]); }
     for (let b = 0; b < bridges; b++) {
       const [bx, by, ba] = pts[Math.floor((b + 0.5) / bridges * pts.length)], horiz = Math.abs(Math.cos(ba)) > Math.abs(Math.sin(ba));
-      for (let k = -4; k <= 4; k++) for (const w of [0, 1]) { const i = Math.round(bx) + (horiz ? w : k), j = Math.round(by) + (horiz ? k : w), key = i + ',' + j; if (cells.has(key)) bset.set(key, horiz ? 'z' : 'x'); }
+      for (let k = -4; k <= 4; k++) for (const w of (genVer >= 4 ? [0] : [0, 1])) { const i = Math.round(bx) + (horiz ? w : k), j = Math.round(by) + (horiz ? k : w), key = i + ',' + j; if (cells.has(key)) bset.set(key, horiz ? 'z' : 'x'); }
     }
     for (const [key, [i, j]] of cells) { if (!ok(i, j)) continue; const n = idx(i, j); if (bset.has(key)) { grid[n] = BRIDGE; addObj(n, makeBridge(n, bset.get(key))); } else { grid[n] = CANYON; addObj(n, makeCanyon(n)); } }
   };
@@ -1478,7 +1481,7 @@ function pickBiome(avoid) {
     if (b === 'mountain' && hasMtn) continue; if (b === 'airstrip' && avoid === 'airstrip') continue; if (b !== avoid) return b;
   }
 }
-let genVer = 3, worldSeed = 1, swaps = [], genGrid = new Uint8Array(N * N), loadingSave = false;
+let genVer = 4, worldSeed = 1, swaps = [], genGrid = new Uint8Array(N * N), loadingSave = false;
 function seeded(seed, fn) { let a = seed >>> 0; const orig = Math.random; Math.random = () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; try { return fn(); } finally { Math.random = orig; } }
 function snapGen() { for (let n = 0; n < N * N; n++) genGrid[n] = built[n] ? 0 : grid[n]; }
 function generateWorld() {
@@ -1496,23 +1499,27 @@ function swapBiome() {
   setTimeout(() => { banner('The land shifts', 'The ' + DIRS[r] + ' is now ' + BIOMES[nb].name, 3); SFX.dusk(); }, 3400);
 }
 /* ---------- building ---------- */
+const BIG_STRUCT = new Set([SHED, COMPILER, BELL, SILO, KENNEL, TITAN, SCARE, TOTEM, SHIELD]);
+const keepOut = t => BIG_STRUCT.has(t) ? 8 : t === SPINNER || t === SENTRY ? 6 : 2.5;
 function canPlace(i, j, type) {
   if (loadingSave) return 'ok';
   if (!crystal.planted || !inb(i, j)) return 'no';
   const n = idx(i, j);
   if (type === FARM && pathPts.includes(n)) return 'path';
-  if (type === ERASE) return (grid[n] === WALL || grid[n] === WIRE || grid[n] === TAR || grid[n] === JUMPPAD || grid[n] === GRAVPAD || grid[n] === TOTEM || grid[n] === FARM || grid[n] === BEAR || grid[n] === SPINNER || grid[n] === MOAT || grid[n] === DRAWB || grid[n] === SCARE || grid[n] === ROAD || grid[n] === TITAN || grid[n] === SENTRY || grid[n] === SHIELD || (grid[n] === PIT && fill[n] === 0)) ? 'ok' : 'no';
-  if (grid[n] !== EMPTY || spawnMask[n] || n === padIdx()) return 'no';
+  if (type === ERASE) return ((grid[n] === CACTUS && built[n]) || grid[n] === WALL || grid[n] === WIRE || grid[n] === TAR || grid[n] === JUMPPAD || grid[n] === GRAVPAD || grid[n] === TOTEM || grid[n] === FARM || grid[n] === BEAR || grid[n] === SPINNER || grid[n] === MOAT || grid[n] === DRAWB || grid[n] === SCARE || grid[n] === ROAD || grid[n] === TITAN || grid[n] === SENTRY || grid[n] === SHIELD || (grid[n] === PIT && fill[n] === 0)) ? 'ok' : 'no';
+  if (type === DRAWB) { if (grid[n] !== MOAT) return 'nomoat'; } else if (grid[n] !== EMPTY || spawnMask[n] || n === padIdx()) return 'no';
   if ((type === WALL && !wallsOn) || (type === PIT && !pitsOn) || (type === WIRE && !wireOn) || (type === BARREL && !barrelUnlocked) || (type === TAR && !tarOn) || (type === JUMPPAD && !jumpOn) || (type === GRAVPAD && !gravOn) || (type === TOTEM && !totemMax) || ((type === SILO || type === FARM) && !siloOn) || (type === BEAR && !bearOn) || (type === SPINNER && !spinnerMax) || (type === MOAT && !moatOn) || (type === DRAWB && !drawOn) || (type === KENNEL && !kennelOn) || (type === SCARE && !scareLv) || (type === ROAD && !roadOn) || (type === TITAN && !titanOn)) return 'no';
   if (type === TITAN && !titanShapeOk(i, j)) return 'seal';
+  if (type === CACTUS && (!landOn || cactusBag <= 0)) return 'nocact';
   if (type === FARM && (siloAt < 0 || Math.max(Math.abs(i - siloAt % N), Math.abs(j - ((siloAt / N) | 0))) > 3)) return 'nosilo';
   if (Math.hypot(tc(i) - P.x, tc(j) - P.z) > 16) return 'far';
+  if (type !== ERASE && Math.hypot(i - crystal.i, j - crystal.j) < keepOut(type)) return 'crys';
   const cx = tc(i), cz = tc(j);
   if (Math.abs(P.x - cx) < 0.82 && Math.abs(P.z - cz) < 0.82) return 'no';
   for (const z of zombies) if (Math.abs(z.x - cx) < 0.75 && Math.abs(z.z - cz) < 0.75) return 'no';
   if ((counts[type] || 0) >= limitFor(type)) return 'limit';
   if (scrap < costOf(type)) return 'scrap';
-  if ((type === WALL || type === BARREL || type === SENTRY || type === SHIELD || type === TOTEM || type === SILO || type === SPINNER || type === KENNEL || type === SCARE || type === SHED || type === TITAN || type === COMPILER || type === BELL) && wouldSeal(n)) return 'seal';
+  if ((type === WALL || type === BARREL || type === SENTRY || type === SHIELD || type === TOTEM || type === SILO || type === SPINNER || type === KENNEL || type === SCARE || type === SHED || type === TITAN || type === COMPILER || type === BELL || type === CACTUS) && wouldSeal(n)) return 'seal';
   return 'ok';
 }
 function place(i, j, type) {
@@ -1523,14 +1530,20 @@ function place(i, j, type) {
   if (why === 'path') { if (gate('nobuild', 250)) { SFX.bonk(); floater(tc(i), tc(j), '✕', '#ff6b6b'); } tip('Zombies walk here and would trample it.', 'farmpath'); return false; }
   if (why === 'scrap') { tip('Not enough scrap.'); SFX.bonk(); return false; }
   if (why === 'limit') { if (gate('nobuild', 250)) floater(tc(i), tc(j), 'MAX', '#ff6b6b'); tip(type === WALL || type === PIT ? 'Limit reached. Level up the crystal.' : 'Limit reached. Upgrade for more.'); SFX.bonk(); return false; }
+  if (why === 'nocact') { if (gate('nobuild', 600)) { SFX.bonk(); floater(tc(i), tc(j), 'Swing at cactus to collect some', '#ffd166'); } return false; }
+  if (why === 'crys') { if (gate('nobuild', 400)) { SFX.bonk(); floater(tc(i), tc(j), 'Too close to the crystal', '#ff6b6b'); } return false; }
+  if (why === 'nomoat') { if (gate('nobuild', 400)) { SFX.bonk(); floater(tc(i), tc(j), 'Place bridges on moat', '#ff6b6b'); } return false; }
   if (why === 'seal' || why === 'far' || why === 'nosilo') { if (gate('nobuild', 250)) { SFX.bonk(); floater(tc(i), tc(j), '✕', '#ff6b6b'); } return false; }
   if (why === 'nosilo') { tip(siloAt < 0 ? 'Build a silo first.' : 'Farms must be within 3 tiles of the silo.'); return false; }
   if (why !== 'ok') return false;
   const n = idx(i, j);
   if (type === ERASE) {
+    if (grid[n] === CACTUS && built[n]) { cactusBag++; removeTile(n); computeFlow(); SFX.erase(); recount(); return true; }
     const refund = Math.round(COST[grid[n]] * 0.75 * Math.min(priceK(), 1.5));
     scrap += refund; floater(tc(i), tc(j), '+' + refund); removeTile(n); computeFlow(); SFX.erase(); recount(); return true;
   }
+  if (type === DRAWB && grid[n] === MOAT) { removeTile(n); recount(); }
+  clearDecorAt(n);
   grid[n] = type; built[n] = 1; if (!loadingSave) { scrap -= costOf(type); if (type === WALL) cnt.walls++; } version++;
   let obj;
   if (type === WALL) {
@@ -1575,6 +1588,8 @@ function place(i, j, type) {
     obj = makeWire(); obj.rotation.y = (lastPaintDir || 0);
   } else if (type === SENTRY) {
     obj = makeSentry(); sentries.push(n);
+  } else if (type === CACTUS) {
+    obj = makeCactus(); wallMax[n] = wallHp[n] = 140; if (!loadingSave) cactusBag--;
   } else if (type === SHIELD) {
     obj = makeShield(); shields.push(n);
   } else {
@@ -1642,6 +1657,10 @@ function tryPlant() { if (netRole !== 'guest' && !plantTile()) { SFX.bonk(); ret
 
 /* ---------- crystal levels ---------- */
 const BR_ICON = {
+  Spin: '<path d="M12 3 A9 9 0 1 1 3.5 9" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M1 6 L4 10.5 L7.5 6.5 Z" fill="#fff"/><path d="M9 13 L12 9 L15 13 L12 17 Z" fill="#fff"/>',
+  Respawn: '<path d="M12 4 A8 8 0 1 0 20 12" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M16 2 L21 6 L15 8 Z" fill="#fff"/><path d="M12 8 V12 L15 14" stroke="#fff" stroke-width="2.2" stroke-linecap="round" fill="none"/>',
+  Bell: '<path d="M12 3 Q18 4 18 12 V16 L20 18 H4 L6 16 V12 Q6 4 12 3 Z" fill="#fff"/><circle cx="12" cy="20.5" r="1.8" fill="#fff"/>',
+  Lure: '<path d="M12 2 C15 6 17 8 17 12 A5 5 0 0 1 7 12 C7 9 9 8 10 5 C11 8 12 8 12 2 Z" fill="#fff"/><rect x="8" y="17" width="8" height="5" rx="1" fill="#fff"/>',
   Truck: '<rect x="2" y="9" width="12" height="7" rx="1" fill="#fff"/><path d="M14 11 H19 L22 14 V16 H14 Z" fill="#fff"/><circle cx="6" cy="17.5" r="2.4" fill="#fff" stroke="#6b7a44" stroke-width="1.2"/><circle cx="18" cy="17.5" r="2.4" fill="#fff" stroke="#6b7a44" stroke-width="1.2"/><circle cx="5" cy="9" r="1.6" fill="#fff"/><circle cx="9.5" cy="9" r="1.6" fill="#fff"/>',
   Bike: '<circle cx="6" cy="16" r="3.4" fill="none" stroke="#fff" stroke-width="2"/><circle cx="18" cy="16" r="3.4" fill="none" stroke="#fff" stroke-width="2"/><path d="M6 16 L10 9 H15 L18 16 M9 9 H12" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>',
   Armory: '<rect x="3" y="9" width="15" height="5" rx="1" fill="#fff"/><rect x="17" y="10" width="5" height="2.5" fill="#fff"/><path d="M6 14 L5 20 H9 L10 14 Z" fill="#fff"/>',
@@ -1665,7 +1684,7 @@ const BR_ICON = {
   Farm: '<path d="M12 21 V8" stroke="#fff" stroke-width="2"/><ellipse cx="12" cy="6" rx="2.2" ry="3.4" fill="#fff"/><ellipse cx="8.5" cy="11" rx="1.8" ry="3" fill="#fff" transform="rotate(-30 8.5 11)"/><ellipse cx="15.5" cy="11" rx="1.8" ry="3" fill="#fff" transform="rotate(30 15.5 11)"/><ellipse cx="8.5" cy="16" rx="1.8" ry="3" fill="#fff" transform="rotate(-30 8.5 16)"/><ellipse cx="15.5" cy="16" rx="1.8" ry="3" fill="#fff" transform="rotate(30 15.5 16)"/>',
   Garage: '<rect x="3" y="11" width="18" height="6" rx="2" fill="#fff"/><circle cx="7" cy="18" r="2.6" fill="#fff"/><circle cx="17" cy="18" r="2.6" fill="#fff"/><rect x="9" y="6" width="6" height="5" rx="1" fill="#fff"/><path d="M15 8 H21" stroke="#fff" stroke-width="2"/>'
 };
-const BR_COL = { Truck: '#6b7a44', Bike: '#5a8fc0', Armory: '#c0563a', Hangar: '#7a9a5a', Launch: '#b06bd0', Speed: '#43c6ea', Workshop: '#a8703f', Traps: '#8a6fd0', Offence: '#d8643c', Walls: '#b8ab95', Pits: '#8a5a3a', Mobility: '#5fa04a', Base: '#d4a017', Crystal: '#2fa9d6', Garage: '#e07b39', Farm: '#c9a227', Roll: '#e0507a', Moat: '#3f86b8', Gadgets: '#9aa1a8', Kennel: '#b5763a', Powers: '#c86bff', Scarecrow: '#e9c35a' };
+const BR_COL = { Spin: '#e0507a', Respawn: '#5fd4a0', Bell: '#e9b949', Lure: '#b0412e', Truck: '#6b7a44', Bike: '#5a8fc0', Armory: '#c0563a', Hangar: '#7a9a5a', Launch: '#b06bd0', Speed: '#43c6ea', Workshop: '#a8703f', Traps: '#8a6fd0', Offence: '#d8643c', Walls: '#b8ab95', Pits: '#8a5a3a', Mobility: '#5fa04a', Base: '#d4a017', Crystal: '#2fa9d6', Garage: '#e07b39', Farm: '#c9a227', Roll: '#e0507a', Moat: '#3f86b8', Gadgets: '#9aa1a8', Kennel: '#b5763a', Powers: '#c86bff', Scarecrow: '#e9c35a' };
 let selNode = null;
 const UPG = [
   { name: 'Offence', nodes: [
@@ -1713,9 +1732,9 @@ const UPG = [
     ['scare2', 'Sturdy scarecrow', 'Much tougher, and one more allowed', () => { scareLv = Math.max(scareLv, 2); for (const [n, sc] of scares) { sc.max = 700; sc.hp = Math.max(sc.hp, 700 * sc.hp / 320); } }],
     ['scare3', 'Boom scarecrow', 'Explodes when it breaks', () => { scareLv = 3; }]] },
   { name: 'Moat', nodes: [
-    ['moat', 'Moat', 'Dig water that slows zombies to a crawl and blocks you', () => { moatOn = true; }],
-    ['drawb', 'Drawbridge', 'Bridges that lower when you walk up', () => { drawOn = true; }],
-    ['deepmoat', 'Deep moat', 'Zombies slowly drown in your moat', () => { deepMoat = true; for (const [n] of grid.entries()) { if (grid[n] === MOAT || grid[n] === DRAWB) { const o = tileObj[n]; if (o && o.userData.water) o.userData.water.material = MOATM.deep; } } }]] },
+    ['moat', 'Moat', 'Dig up to 15 tiles of water that slows zombies to a crawl and blocks you', () => { moatOn = true; }],
+    ['drawb', 'Drawbridge', 'Up to 2 bridges, placed on your moat, that lower when you walk up', () => { drawOn = true; }],
+    ['deepmoat', 'Deep moat', 'Zombies slowly drown in your moat. Up to 25 moat tiles and 3 bridges', () => { deepMoat = true; for (const [n] of grid.entries()) { if (grid[n] === MOAT || grid[n] === DRAWB) { const o = tileObj[n]; if (o && o.userData.water) o.userData.water.material = MOATM.deep; } } }]] },
   { name: 'Gadgets', nodes: [
     ['bear', 'Bear traps', 'Snap shut and hold a zombie in place', () => { bearOn = true; }],
     ['spinner', 'Blade spinner', 'A spinning blade that shreds anything close', () => { spinnerMax = 2; }],
@@ -1731,24 +1750,38 @@ const UPG = [
     ['copter2', 'Long copter', 'Copter lasts 7s with a wider blade', () => { copterLong = true; }],
     ['frenzy', 'Roll frenzy', 'An 8-kill combo lets you roll non-stop for 3s through the thickest zombies', () => { frenzyOn = true; }],
     ['chain', 'Chain combos', 'Kills during spins, copters and frenzies count toward your next combo', () => { chainOn = true; }],
-    ['lure', 'Hoarde lure', 'Stand on one side of your base and ring it: every zombie comes from there for 90s', () => { lureOn = true; }]] },
+    ]},
+  { name: 'Spin', nodes: [
+    ['spin', 'Spin attack', 'Every 5-kill combo charges a spin attack: tap Spin and draw a path through the horde', () => { spinOn = true; }],
+    ['spin2', 'Long spin', 'Spin paths reach much further', () => { spinLong = true; }]] },
+  { name: 'Respawn', nodes: [
+    ['resp1', 'Quick respawn', 'Get back up after 25s instead of 30s', () => { respawnT = 25; }],
+    ['resp2', 'Rapid respawn', 'Get back up after just 15s', () => { respawnT = 15; }]] },
+  { name: 'Bell', nodes: [
+    ['bell1', 'Long peace', 'The peace bell lasts 2:20', () => { peaceLen = 140; }],
+    ['bell2', 'Longer peace', 'The peace bell lasts 2:40', () => { peaceLen = 160; }],
+    ['bell3', 'Long lull', 'The peace bell lasts 3:00', () => { peaceLen = 180; }]] },
+  { name: 'Lure', nodes: [
+    ['lure', 'Lure Hoard', 'Light a beacon on the workshop: for 90s every zombie comes from the side you stand on. Costs 300 scrap, 5 minute cooldown', () => { lureOn = true; }]] },
   { name: 'Roll', nodes: [
-    ['shoulder', 'Shoulder roll', 'Rolling into zombies knocks them back', () => { rollHit = Math.max(rollHit, 1); }],
+    ['shoulder', 'Shoulder roll', 'Rolling into zombies knocks them back, and you can roll across moats', () => { rollHit = Math.max(rollHit, 1); }],
     ['bowl', 'Bowling roll', 'Rolls send zombies flying and hurt them', () => { rollHit = Math.max(rollHit, 2); }],
     ['wreck', 'Wrecking roll', 'Rolls flatten zombies outright', () => { rollHit = 3; }]] },
   { name: 'Kennel', nodes: [
     ['kennel', 'Kennel', 'Build a kennel to tame dogs, cats and wolves', () => { kennelOn = true; }],
-    ['leash', 'Zombie leash', 'Leash cut-down zombies as guard pets', () => { leashOn = true; }],
+    ['leash', 'Zombie leash', 'Leash up to 3 cut-down zombies. They guard your base, or follow you around as bodyguards', () => { leashOn = true; }],
     ['pack', 'Big kennel', 'Keep up to 6 pets', () => { petCap = 6; }],
     ['vet', 'Vet kennel', 'Hurt dogs, cats and wolves limp back to the kennel and recover in 30s instead of dying', () => { vetOn = true; }],
     ['mech', 'Mech wolf', 'Wolves get a mech suit: twice as fast, with a laser that cuts through lines of zombies', () => { mechWolf = true; for (const pt of pets) if (pt.kind === 'wolf' && pt.tamed) mechify(pt); }]] },
   { name: 'Farm', nodes: [
     ['silo', 'Silo', 'Build a silo and plant wheat farms around it', () => { siloOn = true; }],
+    ['landscape', 'Landscaping', 'Swing at cactus to collect it and plant it around your base: it pricks zombies and they slowly wear it down. Rocks near your base can be rolled 3 tiles with your scythe before they break', () => { landOn = true; updateBuildButtons(); }],
     ['bakery', 'Bakery', 'The silo bakes 2 wheat into bread', () => { bakeOn = true; }],
     ['fertile', 'Rich soil', 'Wheat grows twice as fast', () => { farmSpeed = 2; }],
     ['heir', 'Buried relics', 'Harvesting wheat can dig up rare scythes: Farmer\'s scythe (0.3%) or the Ancient scythe (extremely rare)', () => { heirOn = true; }]] },
   { name: 'Workshop', nodes: [
-    ['gtower', 'Guard tower', 'Turn the workshop roof into a guard tower. Within 5 minutes Sniper Sam arrives and defends from the top', () => { towerOn = true; refreshShed(); if (!sam && samT < 0) samT = loadingSave ? 4 : 60 + Math.random() * 200; }],
+    ['gtower', 'Guard tower', 'Turn the workshop roof into a lookout tower', () => { towerOn = true; refreshShed(); }],
+    ['sam', 'Sniper Sam', 'Sniper Sam moves into the tower within a couple of minutes and picks off zombies from the top', () => { samOn = true; if (!sam && samT < 0) samT = loadingSave ? 4 : 40 + Math.random() * 80; }],
     ['tesla', 'Tesla coil', 'Every 25 kills by Sniper Sam, the tower pulses electricity and freezes everything nearby. The 5 lights show his progress', () => { teslaOn = true; refreshShed(); }]] },
   { name: 'Bike', nodes: [
     ['uzi', 'Bike Uzi', 'Hold Swing while riding the bike to fire an Uzi where you aim. Roll to get off', () => { uziOn = true; }],
@@ -1769,14 +1802,14 @@ const UPG = [
     ['heligun', 'Attack helicopter', 'Fix the helicopter at an airstrip. It flies over everything and fires a chain gun', () => { heliGun = true; }],
     ['sky', 'Sky guardian', 'Leave the helicopter near base and it circles overhead shooting, out of reach of zombies', () => { skyOn = true; }]] }
 ];
-const NEED_RIDE = { tgun: 'truck', tram: 'truck', uzi: 'bike', uziauto: 'bike', gunner: 'buggy', drone: 'buggy', heligun: 'heli', sky: 'heli' }, RIDE_TXT = { truck: 'Drive the army truck first', bike: 'Ride a bike first', buggy: 'Drive a buggy first', heli: 'Fix the helicopter first' };
+const NEED_RIDE = { gpistol: 'bow', tgun: 'truck', tram: 'truck', uzi: 'bike', uziauto: 'bike', gunner: 'buggy', drone: 'buggy', heligun: 'heli', sky: 'heli' }, RIDE_TXT = { bow: 'Find or buy a bow first', truck: 'Drive the army truck first', bike: 'Ride a bike first', buggy: 'Drive a buggy first', heli: 'Fix the helicopter first' };
 let rode = new Set();
 function nodeState(bi, ni) {
   const id = UPG[bi].nodes[ni][0]; if (owned.has(id)) return 'own';
-  if (NEED_RIDE[id] && !rode.has(NEED_RIDE[id]) && (ni === 0 || owned.has(UPG[bi].nodes[ni - 1][0]))) return 'ride';
+  if (NEED_RIDE[id] && !(NEED_RIDE[id] === 'bow' ? bowOwned : rode.has(NEED_RIDE[id])) && (ni === 0 || owned.has(UPG[bi].nodes[ni - 1][0]))) return 'ride';
   return ni === 0 || owned.has(UPG[bi].nodes[ni - 1][0]) ? 'can' : 'lock';
 }
-const TAB_OF = { Truck: 2, Bike: 2, Armory: 2, Hangar: 2, Launch: 1, Speed: 0, Workshop: 2, Powers: 0, Scarecrow: 1, Offence: 2, Roll: 0, Mobility: 0, Walls: 1, Pits: 1, Traps: 1, Moat: 1, Gadgets: 1, Base: 1, Crystal: 1, Farm: 2, Garage: 2, Kennel: 2 };
+const TAB_OF = { Spin: 0, Respawn: 0, Bell: 0, Lure: 2, Truck: 2, Bike: 2, Armory: 2, Hangar: 2, Launch: 1, Speed: 0, Workshop: 2, Powers: 0, Scarecrow: 1, Offence: 2, Roll: 0, Mobility: 0, Walls: 1, Pits: 1, Traps: 1, Moat: 1, Gadgets: 1, Base: 1, Crystal: 1, Farm: 2, Garage: 2, Kennel: 2 };
 let treeTab = 0;
 const tabBranches = t => UPG.map((b, q) => q).filter(q => TAB_OF[UPG[q].name] === t);
 function nodePos(bi, ni) {
@@ -1811,6 +1844,7 @@ const CORE_IC = { crys: '<svg viewBox="0 0 24 24"><path d="M12 1 L19 9 L12 23 L5
 function setCore(key, html, base) { if (coreKey === key) return; coreKey = key; const ci = $('coreIn'); if (!ci) return; ci.className = 'cin'; const ov = !html ? '' : html === CORE_IC.up ? '<i class="cov up">' + CORE_IC.up + '</i>' : '<i class="cov txt">' + html + '</i>'; ci.innerHTML = '<span class="cbase' + (html && html !== CORE_IC.up ? ' dim' : '') + '">' + base + '</span>' + ov; }
 function updateTreeLive(force) {
   if (!treeOpen) return; const c = $('treeCore'); if (!c) return; if (force) coreKey = '';
+  { const k = menuKey(); let rem = 0; if (k) { const S = SL[k]; if (S.cd <= 0 && !menuDone(k === 'w' ? 2 : 0)) rem = Math.ceil(Math.max(0, needS(S.lv, k) - S.ch) * feedK()); } else if (levelCd <= 0) rem = Math.ceil(Math.max(0, need(level) - charge) * feedK()); const low = rem > 0 && scrap < rem, txt = low ? 'Low scrap · ' + (rem - scrap) + ' more needed' : ''; const el = $('lowScrap'); if (el.textContent !== txt) el.textContent = txt; if (el.hidden === low) el.hidden = !low; }
   const ts = $('tScrap'); if (ts && ts.textContent !== String(scrap)) ts.textContent = String(scrap);
   { const lvTxt = 'Lv ' + (menuKey() ? SL[menuKey()].lv : level); const tl = $('tLv'); if (tl && tl.textContent !== lvTxt) tl.textContent = lvTxt; }
   if (menuKey()) { const S = SL[menuKey()], pc = Math.min(100, S.ch / needS(S.lv, menuKey()) * 100).toFixed(1); if (c.style.getPropertyValue('--p') !== pc) c.style.setProperty('--p', pc); c.classList.toggle('feeding', feeding && S.cd <= 0); c.classList.toggle('cool', S.cd > 0); const done = menuDone(treeMode === 'shed' ? 2 : 0); setCore(done ? 'done' + treeMode : S.cd > 0 ? 'cd' + treeMode + Math.ceil(S.cd) : (S.pts > 0 ? 'up' : 'n') + treeMode, done ? '★' : S.cd > 0 ? fmtT(Math.ceil(S.cd)) : S.pts > 0 ? CORE_IC.up : '', treeMode === 'shed' ? CORE_IC.shed : CORE_IC.comp); { const qb = $('bQuake'); if (qb && treeMode === 'comp') { qb.disabled = quakeCd > 0 || scrap < 1000; const qt = quakeCd > 0 ? 'Earthquake ' + fmtT(Math.ceil(quakeCd)) : 'Earthquake'; if ($('quakeTxt').textContent !== qt) $('quakeTxt').textContent = qt; } } return; }
@@ -1837,7 +1871,7 @@ function renderDetail() {
   if (!selNode) { d.innerHTML = ''; return; }
   if (!selNode) { d.innerHTML = '<p>' + (points ? 'Tap a glowing circle to choose your upgrade.' : 'Feed the crystal to reach the next level and earn an upgrade.') + '</p>'; return; }
   const [bi, ni] = selNode, br = UPG[bi], nd = br.nodes[ni], st = nodeState(bi, ni);
-  const btn = st === 'own' ? '<button class="btn dark" disabled>Owned</button>' : st !== 'can' ? '<button class="btn dark" disabled>Locked</button>' : menuPts() > 0 ? '<button class="btn" id="bBuy">Unlock</button>' : '<button class="btn dark" disabled>Unlock</button>';
+  const btn = st === 'own' ? '<button class="btn dark" disabled>Owned</button>' : st === 'ride' ? '<button class="btn dark" disabled>' + RIDE_TXT[NEED_RIDE[nd[0]]] + '</button>' : st !== 'can' ? '<button class="btn dark" disabled>Locked</button>' : menuPts() > 0 ? '<button class="btn" id="bBuy">Unlock</button>' : '<button class="btn dark" disabled>Unlock</button>';
   d.innerHTML = '<div class="br"></div><b></b><p></p>' + btn;
   d.querySelector('.br').textContent = br.name; d.querySelector('b').textContent = nd[1]; d.querySelector('p').textContent = nd[2];
   const bb = $('bBuy'); if (bb) bb.addEventListener('click', () => buyNode(bi, ni));
@@ -1846,7 +1880,7 @@ function buyNode(bi, ni) {
   if (nodeState(bi, ni) !== 'can') return;
   const tab = TAB_OF[UPG[bi].name], key = tab === 2 ? 'w' : tab === 0 ? 'c' : null;
   if (key ? SL[key].pts <= 0 : points <= 0) { SFX.bonk(); return; }
-  const nd = UPG[bi].nodes[ni]; if (key) SL[key].pts--; else points--; owned.add(nd[0]); nd[3](); SFX.buy(); updateBuildButtons();
+  const nd = UPG[bi].nodes[ni]; if (key) SL[key].pts--; else points--; owned.add(nd[0]); nd[3](); SFX.buy(); updateBuildButtons(); if (owned.size % 10 === 0 && netRole !== 'guest') setTimeout(swapBiome, 1500);
   selNode = ni + 1 < UPG[bi].nodes.length ? [bi, ni + 1] : null; renderTree();
 }
 function openTree(open, mode) {
@@ -1854,12 +1888,12 @@ function openTree(open, mode) {
   clearInput();
   if (open) { if (buildMode) setBuild(0); treeMode = mode || 'crystal'; treeTab = treeMode === 'shed' ? 2 : treeMode === 'comp' ? 0 : 1; frozenDrawn = false; pauseFx(true);
     const sh = treeMode === 'shed'; $('tree').classList.toggle('shed', sh); $('tTabs').style.display = 'none'; document.querySelector('#tree .thead h2').textContent = sh ? 'Workshop' : treeMode === 'comp' ? 'Scrap compiler' : 'Crystal';
-    for (const id of ['bPeace', 'bFeedHold', 'bShedUp']) $(id).style.display = 'none'; $('bLure').style.display = treeMode === 'comp' ? '' : 'none'; $('bQuake').style.display = treeMode === 'comp' ? '' : 'none';
+    for (const id of ['bPeace', 'bFeedHold', 'bShedUp']) $(id).style.display = 'none'; $('bLure').style.display = treeMode === 'shed' ? '' : 'none'; $('bQuake').style.display = treeMode === 'comp' ? '' : 'none';
     document.querySelector('#tTabs button[data-t="2"]').style.display = 'none';
     selNode = null; renderTree(); SFX.click(); updatePeaceUI(); } }
-let shedPay = 0; const SL = { w: { lv: 1, ch: 0, pts: 1, cd: 0 }, c: { lv: 1, ch: 0, pts: 1, cd: 0 } };
+let shedPay = 0; const SL = { w: { lv: 1, ch: 0, pts: 0, cd: 0 }, c: { lv: 1, ch: 0, pts: 0, cd: 0 } };
 function menuDone(tab) { return UPG.every(b => TAB_OF[b.name] !== tab || b.nodes.every(nd => owned.has(nd[0]))); }
-const needS = (L, k) => Math.round((30 + 25 * (L - 1) + 2 * (L - 1) ** 2) * (k === 'c' ? 1.4 : 1) * 1.25);
+const needS = (L, k) => Math.round((30 + 25 * (L - 1) + 2 * (L - 1) ** 2) * (k === 'c' ? 2.4 : 1.2) * 1.25);
 const menuKey = () => treeMode === 'shed' ? 'w' : treeMode === 'comp' ? 'c' : null;
 const menuPts = () => { const k = menuKey(); return k ? SL[k].pts : points; };
 function feedStruct(k) {
@@ -1871,12 +1905,12 @@ function feedShed() { if (shedLv >= 5 || scrap <= 0) { SFX.bonk(); feeding = fal
 const shedCost = ni => Math.round((70 + 70 * ni) * priceK()), SHED_UP = [0, 0, 150, 350, 650, 1000], shedUpCost = () => Math.round(SHED_UP[shedLv + 1] * priceK());
 function upgradeShed() { if (shedLv >= 5) return; const c = shedUpCost(); if (scrap < c) { SFX.bonk(); return; } scrap -= c; shedLv++; refreshShed(); SFX.repair(); setTimeout(() => SFX.levelUp(), 150); if (shedAt >= 0) burst(tc(shedAt % N), 1 + shedLv * 0.5, tc((shedAt / N) | 0), mat.wood, 20, 3); renderTree(); }
 let naT = 0;
-function updateNA(dt) { if ((naT -= dt) > 0) return; naT = 0.25; const live = phase === 'live';
+function updateNA(dt) { if ((naT -= dt) > 0) return; naT = 0.25; const live = phase === 'live'; if (landOn) { setText('cactN', String(cactusBag)); setText('cactN2', String(cactusBag)); }
   for (const [bb, pp, t] of PRICE_BTNS) { const na = live && (scrap < costOf(t) || (counts[t] || 0) >= limitFor(t)); for (const id of [bb, pp]) { const el = $(id); if (el && el.classList.contains('na') !== na) el.classList.toggle('na', na); } }
   const tb = $('bTree'); if (tb) { const na = live && !(nearCrystal() || onPad()) && netRole !== 'guest'; if (tb.classList.contains('na') !== na) tb.classList.toggle('na', na); } }
 function updateBuildButtons() {
   setTimeout(() => { const any = [...$('tray').children].some(b => !b.hidden); $('bBuild').hidden = !any; if (!any) $('tray').hidden = true; const anyO = [...$('onceBar').children].some(b => !b.hidden); $('onceBar').hidden = !anyO || phase !== 'live'; }, 0);
-  for (const [a, b, ok] of [['bWall', 'pWall', wallsOn], ['bPit', 'pPit', pitsOn], ['bErase', 'pErase', wallsOn || pitsOn || wireOn], ['bWire', 'pWire', wireOn], ['bTar', 'pTar', tarOn], ['bJump', 'pJump', jumpOn], ['bGrav', 'pGrav', gravOn], ['bTotem', 'pTotem', totemMax > 0], ['bSilo', 'pSilo', siloOn && siloAt < 0], ['bFarm', 'pFarm', siloOn], ['bMoat', 'pMoat', moatOn], ['bDrawb', 'pDrawb', drawOn], ['bBear', 'pBear', bearOn], ['bSpinner', 'pSpinner', spinnerMax > 0], ['bKennel', 'pKennel', kennelOn && kennelAt < 0], ['bScare', 'pScare', scareLv > 0], ['bRoad', 'pRoad', roadOn], ['bShed', 'pShed', crystal.planted && shedAt < 0], ['bComp', 'pComp', crystal.planted && compAt < 0], ['bBell', 'pBell', crystal.planted && bellAt < 0], ['bTitan', 'pTitan', titanOn], ['bBarrel', 'pBarrel', barrelUnlocked], ['bSentry', 'pSentry', sentryMax > 0], ['bShield', 'pShield', shieldMax > 0]]) { $(a).hidden = !ok; $(b).hidden = !ok; }
+  for (const [a, b, ok] of [['bWall', 'pWall', wallsOn], ['bPit', 'pPit', pitsOn], ['bErase', 'pErase', wallsOn || pitsOn || wireOn], ['bWire', 'pWire', wireOn], ['bTar', 'pTar', tarOn], ['bJump', 'pJump', jumpOn], ['bGrav', 'pGrav', gravOn], ['bTotem', 'pTotem', totemMax > 0], ['bSilo', 'pSilo', siloOn && siloAt < 0], ['bFarm', 'pFarm', siloOn], ['bMoat', 'pMoat', moatOn], ['bDrawb', 'pDrawb', drawOn], ['bBear', 'pBear', bearOn], ['bSpinner', 'pSpinner', spinnerMax > 0], ['bKennel', 'pKennel', kennelOn && kennelAt < 0], ['bScare', 'pScare', scareLv > 0], ['bRoad', 'pRoad', roadOn], ['bShed', 'pShed', crystal.planted && shedAt < 0], ['bComp', 'pComp', crystal.planted && compAt < 0], ['bBell', 'pBell', crystal.planted && bellAt < 0], ['bTitan', 'pTitan', titanOn], ['bCact', 'pCact', landOn], ['bBarrel', 'pBarrel', barrelUnlocked], ['bSentry', 'pSentry', sentryMax > 0], ['bShield', 'pShield', shieldMax > 0]]) { $(a).hidden = !ok; $(b).hidden = !ok; }
 }
 function setTowerLook() {
   const h = climbTime >= 6 ? 1.9 : climbTime >= 3 ? 1.1 : 0.24;
@@ -1887,7 +1921,7 @@ function levelUp() {
   charge -= need(level); level++;
   crystal.max += 60; crystal.hp = Math.min(crystal.max, crystal.hp + crystal.max * 0.35);
   points++; levelCd = levelCdFor(level); recount();
-  if (level % 10 === 0) swapBiome();
+
   banner('Level ' + level, '+1 upgrade point · more walls and pits allowed', 3.2);
   if (level === 3) setTimeout(() => tip('Runners now join the horde.'), 3400);
   if (level === 5) setTimeout(() => tip('Brutes now smash walls.'), 3400);
@@ -1947,7 +1981,7 @@ function startHoarde() {
   if (hoardes % 3 === 0 || (hoardes === 1 && level >= 8)) setTimeout(spawnBoss, 8000);
 }
 let hoardeStall = 0, stallMarkT = 0, goldenT = 0, priceT = 0, lastPK = -1;
-const PRICE_BTNS = [['bWall', 'pWall', WALL], ['bPit', 'pPit', PIT], ['bBarrel', 'pBarrel', BARREL], ['bSentry', 'pSentry', SENTRY], ['bShield', 'pShield', SHIELD], ['bWire', 'pWire', WIRE], ['bTar', 'pTar', TAR], ['bJump', 'pJump', JUMPPAD], ['bGrav', 'pGrav', GRAVPAD], ['bTotem', 'pTotem', TOTEM], ['bSilo', 'pSilo', SILO], ['bFarm', 'pFarm', FARM], ['bBear', 'pBear', BEAR], ['bSpinner', 'pSpinner', SPINNER], ['bMoat', 'pMoat', MOAT], ['bDrawb', 'pDrawb', DRAWB], ['bKennel', 'pKennel', KENNEL], ['bScare', 'pScare', SCARE], ['bRoad', 'pRoad', ROAD], ['bShed', 'pShed', SHED], ['bTitan', 'pTitan', TITAN], ['bComp', 'pComp', COMPILER], ['bBell', 'pBell', BELL]];
+const PRICE_BTNS = [['bWall', 'pWall', WALL], ['bPit', 'pPit', PIT], ['bBarrel', 'pBarrel', BARREL], ['bSentry', 'pSentry', SENTRY], ['bShield', 'pShield', SHIELD], ['bWire', 'pWire', WIRE], ['bTar', 'pTar', TAR], ['bJump', 'pJump', JUMPPAD], ['bGrav', 'pGrav', GRAVPAD], ['bTotem', 'pTotem', TOTEM], ['bSilo', 'pSilo', SILO], ['bFarm', 'pFarm', FARM], ['bBear', 'pBear', BEAR], ['bSpinner', 'pSpinner', SPINNER], ['bMoat', 'pMoat', MOAT], ['bDrawb', 'pDrawb', DRAWB], ['bKennel', 'pKennel', KENNEL], ['bScare', 'pScare', SCARE], ['bRoad', 'pRoad', ROAD], ['bCact', 'pCact', CACTUS], ['bShed', 'pShed', SHED], ['bTitan', 'pTitan', TITAN], ['bComp', 'pComp', COMPILER], ['bBell', 'pBell', BELL]];
 let spawnBias = null, zidSeq = 0, globs = [], boss = null;
 const BOOM_M = M(0xd8643c), BOOM_M2 = new THREE.MeshBasicMaterial({ color: 0xffb03a }), SPIT_M = M(0x9fc23a), SPIT_M2 = new THREE.MeshBasicMaterial({ color: 0xd6ff4a }), GLOB_G = new THREE.SphereGeometry(0.16, 8, 6), BOSS_M = M(0x6e2a3a);
 function bruteLine(x0, z0, x1, z1) {
@@ -2010,7 +2044,9 @@ function spawnBoss() {
   const crown = new THREE.Group(); for (let q = 0; q < 5; q++) { const c = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.16, 4), mat.gold); c.position.set(Math.cos(q * 1.256) * 0.14, 0.5, Math.sin(q * 1.256) * 0.14); crown.add(c); } z.roll.add(crown);
   boss = z; banner('BOSS', '', 2.4); SFX.hoarde(); shake = 0.6; tempMark(z.x, z.z, '#ff3d3d', 'skull', 12);
 }
+let hoardeWait = false;
 function bossDown(z) {
+  if (hoardeWait) setTimeout(() => { if (hoardeOn) endHoarde(); }, 600);
   boss = null; bossPeace = true; const v = Math.round((150 + 20 * level) * lootK()); scrap += v; charge += need(level) * 0.4; shake = 0.7; SFX.hoardeWin(); burst(z.x, 1, z.z, mat.gold, 30, 6);
   showLoot('scrap', '+' + v + ' scrap', 'Boss down!', '#ffd166'); dropGear(z.x, z.z, 2.5); setTimeout(() => dropGear(z.x, z.z, 2.5), 350);
 }
@@ -2071,6 +2107,7 @@ function damageWall(n, d) {
   }
 }
 function endHoarde() {
+  if (boss && !boss.dead && hoardeOn) { hoardeWait = true; banner('BOSS', 'Defeat the boss to end the Hoarde', 2.4); return; } hoardeWait = false;
   spawnOff = spawnOff.map(o => Math.max(-16, Math.min(16, o + Math.round((Math.random() - 0.5) * 18)))); flowDirty = true;
   hoardeOn = false; const bonus = Math.round((25 + 8 * level) * lootK()); scrap += bonus; charge += need(level) * 0.3;
   crystal.hp = Math.min(crystal.max, crystal.hp + crystal.max * 0.25);
@@ -2088,7 +2125,7 @@ function killZombie(z, how) {
   if (melee) { if ((P.spin || copterT > 0 || frenzyT > 0) && !chainOn && comboT > 0) comboT = comboWin(); else { combo = comboT > 0 ? combo + 1 : 1; comboT = comboWin(); comboPop(); } }
   const mult = melee ? 1 + Math.min(2 + scy * 2, combo - 1) * (0.15 + 0.05 * scy) : 1, gain = Math.max(1, Math.round((goldenT > 0 ? 3 : 1) * 3 * lootK() * Math.min(6, mult * (bloodMoon ? 2 : 1) * (Math.hypot(z.x - tc(crystal.i), z.z - tc(crystal.j)) < 22 ? mazeF : 1))));
   scrap += gain; floater(z.x, z.z, '+' + gain);
-  if (how === 'pit') burst(z.x, 0.1, z.z, mat.zomb, 5, 1.5); else { burst(z.x, 0.5, z.z, mat.zomb, 9); SFX.kill(); if (Math.random() < 0.08) dropBone(z.x, z.z); }
+  if (how === 'pit') burst(z.x, 0.1, z.z, mat.zomb, 5, 1.5); else { burst(z.x, 0.5, z.z, mat.zomb, 9); SFX.kill(); if (Math.random() < (hoardeOn ? 0.012 : 0.03)) dropBone(z.x, z.z); }
   SFX.coin();
 }
 function hitZombie(z, dmg, nx, nz, how) {
@@ -2145,6 +2182,11 @@ function doSwing() {
   if (!inBonus) for (let i = pi - 2; i <= pi + 2; i++) for (let j = pj - 2; j <= pj + 2; j++) {
     if (!inb(i, j)) continue; const n = idx(i, j), g = grid[n];
     if (g === FARM) { const f = farms.get(n), dxf = tc(i) - P.x, dzf = tc(j) - P.z; if (f && f.g >= 1 && Math.hypot(dxf, dzf) < 1.8) { f.g = 0; wheat++; if (heirOn) { const rr = Math.random(); if (rr < 0.0004) spawnGearItem('scythe', 2, tc(i), tc(j)); else if (rr < 0.0034) spawnGearItem('scythe', 1, tc(i), tc(j)); if (rr < 0.0115) { SFX.levelUp(); showLoot('chest', rr < 0.0015 ? 'Ancient scythe' : 'Farmer\'s scythe', 'Dug up! Pick it up', rr < 0.0015 ? '#c86bff' : '#d9a24a'); } } floater(tc(i), tc(j), '+1 wheat', '#f2d16a'); burst(tc(i), 0.3, tc(j), FARMM.ripe, 5, 2); SFX.coin(); gotItem(); setFarmLook(n); tip('Wheat! Trade it, or bake it into bread.', 'wheat'); } continue; }
+    if (landOn && (g === CACTUS || g === ROCK)) { const dx0 = tc(i) - P.x, dz0 = tc(j) - P.z, d0 = Math.hypot(dx0, dz0); if (!(d0 < 1.7 && (d0 < 0.9 || (dx0 * P.ax + dz0 * P.az) / d0 > 0.3))) continue;
+      if (g === CACTUS) { if (cactusBag >= 24) { floater(tc(i), tc(j), 'Cactus bag full', '#ffd166'); continue; } removeTile(n); computeFlow(); cactusBag++; floater(tc(i), tc(j), '+1 cactus', '#8fd35a'); burst(tc(i), 0.5, tc(j), mat.cactus, 6, 2); SFX.coin(); continue; }
+      if (Math.hypot(i - crystal.i, j - crystal.j) < 24) { const o = tileObj[n]; if (!o) continue; o.userData.rolls = o.userData.rolls || 0; const fx = Math.abs(P.ax) > Math.abs(P.az) ? Math.sign(P.ax) : 0, fz = fx ? 0 : Math.sign(P.az) || 1, a = i + fx, b = j + fz, m = inb(a, b) ? idx(a, b) : -1;
+        if (o.userData.rolls < 3 && m >= 0 && grid[m] === EMPTY && !spawnMask[m] && !zombies.some(zb => !zb.dead && tt(zb.x) === a && tt(zb.z) === b)) { grid[m] = ROCK; grid[n] = EMPTY; tileObj[m] = o; tileObj[n] = null; o.userData.rolls++; const sx = o.position.x, sz = o.position.z, t0 = time; const roll = () => { const k = Math.min(1, (time - t0) / 0.25); o.position.x = sx + fx * k; o.position.z = sz + fz * k; o.rotation.x += fz * 0.3; o.rotation.z -= fx * 0.3; if (k < 1) requestAnimationFrame(roll); }; roll(); clearDecorAt(m); version++; flowDirty = true; SFX.crumble(); burst(tc(i), 0.2, tc(j), mat.rock, 4, 2); }
+        else { removeTile(n); computeFlow(); scrap += 3; floater(tc(i), tc(j), '+3', '#ffe066'); burst(tc(i), 0.4, tc(j), mat.rock, 10, 3); SFX.crumble(); } continue; } }
     if (g !== PIT && g !== SCRAPPILE && g !== BARREL && g !== WALL && g !== HAY && g !== TREE && g !== CACTUS && g !== CHEST && g !== CRATE && g !== ORE) continue;
     const dx = tc(i) - P.x, dz = tc(j) - P.z, d = Math.hypot(dx, dz);
     if (!(d < 1.7 && (d < 0.9 || (dx * P.ax + dz * P.az) / d > 0.3))) continue;
@@ -2213,7 +2255,7 @@ let deathBag = null, nights = 0, bloodMoon = false;
 function playerDown() {
   if (inBonus && BL && BL.safari) { endBonus(false); P.hp = 60; P.hurtT = 2; P.dead = false; shake = 0.6; SFX.over(); return; }
   if (inBonus) endBonus(false);
-  P.dead = true; P.deadT = 30; P.hp = 0; P.onWall = false; P.spin = null; if (P.mount) { const v = P.mount; v.x = P.x; v.z = P.z; if (v.kind === 'truck') unboardTruck(v); if (v.kind === 'wolf') { v.ridden = false; v.mode = 'guard'; } P.mount = null; P.y = 0; } cancelFishing(); setBuild(0); if (spinAim) setSpinAim(false);
+  P.dead = true; P.deadT = respawnT; P.hp = 0; P.onWall = false; P.spin = null; if (P.mount) { const v = P.mount; v.x = P.x; v.z = P.z; if (v.kind === 'truck') unboardTruck(v); if (v.kind === 'wolf') { v.ridden = false; v.mode = 'guard'; } P.mount = null; P.y = 0; } cancelFishing(); setBuild(0); if (spinAim) setSpinAim(false);
   burst(P.x, 0.6, P.z, mat.player, 16, 4); SFX.over(); shake = 0.7; player.g.visible = false;
   if (gear.head || gear.chest || gear.legs || gear.feet) {
     if (deathBag) scene.remove(deathBag.mesh);
@@ -2224,7 +2266,7 @@ function playerDown() {
 }
 function updateDeath(dt) {
   if (P.dead) {
-    P.deadT -= dt; const el = $('respawn'); el.hidden = false; el.style.setProperty('--p', ((30 - P.deadT) / 30 * 100).toFixed(1)); $('respawnN').textContent = Math.max(0, Math.ceil(P.deadT));
+    P.deadT -= dt; const el = $('respawn'); el.hidden = false; el.style.setProperty('--p', ((respawnT - P.deadT) / respawnT * 100).toFixed(1)); $('respawnN').textContent = Math.max(0, Math.ceil(P.deadT));
     if (P.deadT <= 0) { P.dead = false; P.hp = 100; P.x = tc(crystal.i); P.z = tc(crystal.j) + 1.5; P.vx = P.vz = 0; player.g.visible = true; el.hidden = true; burst(P.x, 0.8, P.z, mat.gem, 14, 3); SFX.levelUp(); }
   } else $('respawn').hidden = true;
   if (deathBag) {
@@ -2233,13 +2275,14 @@ function updateDeath(dt) {
     else if (deathBag.t <= 0) { scene.remove(deathBag.mesh); deathBag = null; }
   }
 }
+const HINT_ONE0 = 0;
 const HINT_ONE = { [SHED]: 'Workshop', [COMPILER]: 'Compiler', [BELL]: 'Bell', [KENNEL]: 'Kennel', [SILO]: 'Silo' };
-const BUILD_NAME = { [WALL]: 'Wall', [PIT]: 'Pit', [ERASE]: 'Erase', [BARREL]: 'Barrel', [SENTRY]: 'Sentry', [SHIELD]: 'Shield', [WIRE]: 'Wire', [TAR]: 'Tar', [JUMPPAD]: 'Jump', [GRAVPAD]: 'Grav pad', [TOTEM]: 'Totem', [SILO]: 'Silo', [FARM]: 'Farm', [BEAR]: 'Trap', [SPINNER]: 'Blade', [MOAT]: 'Moat', [DRAWB]: 'Bridge', [KENNEL]: 'Kennel', [SCARE]: 'Scare', [ROAD]: 'Road', [SHED]: 'Shed', [TITAN]: 'Titanium', [COMPILER]: 'Compiler', [BELL]: 'Bell' };
+const BUILD_NAME = { [CACTUS]: 'Cactus', [WALL]: 'Wall', [PIT]: 'Pit', [ERASE]: 'Erase', [BARREL]: 'Barrel', [SENTRY]: 'Sentry', [SHIELD]: 'Shield', [WIRE]: 'Wire', [TAR]: 'Tar', [JUMPPAD]: 'Jump', [GRAVPAD]: 'Grav pad', [TOTEM]: 'Totem', [SILO]: 'Silo', [FARM]: 'Farm', [BEAR]: 'Trap', [SPINNER]: 'Blade', [MOAT]: 'Moat', [DRAWB]: 'Bridge', [KENNEL]: 'Kennel', [SCARE]: 'Scare', [ROAD]: 'Road', [SHED]: 'Shed', [TITAN]: 'Titanium', [COMPILER]: 'Compiler', [BELL]: 'Bell' };
 function setBuild(type) {
   buildMode = buildMode === type ? 0 : type; lastPaint = -1;
   if (buildMode && !crystal.planted) { tip('Plant the crystal first.'); buildMode = 0; }
   if ((buildMode === WALL && !wallsOn) || (buildMode === PIT && !pitsOn) || (buildMode === WIRE && !wireOn) || (buildMode === TAR && !tarOn) || (buildMode === JUMPPAD && !jumpOn) || (buildMode === GRAVPAD && !gravOn) || (buildMode === TOTEM && !totemMax) || ((buildMode === SILO || buildMode === FARM) && !siloOn) || (buildMode === MOAT && !moatOn) || (buildMode === DRAWB && !drawOn) || (buildMode === BEAR && !bearOn) || (buildMode === SPINNER && !spinnerMax) || (buildMode === KENNEL && !kennelOn) || (buildMode === SCARE && !scareLv) || (buildMode === ROAD && !roadOn) || (buildMode === TITAN && !titanOn) || (buildMode === BARREL && !barrelUnlocked) || (buildMode === SENTRY && !sentryMax) || (buildMode === SHIELD && !shieldMax)) buildMode = 0;
-  for (const [a, b, t] of [['bWall', 'pWall', WALL], ['bPit', 'pPit', PIT], ['bErase', 'pErase', ERASE], ['bBarrel', 'pBarrel', BARREL], ['bSentry', 'pSentry', SENTRY], ['bShield', 'pShield', SHIELD], ['bWire', 'pWire', WIRE], ['bTar', 'pTar', TAR], ['bJump', 'pJump', JUMPPAD], ['bGrav', 'pGrav', GRAVPAD], ['bTotem', 'pTotem', TOTEM], ['bSilo', 'pSilo', SILO], ['bFarm', 'pFarm', FARM], ['bMoat', 'pMoat', MOAT], ['bDrawb', 'pDrawb', DRAWB], ['bBear', 'pBear', BEAR], ['bSpinner', 'pSpinner', SPINNER], ['bKennel', 'pKennel', KENNEL], ['bScare', 'pScare', SCARE], ['bRoad', 'pRoad', ROAD], ['bShed', 'pShed', SHED], ['bTitan', 'pTitan', TITAN], ['bComp', 'pComp', COMPILER], ['bBell', 'pBell', BELL]]) {
+  for (const [a, b, t] of [['bWall', 'pWall', WALL], ['bPit', 'pPit', PIT], ['bErase', 'pErase', ERASE], ['bBarrel', 'pBarrel', BARREL], ['bSentry', 'pSentry', SENTRY], ['bShield', 'pShield', SHIELD], ['bWire', 'pWire', WIRE], ['bTar', 'pTar', TAR], ['bJump', 'pJump', JUMPPAD], ['bGrav', 'pGrav', GRAVPAD], ['bTotem', 'pTotem', TOTEM], ['bSilo', 'pSilo', SILO], ['bFarm', 'pFarm', FARM], ['bMoat', 'pMoat', MOAT], ['bDrawb', 'pDrawb', DRAWB], ['bBear', 'pBear', BEAR], ['bSpinner', 'pSpinner', SPINNER], ['bKennel', 'pKennel', KENNEL], ['bScare', 'pScare', SCARE], ['bRoad', 'pRoad', ROAD], ['bCact', 'pCact', CACTUS], ['bShed', 'pShed', SHED], ['bTitan', 'pTitan', TITAN], ['bComp', 'pComp', COMPILER], ['bBell', 'pBell', BELL]]) {
     $(a).classList.toggle('on', buildMode === t); $(b).classList.toggle('on', buildMode === t);
   }
   $('hud').classList.toggle('building', !!buildMode); if (buildMode) $('tray').hidden = true; $('bBuild').classList.toggle('on', !!buildMode); $('buildLbl').textContent = buildMode ? BUILD_NAME[buildMode] || 'Build' : 'Build';
@@ -2351,9 +2394,9 @@ hold('bSentry', () => { SFX.click(); setBuild(SENTRY); }); hold('pSentry', () =>
 hold('bShield', () => { SFX.click(); setBuild(SHIELD); }); hold('bWire', () => { SFX.click(); setBuild(WIRE); }); hold('pWire', () => setBuild(WIRE));
 hold('bTar', () => { SFX.click(); setBuild(TAR); }); hold('pTar', () => setBuild(TAR));
 hold('bJump', () => { SFX.click(); setBuild(JUMPPAD); }); hold('pJump', () => setBuild(JUMPPAD)); hold('bGrav', () => { SFX.click(); setBuild(GRAVPAD); }); hold('pGrav', () => setBuild(GRAVPAD));
-hold('bTotem', () => { SFX.click(); setBuild(TOTEM); }); hold('bSilo', () => { SFX.click(); setBuild(SILO); }); for (const [bt, pt, ty] of [['bMoat', 'pMoat', MOAT], ['bDrawb', 'pDrawb', DRAWB], ['bBear', 'pBear', BEAR], ['bSpinner', 'pSpinner', SPINNER], ['bKennel', 'pKennel', KENNEL], ['bScare', 'pScare', SCARE], ['bRoad', 'pRoad', ROAD], ['bShed', 'pShed', SHED], ['bTitan', 'pTitan', TITAN], ['bComp', 'pComp', COMPILER], ['bBell', 'pBell', BELL]]) { hold(bt, () => { SFX.click(); setBuild(ty); }); hold(pt, () => setBuild(ty)); } hold('pSilo', () => setBuild(SILO)); hold('bFarm', () => { SFX.click(); setBuild(FARM); }); hold('pFarm', () => setBuild(FARM)); hold('pTotem', () => setBuild(TOTEM)); hold('pShield', () => setBuild(SHIELD));
+hold('bTotem', () => { SFX.click(); setBuild(TOTEM); }); hold('bSilo', () => { SFX.click(); setBuild(SILO); }); for (const [bt, pt, ty] of [['bCact', 'pCact', CACTUS], ['bMoat', 'pMoat', MOAT], ['bDrawb', 'pDrawb', DRAWB], ['bBear', 'pBear', BEAR], ['bSpinner', 'pSpinner', SPINNER], ['bKennel', 'pKennel', KENNEL], ['bScare', 'pScare', SCARE], ['bRoad', 'pRoad', ROAD], ['bCact', 'pCact', CACTUS], ['bShed', 'pShed', SHED], ['bTitan', 'pTitan', TITAN], ['bComp', 'pComp', COMPILER], ['bBell', 'pBell', BELL]]) { hold(bt, () => { SFX.click(); setBuild(ty); }); hold(pt, () => setBuild(ty)); } hold('pSilo', () => setBuild(SILO)); hold('bFarm', () => { SFX.click(); setBuild(FARM); }); hold('pFarm', () => setBuild(FARM)); hold('pTotem', () => setBuild(TOTEM)); hold('pShield', () => setBuild(SHIELD));
 hold('bBag', () => toggleBag());
-for (const id of ['bWall', 'bPit', 'bErase', 'bWire', 'bTar', 'bBarrel', 'bJump', 'bGrav', 'bTotem', 'bSentry', 'bShield', 'bMoat', 'bDrawb', 'bBear', 'bSpinner', 'bScare', 'bRoad', 'bTitan', 'bFarm']) if ($(id)) $('tray').appendChild($(id));
+for (const id of ['bWall', 'bPit', 'bErase', 'bWire', 'bTar', 'bBarrel', 'bJump', 'bGrav', 'bTotem', 'bSentry', 'bShield', 'bMoat', 'bDrawb', 'bBear', 'bSpinner', 'bScare', 'bRoad', 'bTitan', 'bFarm', 'bCact']) if ($(id)) $('tray').appendChild($(id));
 for (const id of ['bShed', 'bComp', 'bBell', 'bKennel', 'bSilo']) if ($(id)) { $(id).classList.add('once'); $('onceBar').appendChild($(id)); }
 for (const id of ['pShed', 'pComp', 'pBell', 'pKennel', 'pSilo']) if ($(id)) $(id).classList.add('once');
 hold('bBuild', () => { SFX.click(); if (buildMode) { setBuild(0); $('tray').hidden = false; } else $('tray').hidden = !$('tray').hidden; });
@@ -2366,7 +2409,7 @@ $('bFeedHold').addEventListener('pointerdown', e => { e.preventDefault(); feedin
 $('treeBody').addEventListener('pointerdown', e => { if (e.target.closest('#treeCore')) { e.preventDefault(); feeding = true; feedT = 0; feedFrom = 'core'; audioInit(); } });
 $('bFeedHold').addEventListener('pointerdown', () => { feedFrom = 'btn'; });
 addEventListener('pointerup', () => { if (treeOpen) feeding = false; }); addEventListener('pointercancel', () => { if (treeOpen) feeding = false; });
-$('bPeace').addEventListener('click', startPeace); $('bShedUp').addEventListener('click', upgradeShed); $('bQuake').addEventListener('click', () => { if (quakeCd > 0 || scrap < 1000) { SFX.bonk(); return; } scrap -= 1000; quakeCd = 600; openTree(false); shake = 1.2; SFX.boom(); setTimeout(() => SFX.boom(), 300); banner('Earthquake'); swapBiome(); }); $('mazePill').style.pointerEvents = 'auto'; $('mazePill').style.cursor = 'pointer'; $('mazePill').addEventListener('click', () => { pathShowT = pathShowT > 0 ? 0 : 8; SFX.click(); $('mazeTip').hidden = pathShowT <= 0; clearTimeout(window.__mzT); window.__mzT = setTimeout(() => { $('mazeTip').hidden = true; }, 4000); }); $('bLure').addEventListener('click', startLure);
+$('bPeace').addEventListener('click', startPeace); $('bShedUp').addEventListener('click', upgradeShed); $('bQuake').addEventListener('click', () => { if (quakeCd > 0 || scrap < 750) { SFX.bonk(); return; } scrap -= 750; quakeCd = 600; openTree(false); shake = 1.2; SFX.boom(); setTimeout(() => SFX.boom(), 300); banner('Earthquake'); swapBiome(); }); $('mazePill').style.pointerEvents = 'auto'; $('mazePill').style.cursor = 'pointer'; $('mazePill').addEventListener('click', () => { pathShowT = pathShowT > 0 ? 0 : 8; SFX.click(); $('mazeTip').hidden = pathShowT <= 0; clearTimeout(window.__mzT); window.__mzT = setTimeout(() => { $('mazeTip').hidden = true; }, 4000); }); $('bLure').addEventListener('click', startLure);
 $('tTabs').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; treeTab = +b.dataset.t; selNode = null; SFX.click(); renderTree(); });
 $('treeBody').addEventListener('click', e => { const b = e.target.closest('.nd[data-b]'); if (b) { selNode = [+b.dataset.b, +b.dataset.n]; SFX.click(); renderTree(); } });
 addEventListener('pointerdown', audioInit, true); addEventListener('keydown', audioInit, true);
@@ -2377,6 +2420,10 @@ drawMusic();
 $('bMusic').addEventListener('pointerdown', e => { e.stopPropagation(); e.preventDefault(); SET.music = SET.music === false; applySet(); audioInit(); if (musBus) musBus.gain.setTargetAtTime(SET.music ? 1 : 0, ac.currentTime, 0.05); drawMusic(); });
 audioInit();
 $('bPlay').addEventListener('click', () => newGame());
+let quitPause = false;
+$('bHome').addEventListener('pointerdown', e => { e.stopPropagation(); e.preventDefault(); if (phase === 'menu' || attract) return; quitPause = true; $('quitBox').hidden = false; clearInput(); SFX.click(); });
+$('bQuitNo').addEventListener('click', () => { quitPause = false; $('quitBox').hidden = true; });
+$('bQuitYes').addEventListener('click', () => { if (netRole !== 'guest' && phase === 'live') saveGame(); try { if (net.peer) leaveRoom(); } catch (e) { } location.reload(); });
 $('bContinue').addEventListener('click', () => { if (!readSave()) { refreshMenu(); return; } audioInit(); loadGame(); });
 setTimeout(refreshMenu, 0);
 $('bAgain').addEventListener('click', () => { if (netRole === 'guest') { $('over').hidden = true; phase = 'menu'; leaveRoom(); return; } if (hostHasGuests() || (netRole === 'host' && net.guests.size)) { newGame(); autoPlant(); return; } newGame(); });
@@ -2405,7 +2452,7 @@ function newGame(opts) {
   clearTimeout(overTimer); $('over').hidden = true; raidPendT = -1;
   if (netRole === 'guest' && !(opts && opts.seed !== undefined)) leaveRoom();
   clearBoard(); resetExtras();
-  const fromSave = opts && opts.seed !== undefined; worldSeed = fromSave ? opts.seed : (Math.random() * 1e9) | 0; swaps = []; genVer = fromSave ? opts.gv || 1 : 3;
+  const fromSave = opts && opts.seed !== undefined; worldSeed = fromSave ? opts.seed : (Math.random() * 1e9) | 0; swaps = []; genVer = fromSave ? opts.gv || 1 : 4;
   const sides = seeded(worldSeed + 7, () => [0, 1, 2, 3].sort(() => Math.random() - 0.5).slice(0, 2));
   spawnTiles = [];
   for (const s of sides) {
@@ -2692,7 +2739,7 @@ function guestStep(dt) {
   for (const v of vehicles) if (v.gx !== undefined) { v.x += (v.gx - v.x) * k; v.z += (v.gz2 - v.z) * k; v.mesh.position.set(v.x, 0, v.z); v.mesh.rotation.y = v.face; }
   for (const nt of nests) { const u = nt.mesh.userData; u.hpFg.scale.x = Math.max(0.01, nt.hp / nt.max); u.hpFg.position.x = -0.8 * (1 - u.hpFg.scale.x); }
   if (mystery) { mystery.q.position.y = 1.35 + Math.sin(time * 3) * 0.1; mystery.q.rotation.y += dt * 2; }
-  if (P.dead) { P.deadT -= dt; const el = $('respawn'); el.hidden = false; el.style.setProperty('--p', ((30 - P.deadT) / 30 * 100).toFixed(1)); $('respawnN').textContent = Math.max(0, Math.ceil(P.deadT)); } else $('respawn').hidden = true;
+  if (P.dead) { P.deadT -= dt; const el = $('respawn'); el.hidden = false; el.style.setProperty('--p', ((respawnT - P.deadT) / respawnT * 100).toFixed(1)); $('respawnN').textContent = Math.max(0, Math.ceil(P.deadT)); } else $('respawn').hidden = true;
   updateTraps(dt, true); updateComboHud(); updateSpinFx(dt); updateFx(dt); updateFog(); updateLight(dt); updateCamera(dt); updateHud(dt); updatePuffs(dt);
   if ((net.posT -= dt) <= 0 && net.conn && net.conn.open) { net.posT = 0.05; netSend({ t: 'p', x: +P.x.toFixed(2), z: +P.z.toFixed(2), f: +P.face.toFixed(2), ax: +P.ax.toFixed(2), az: +P.az.toFixed(2), w: P.onWall ? 1 : 0, r: P.dodgeT > 0 ? 1 : 0, s: P.spin ? 1 : 0, y: +(P.y || 0).toFixed(2) }); }
 }
@@ -2727,7 +2774,7 @@ function buildSave() {
     const fogA = new Uint8Array(N * N); for (let q = 0; q < N * N; q++) fogA[q] = fogData[q * 4 + 3];
     const mv = P.mount;
     const d = {
-      v: SAVE_VER, gv: genVer, seed: worldSeed, swaps, level, charge, points, owned: [...owned], scrap, hp: P.hp, px: P.x, pz: P.z,
+      v: SAVE_VER, gv: genVer, cb: cactusBag, seed: worldSeed, swaps, level, charge, points, owned: [...owned], scrap, hp: P.hp, px: P.x, pz: P.z,
       cr: [crystal.i, crystal.j, crystal.hp, crystal.max], bm: bloodMoon ? 1 : 0, tt: tradeTax, pd: [...padDir], rd: [...rode], qc: Math.round(quakeCd), sh: [...structHp].map(([n, st]) => [n, Math.round(st.hp), st.off ? 1 : 0]), sr: scyRare, sl: shedLv, sw: [SL.w.lv, +SL.w.ch.toFixed(1), SL.w.pts, Math.round(SL.w.cd)], sc: [SL.c.lv, +SL.c.ch.toFixed(1), SL.c.pts, Math.round(SL.c.cd)], pb: bellAt, cp: compAt, jp: jetOn ? 1 : 0, cc: cosmic ? [+cosmic.x.toFixed(2), +cosmic.z.toFixed(2), Math.round(cosmic.t)] : null, peaceCd: Math.round(peaceCd + (peaceT > 0 ? 300 : 0)), scares: [...scares].map(([n, sc]) => [n, Math.round(sc.hp)]), levelCd, hoardeT: hoardeOn ? 4 : hoardeT, hoardes: hoardeOn ? hoardes - 1 : hoardes, liveTime, kills, nights, gear, fish, bones, wheat, bread, repu, spinCharges, gunAmmo, bowOwned, fuel: Math.round(fuel), molotovs, nestNextLv, best: [bestLevel, bestTime],
       diff, fills, walls, fog: b64(fogA), visited: [...visited], farms: [...farms].map(([n, f]) => [n, +f.g.toFixed(2)]),
       veh: vehicles.map(v => [v.kind, +v.x.toFixed(2), +v.z.toFixed(2), +(v.face || 0).toFixed(2), v.fixed ? 1 : 0]),
@@ -2781,7 +2828,7 @@ function loadGame(given) {
       else place(i, j, t);
     }
     loadingSave = false;
-    d.owned = d.owned.map(id => id === 'pistol' ? 'longscy' : id); if (d.owned.includes('tesla') && !d.owned.includes('gtower')) d.owned.push('gtower');
+    d.owned = d.owned.map(id => id === 'pistol' ? 'longscy' : id); if (d.owned.includes('tesla') && !d.owned.includes('gtower')) d.owned.push('gtower'); if (d.owned.includes('gtower') && !d.owned.includes('sam')) d.owned.push('sam'); if (!d.owned.includes('spin')) d.owned.push('spin');
     for (const id of d.owned) for (const br of UPG) for (const nd of br.nodes) if (nd[0] === id && !owned.has(id)) { owned.add(id); nd[3](); }
     for (let q = 0; q < d.fills.length; q += 2) { fill[d.fills[q]] = d.fills[q + 1]; if (grid[d.fills[q]] === PIT) setPitVisual(d.fills[q]); }
     for (let q = 0; q < d.walls.length; q += 2) wallHp[d.walls[q]] = d.walls[q + 1];
@@ -2792,7 +2839,7 @@ function loadGame(given) {
     level = d.level; charge = d.charge; points = d.points; scrap = d.scrap; P.hp = d.hp; P.x = d.px; P.z = d.pz; crystal.max = d.cr[3] || crystal.max; crystal.hp = Math.min(d.cr[2], crystal.max); bloodMoon = !!d.bm;
     levelCd = d.levelCd; hoardeT = d.hoardeT; hoardes = d.hoardes; liveTime = d.liveTime; kills = d.kills || 0; nights = d.nights || 0; peaceCd = d.peaceCd || 0; tradeTax = d.tt || 0; padDir = new Map(d.pd || []); rode = new Set(d.rd || []); quakeCd = d.qc || 0; setTimeout(refreshPads, 0); structHp = new Map((d.sh || []).map(([n, hp, off]) => [n, { hp, max: 220, off: !!off }])); scyRare = d.sr || 0; setBladeLook(); if (d.pb !== undefined && d.pb >= 0 && grid[d.pb] === BELL) bellAt = d.pb; if (d.cp !== undefined && d.cp >= 0 && grid[d.cp] === COMPILER) compAt = d.cp; if (d.sw) { [SL.w.lv, SL.w.ch, SL.w.pts, SL.w.cd] = d.sw; SL.w.cd = SL.w.cd || 0; } else { SL.w.lv = d.sl || 1; SL.w.ch = 0; SL.w.pts = 0; } if (d.sc) { [SL.c.lv, SL.c.ch, SL.c.pts, SL.c.cd] = d.sc; SL.c.cd = SL.c.cd || 0; } else { SL.c.lv = 1; SL.c.ch = 0; SL.c.pts = 1; } shedLv = Math.min(6, SL.w.lv); jetOn = !!d.jp; setJetLook(); refreshShed(); if (d.cc) placeCosmic(d.cc[0], d.cc[1], Math.max(0.01, d.cc[2])); for (const [n, hp] of d.scares || []) { const sc = scares.get(n); if (sc) sc.hp = hp; } gear = d.gear || { head: 0, chest: 0, legs: 0, feet: 0 }; applyGear(); fish = d.fish || 0; bones = d.bones || 0; wheat = d.wheat || 0; bread = d.bread || 0; repu = d.repu || 0; spinCharges = d.spinCharges || 0; gunAmmo = d.gunAmmo || 0; bowOwned = !!d.bowOwned; fuel = d.fuel || 0; molotovs = d.molotovs || 0; nestNextLv = d.nestNextLv || 3;
     if (d.mys) { const { g, q } = makePresent(); g.position.set(d.mys[0], 0, d.mys[1]); scene.add(g); mystery = { x: d.mys[0], z: d.mys[1], mesh: g, q, sp: 0 }; } mysteryT = d.mysteryT || 0;
-    if (d.wg) placeWendyGrave(d.wg[0], d.wg[1]);
+    if (d.wg) placeWendyGrave(d.wg[0], d.wg[1]); cactusBag = d.cb || 0;
     if (radio && d.radio) { radio.fixed = !!d.radio[0]; radio.cd = d.radio[1]; }
     graceT = 8; stage = 600 - hoardeT < 240 ? 'day' : 600 - hoardeT < 420 ? 'dusk' : 'night';
     if (netRole === 'host' && !given) setTimeout(sendWorld, 300);
@@ -2871,7 +2918,7 @@ function makeGateMesh(side) {
 }
 function openGateway(type) {
   if (gateway || inBonus || netRole || !crystal.planted || phase !== 'live') return;
-  type = type || ['dungeon', 'city', 'canyon', 'swamp', 'ice', 'grave', 'train', 'stealth'][(Math.random() * 8) | 0];
+  type = type || ['dungeon', 'city', 'canyon', 'swamp', 'ice', 'grave', 'train', 'stealth', 'safari'][(Math.random() * 9) | 0];
   for (let t = 0; t < 80; t++) {
     const side = (Math.random() * 4) | 0, k = 30 + ((Math.random() * 156) | 0), [i, j] = side === 0 ? [k, 4] : side === 1 ? [N - 5, k] : side === 2 ? [k, N - 5] : [4, k], n = idx(i, j);
     if (grid[n] !== EMPTY) continue;
@@ -3045,18 +3092,17 @@ function endBonus(won) {
   pets = pets.filter(pt => !pt.dead); npcs = npcs.filter(n => !n.dead);
   for (const d of gearDrops) if (d.x > tc(BX) - 6) { d.x = cx + 1 + Math.random(); d.z = cz - 1.5 - Math.random(); d.mesh.position.set(d.x, 0, d.z); }
   P.x = BL.ret.x; P.z = BL.ret.z + (BL.ret.z < 0 ? 1.5 : -1.5); P.vx = P.vz = 0; camTarget.set(P.x, 0, P.z); BL = null; setHidden('bonusPill', true);
-  if (saf) { let best = 0; try { best = +localStorage.getItem('hoarder_safari') || 0; } catch (e) {} const nb = sT > best; if (nb) try { localStorage.setItem('hoarder_safari', Math.floor(sT)); } catch (e) {}
-    const rw = Math.round(sT * 0.6); scrap += rw; banner('Safari'); SFX.levelUp(); setTimeout(() => showLoot('gem', 'Survived ' + fmtT(Math.floor(sT)), (nb ? 'New best! ' : 'Best ' + fmtT(Math.floor(best)) + ' · ') + '+' + rw + ' scrap', '#8fa8ff'), 300); }
+  if (saf) { if (won) { banner('Escaped'); SFX.levelUp(); } }
   else if (won) { banner('Escaped'); SFX.levelUp(); scrap += 25 + level * 5; }
   if (freedBruce && !npcs.some(n => n.heroType === 'bruce' && !n.dead)) { const b = addHero('bruce', cx + 2, cz + 2); b.hired = true; b.mode = 'guard'; setTimeout(() => showLoot('heart', 'Biker Bruce joined', 'He patrols your base', '#ffd166'), 600); }
 }
 function bonusStep(dt) {
-  if (BL.safari) { BL.t += dt; setText('bonusN', fmtT(Math.floor(BL.t))); if (safLight) safLight.position.set(P.x, 2.4, P.z);
+  if (BL.safari) { BL.t += dt; const sk = kills - BL.kills0; setText('bonusN', BL.done ? 'Exit open!' : Math.min(100, sk) + ' / 100'); BL.exitRing.visible = !!BL.done; if (!BL.done && sk >= 100) { BL.done = true; const rw = Math.round((120 + 12 * level) * lootK()); scrap += rw; banner('Safari'); SFX.levelUp(); showLoot('gem', '100 zombies down!', '+' + rw + ' scrap · the exit is open', '#8fa8ff'); BL.exitRing.position.set(P.x + 2, 0.1, P.z); } if (safLight) safLight.position.set(P.x, 2.4, P.z);
     if ((BL.sp -= dt) <= 0 && zombies.length < Math.min(110, 34 + BL.t / 5)) { BL.sp = Math.max(0.3, 1.3 - BL.t / 200); for (let tr = 0, got = 0, want = zombies.length < 18 ? 3 : 1; tr < 12 && got < want; tr++) { const an = Math.random() * 6.283, d = 15 + Math.random() * 8, x = P.x + Math.cos(an) * d, z = P.z + Math.sin(an) * d; if (bTile(x, z) !== 0) continue;
       const r = Math.random(), kind = BL.t > 150 && r < 0.06 ? 'brute' : r < 0.2 + Math.min(0.35, BL.t / 600) ? 'runner' : 'walker'; spawnZombie(kind, x, z); const z2 = zombies[zombies.length - 1]; if (z2) { z2.hoarde = false; z2.speed *= 1 + Math.min(0.5, BL.t / 500); } got++; } } }
   else { BL.t -= dt; setText('bonusN', fmtT(Math.max(0, Math.ceil(BL.t)))); if (BL.t <= 0) { endBonus(false); return; } }
   if (!P.dead) updatePlayer(dt);
-  if (Math.hypot(P.x - BL.exitRing.position.x, P.z - BL.exitRing.position.z) < 0.9) { endBonus(true); return; }
+  if ((!BL.safari || BL.done) && Math.hypot(P.x - BL.exitRing.position.x, P.z - BL.exitRing.position.z) < 0.9) { endBonus(true); return; }
   BL.exitRing.rotation.z += dt * 2;
   for (let a = 0; a < zombies.length; a++) {
     const z = zombies[a]; if (z.dead) continue; z.hitCd -= dt; if (z.flash > 0 && (z.flash -= dt) <= 0) z.body.material = z.baseMat;
@@ -3397,6 +3443,12 @@ function updateAllies(dt) {
   }
   if (allies.some(a => a.dead)) allies = allies.filter(a => !a.dead);
 }
+let stragT = 8;
+function updateStragglers(dt) {
+  if (phase !== 'live' || inBonus || P.dead || (P.mount && P.mount.fly)) return; const pi = tt(P.x), pj = tt(P.z); if (!inb(pi, pj) || regionAt(pi, pj) === 4) return; if ((stragT -= dt) > 0) return; stragT = (stage === 'night' ? 4 : 7) + Math.random() * 4;
+  let near = 0; for (const zb of zombies) if (!zb.dead && Math.hypot(zb.x - P.x, zb.z - P.z) < 20) near++; if (near >= 7 || zombies.length >= 140) return;
+  const c = 1 + (Math.random() < 0.35 ? 1 : 0); for (let q = 0; q < c; q++) for (let t = 0; t < 20; t++) { const a = Math.random() * 6.28, d = 13 + Math.random() * 6, x = P.x + Math.cos(a) * d, z = P.z + Math.sin(a) * d; if (blocked(x, z, 0.3, false) || !inb(tt(x), tt(z)) || grid[idx(tt(x), tt(z))] === WATER) continue; const zz = spawnZombie(level >= 3 && Math.random() < 0.3 ? 'runner' : 'walker', x, z); if (zz) { zz.hoarde = false; zz.hunt = 14; } break; }
+}
 function updateGraveyard(dt) {
   if (phase !== 'live' || inBonus || P.dead || P.mount && P.mount.fly) return;
   const pi = tt(P.x), pj = tt(P.z); if (!inb(pi, pj) || regionBiome[regionAt(pi, pj)] !== 'graveyard') return;
@@ -3408,6 +3460,7 @@ function updateGraveyard(dt) {
 const HULK_M = new THREE.MeshLambertMaterial({ color: 0x5fa04a, flatShading: true }), TRIDENT_GEO = new THREE.CylinderGeometry(0.03, 0.03, 0.9, 5).rotateX(Math.PI / 2);
 
 /* ---------- v0.31 traps + moat ---------- */
+let samOn = false, samLast = 0, respawnT = 30, peaceLen = 120, spinOn = false, spinLong = false, landOn = false, cactusBag = 0;
 let jumpMax = 4, gravOn = false, padDir = new Map(), quakeCd = 0, uziAuto = false, uziT = 0, structHp = new Map(), compAt = -1, bellAt = -1, padT = null, shedLv = 1, samKills = 0, jetOn = false, jetCharge = 0, jetT = 0, ship = null, spdTier = 0, dashOn = false, scyRare = 0, heirOn = false, teslaOn = false, teslaCd = 0, killTimes = [], towerOn = false, samT = -1, sam = null, vetOn = false, titanOn = false, shedAt = -1, treeMode = 'crystal', uziOn = false, heliGun = false, skyOn = false, mechWolf = false, beams = [];
 let bears = new Map(), spinners = [], drawbs = [], reaperBlades = false, roadOn = false, roadVer = 0, roadSeen = -1, roadNext = new Int32Array(N * N).fill(-1);
 const MOATM = { water: new THREE.MeshLambertMaterial({ color: 0x3f86b8, transparent: true, opacity: 0.92 }), deep: new THREE.MeshLambertMaterial({ color: 0x24557e, transparent: true, opacity: 0.95 }), steel: M(0x9aa1a8), plank: M(0xa77a4a), rope: M(0xd8c79a), blade: M(0xd9dee3) };
@@ -3466,15 +3519,17 @@ function titanShapeOk(i, j) {
 function refreshShed() { if (shedAt < 0 || grid[shedAt] !== SHED) return; const o = tileObj[shedAt]; if (o) scene.remove(o); addObj(shedAt, makeShed()); }
 function updateShedPowers(dt) {
   if (shedAt < 0 || grid[shedAt] !== SHED || phase !== 'live') return; const sx = tc(shedAt % N), sz = tc((shedAt / N) | 0), o = tileObj[shedAt];
-  if (o && o.userData.pips) { const lit = Math.min(5, Math.floor(samKills / 5)); o.userData.pips.forEach((pp, q) => pp.material.color.setHex(q < lit ? (teslaOn ? 0x8fe3ff : 0xffd166) : 0x3a3440)); }
+  if (o && o.userData.pips) { const lit = Math.min(5, Math.floor(samKills / 5)); o.userData.pips.forEach((pp, q) => pp.material.color.setHex(teslaCd > 0 ? 0x23303a : q < lit ? 0x8fe3ff : 0x3a3440)); }
   if (teslaOn && sam) { const k = Math.min(1, samKills / 25);
     if (o && o.userData.coil) { o.userData.coil.material.emissive.setRGB(0.1 + k * 0.6, 0.3 + k * 0.6, 0.6 + k * 0.4); o.userData.coil.scale.setScalar(1 + k * 0.4 + (k >= 1 ? Math.sin(time * 20) * 0.1 : 0)); }
-    if (samKills >= 25) { samKills = 0; let c = 0; for (const z of zombies) { if (z.dead) continue; const d = Math.hypot(z.x - sx, z.z - sz); if (d < 9) { z.frozen = 4; c++; burst(z.x, 0.8, z.z, mat.ice, 3, 2); } }
+    if (samKills >= 25) { samKills = 0; teslaCd = 30; let c = 0; for (const z of zombies) { if (z.dead) continue; const d = Math.hypot(z.x - sx, z.z - sz); if (d < 9) { z.frozen = 4; c++; burst(z.x, 0.8, z.z, mat.ice, 3, 2); } }
       const ring = new THREE.Mesh(new THREE.RingGeometry(0.3, 0.6, 40).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: 0x8fe3ff, transparent: true, opacity: 0.9, depthWrite: false })); ring.position.set(sx, 0.3, sz); scene.add(ring); beams.push({ m: ring, t: 0.6, grow: 15 });
       tone({ type: SQ, f: 90, f2: 1800, t: 0.4, v: 0.08 }); shake = 0.4; banner('Tesla pulse'); } }
-  if (towerOn && !sam && samT > 0 && (samT -= dt) <= 0) spawnSam(sx, sz);
+  if (towerOn && samOn && !sam && samT > 0 && (samT -= dt) <= 0) spawnSam(sx, sz);
+  if (teslaCd > 0) teslaCd -= dt; if (samKills > 0 && time - samLast > 60) samKills = 0;
+  if (o) { if (!o.userData.beacon) { const bc = new THREE.Group(), fl = new THREE.Mesh(new THREE.OctahedronGeometry(0.28, 0), B(0xff8a2a)); fl.scale.y = 1.8; const fl2 = new THREE.Mesh(new THREE.OctahedronGeometry(0.17, 0), B(0xffe066)); fl2.scale.y = 1.6; bc.add(fl, fl2); bc.position.y = shedTop() + (towerOn ? 1.55 : 0.75); o.add(bc); o.userData.beacon = bc; } const bc = o.userData.beacon; bc.visible = lureT > 0; if (lureT > 0) { bc.scale.set(1, 1 + Math.sin(time * 18) * 0.15, 1); bc.rotation.y += dt * 4; if (Math.random() < dt * 6) puff(sx, shedTop() + 2, sz, 0x6a5a50); } }
   if (sam) { sam.g.position.set(sx, shedTop() + 0.12, sz); sam.cd -= dt; let tg = null, bd = 17; for (const z of zombies) { if (z.dead) continue; const d = Math.hypot(z.x - sx, z.z - sz); if (d < bd && d > 1) { bd = d; tg = z; } }
-    if (tg) { sam.g.rotation.y = Math.atan2(tg.x - sx, tg.z - sz); if (sam.cd <= 0) { sam.cd = 1.5; hitZombie(tg, 170 + level * 12, (tg.x - sx) / bd, (tg.z - sz) / bd, 'boom'); if (tg.dead) samKills++; const L = bd, m = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.035, L), new THREE.MeshBasicMaterial({ color: 0xfff2a0, transparent: true, opacity: 0.9 })); m.position.set((sx + tg.x) / 2, 1.2, (sz + tg.z) / 2); m.rotation.y = Math.atan2(tg.x - sx, tg.z - sz); m.rotation.x = Math.atan2(0.8, L) * 0; scene.add(m); beams.push({ m, t: 0.12 }); if (gate('sam', 200)) SFX.gun(); } } }
+    if (tg) { sam.g.rotation.y = Math.atan2(tg.x - sx, tg.z - sz); if (sam.cd <= 0) { sam.cd = level < 8 ? 2.4 : level < 14 ? 1.9 : 1.5; hitZombie(tg, 55 + level * 13, (tg.x - sx) / bd, (tg.z - sz) / bd, 'boom'); if (tg.dead) { samLast = time; if (teslaCd <= 0) samKills++; } const L = bd, m = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.035, L), new THREE.MeshBasicMaterial({ color: 0xfff2a0, transparent: true, opacity: 0.9 })); m.position.set((sx + tg.x) / 2, 1.2, (sz + tg.z) / 2); m.rotation.y = Math.atan2(tg.x - sx, tg.z - sz); m.rotation.x = Math.atan2(0.8, L) * 0; scene.add(m); beams.push({ m, t: 0.12 }); if (gate('sam', 200)) SFX.gun(); } } }
 }
 function spawnSam(sx, sz) {
   const pm = makeNpcMesh('recruit'); pm.body.material = M(0x5a6b3a); const rifle = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.06, 0.7), mat.black); rifle.position.set(0.18, 0.1, 0.35); pm.roll.add(rifle);
@@ -3517,11 +3572,11 @@ function repairStruct(n) { const st = structHp.get(n), c = Math.round(30 * price
 function updateBaseItems(dt) {
   for (const [n, st] of structHp) if (st.off && Math.random() < dt * 4) puff(tc(n % N) + (Math.random() - 0.5) * 0.5, 1.1, tc((n / N) | 0), 0x3a3238);
   structSign('w', shedAt, shedAt >= 0 ? shedTop() + (towerOn ? 1.3 : 0.5) : 0); structSign('c', compAt, 1.3);
-  if (bellAt >= 0 && tileObj[bellAt] && tileObj[bellAt].userData.sw) { const u = tileObj[bellAt].userData, ready = peaceT <= 0 && peaceCd <= 0 && !hoardeOn, peace = peaceT > 0;
+  if (bellAt >= 0 && tileObj[bellAt] && tileObj[bellAt].userData.sw) { const u = tileObj[bellAt].userData, ready = peaceT <= 0 && peaceCd <= 0 && !hoardeOn && !(boss && !boss.dead) && !surgeOn() && scrap >= PEACE_COST, peace = peaceT > 0;
     u.sw.rotation.z = peace ? Math.sin(time * 3) * 0.35 : u.nope > 0 ? Math.sin(time * 40) * 0.15 : ready ? Math.sin(time * 1.5) * 0.06 : 0; if (u.nope > 0) u.nope -= dt;
     u.bm.color.setHex(peace ? 0x8fe3a0 : ready ? 0xe9b949 : 0x7a7480); u.bm.emissive.setHex(peace ? 0x1a4d2a : ready ? 0x4d3a00 : 0x000000);
     u.aura.visible = ready || peace; u.aura.material.color.setHex(peace ? 0x5fe08a : 0xffd166); u.aura.material.opacity = 0.3 + Math.sin(time * 3) * 0.2; u.aura.scale.setScalar(peace ? 1 + Math.sin(time * 2) * 0.1 : 1);
-    const frac = peace ? peaceT / 120 : peaceCd > 0 ? 1 - peaceCd / 300 : 1, lit = Math.round(frac * 10); u.pips.forEach((pp, q) => pp.material.color.setHex(q < lit ? (peace ? 0x5fe08a : ready ? 0xffd166 : 0x8fb3ff) : 0x3a3440)); }
+    const frac = peace ? Math.min(1, peaceT / peaceLen) : peaceCd > 0 ? 1 - peaceCd / 300 : 1, lit = Math.round(frac * 10); u.pips.forEach((pp, q) => pp.material.color.setHex(q < lit ? (peace ? 0x5fe08a : ready ? 0xffd166 : 0x8fb3ff) : 0x3a3440)); }
   if (compAt >= 0 && tileObj[compAt] && tileObj[compAt].userData.junk) { const u = tileObj[compAt].userData; u.junk.children.forEach((j2, q) => { j2.position.x = -0.45 + ((time * 0.25 + q * 0.3) % 0.9); }); u.mouth.material.color.setHex(Math.sin(time * 6) > 0 ? 0xff9f43 : 0xffb347); if (Math.random() < dt * 2) puff(tc(compAt % N) + 0.35, 1.2, tc((compAt / N) | 0) - 0.3, 0x6a6460); }
 }
 function makeShed() {
@@ -3530,7 +3585,7 @@ function makeShed() {
     if (towerOn) { const H = shedTop(); g.remove(g.userData.roof); const deck = new THREE.Mesh(new THREE.BoxGeometry(1.15, 0.08, 1.15), dk); deck.position.y = H + 0.04; const rail = new THREE.Mesh(new THREE.BoxGeometry(1.15, 0.3, 1.15), new THREE.MeshLambertMaterial({ color: 0x8a5a3a, wireframe: true })); rail.position.y = H + 0.23;
       for (const [x, z] of [[-0.5, -0.5], [0.5, -0.5], [-0.5, 0.5], [0.5, 0.5]]) { const p2 = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.85, 0.06), wood); p2.position.set(x, H + 0.45, z); g.add(p2); }
       const roof = new THREE.Mesh(new THREE.ConeGeometry(0.85, 0.4, 4), dk); roof.rotation.y = Math.PI / 4; roof.position.y = H + 1.05; g.add(deck, rail, roof);
-      const pips = []; for (let q = 0; q < 5; q++) { const pp = new THREE.Mesh(new THREE.SphereGeometry(0.06, 8, 6), new THREE.MeshBasicMaterial({ color: 0x3a3440 })); pp.position.set(-0.32 + q * 0.16, H + 0.42, 0.6); g.add(pp); pips.push(pp); } g.userData.pips = pips;
+      if (teslaOn) { const pips = []; for (let q = 0; q < 5; q++) { const pp = new THREE.Mesh(new THREE.SphereGeometry(0.06, 8, 6), new THREE.MeshBasicMaterial({ color: 0x3a3440 })); pp.position.set(-0.32 + q * 0.16, H + 0.42, 0.6); g.add(pp); pips.push(pp); } g.userData.pips = pips; }
       if (teslaOn) addCoil(g, H + 1.35); }
     else if (teslaOn) addCoil(g, shedTop() + 0.55);
     return g; }
@@ -3688,6 +3743,7 @@ function updateGun(dt) {
   if (weapon === 'minigun' && gunT <= 0) { gunT = 0.055; gunAmmo--; const ax = P.ax, az = P.az, sp = (Math.random() - 0.5) * 0.12, c = Math.cos(sp), s2 = Math.sin(sp); fireBullet(P.x + ax * 0.6, 0.55, P.z + az * 0.6, ax * c - az * s2, ax * s2 + az * c, 28 * (1 + 0.04 * level), true); SFX.gun(); gunMesh.userData.brl.rotation.z += 1.2; shake = Math.max(shake, 0.05); }
   else if (weapon === 'bow' && gunT <= 0) { if (gunTier) fireGun(); else { gunT = 0.55; fireArrow(); } }
   else if (weapon === 'flamer') { fuel = Math.max(0, fuel - 16 * dt); if ((flameT -= dt) <= 0) { flameT = 0.03; puff(P.x + P.ax * (0.7 + Math.random() * 2.6) + (Math.random() - 0.5) * 0.6, 0.45, P.z + P.az * (0.7 + Math.random() * 2.6) + (Math.random() - 0.5) * 0.6, Math.random() < 0.5 ? 0xff9f43 : 0xffd166); if (gate('flame', 120)) noise({ t: 0.12, v: 0.08, f: 900, type: 'lowpass' }); }
+    for (const nt of nests) { if (nt.dead) continue; const dx = nt.x - P.x, dz = nt.z - P.z, d = Math.hypot(dx, dz); if (d < 4.4 && (dx * P.ax + dz * P.az) / (d || 1) > 0.4) { nt.burnD = (nt.burnD || 0) + 22 * dt; if (nt.burnD >= 8) { hitNest(nt, nt.burnD); nt.burnD = 0; } } }
     for (const z of zombies) { if (z.dead) continue; const dx = z.x - P.x, dz = z.z - P.z, d = Math.hypot(dx, dz); if (d < 3.6 && (d < 0.6 || (dx * P.ax + dz * P.az) / d > 0.45)) { z.hp -= (150 + 6 * level) * dt; z.burn = 4; z.vx += P.ax * 4 * dt; z.vz += P.az * 4 * dt; z.flash = 0.04; z.body.material = mat.bladeHot; if (z.hp <= 0) killZombie(z, 'fire'); } } }
   else if (weapon === 'molotov' && press) throwMolotov();
   P.swingCd = 0.15;
@@ -3713,7 +3769,7 @@ function updateMarkers() {
   if (heli.crate >= 0 && grid[heli.crate] === CRATE) list.push(['drop', tc(heli.crate % N), tc((heli.crate / N) | 0), '#8fd36a', 'scrap']);
   for (const n of npcs) if (n.wanderer && !n.dead && !n.hostile) list.push(['w' + n.hx, n.x, n.z, n.sling ? '#ff9f43' : '#ffd166', 'coin']);
   for (const n of npcs) if (n.hero && !n.hired && !n.dead && Math.hypot(n.x - P.x, n.z - P.z) < 13) list.push(['h' + n.heroType + n.hx, n.x, n.z, '#ffd166', 'star']);
-  if (inBonus && BL) { list.length = 0; list.push(['exit', BL.exitRing.position.x, BL.exitRing.position.z, '#c86bff', 'gate']); }
+  if (inBonus && BL) { list.length = 0; if (!BL.safari || BL.done) list.push(['exit', BL.exitRing.position.x, BL.exitRing.position.z, '#c86bff', 'gate']); }
   else if (gateway) list.push(['gate', gateway.x, gateway.z, '#c86bff', 'gate']);
   if (!inBonus && safGate && !hoardeOn && stage === 'night' && Math.hypot(safGate.x - P.x, safGate.z - P.z) < 34) list.push(['safari', safGate.x, safGate.z, '#7f95ff', 'gate']);
   if (!inBonus) for (const nt of nests) if (!nt.dead && Math.hypot(nt.x - P.x, nt.z - P.z) < 30) list.push(['cv' + nt.tiles[0], nt.x, nt.z, '#ff6b6b', 'cave']);
@@ -3919,6 +3975,7 @@ $('tradeList').addEventListener('pointerdown', e => {
   const b = e.target.closest('.offer'); if (!b || !tradeWith) return; e.stopPropagation(); e.preventDefault();
   const st = tradeWith.stock[+b.dataset.q], o = st.o;
   if (st.left <= 0 || !o.give.every(([k, c]) => haveOf(k) >= tq(k, c))) { SFX.bonk(); return; }
+  if ((o.get[0] === 'recruit' && recruitCount() >= 3) || (o.get[0] === 'bow' && bowOwned)) { SFX.bonk(); showLoot('scrap', o.get[0] === 'recruit' ? 'You already have 3 guards' : 'You already have a bow', 'Nothing was charged', '#ff8a7a'); return; }
   payOffer(o); st.left--; cnt.trades++; const [k, v] = o.get, x = tradeWith.x, z = tradeWith.z; SFX.trade();
   if (k === 'scrap') { scrap += v; showLoot('scrap', '+' + v + ' scrap', 'Trade'); }
   else if (k === 'gear') dropGear(x, z, 0.7);
@@ -4004,8 +4061,9 @@ function maybeRaid() {
 }
 function lureSide() { const dx = P.x - tc(crystal.i), dz = P.z - tc(crystal.j); return Math.hypot(dx, dz) > 3 ? Math.atan2(dz, dx) : Math.atan2(P.az, P.ax); }
 const DECOY_COST = 60;
+function burnOut(c) { const o = tileObj[idx(c.i, c.j)]; if (!o) return; o.traverse(m => { if (m.isMesh) { if (m.material === NPCM.flame || (m.material.color && m.material.color.getHex() === 0xffb347)) m.visible = false; else m.material = M(0x2a2422); } }); for (let q = animLm.length - 1; q >= 0; q--) if (animLm[q].obj === o) animLm.splice(q, 1); puff(c.x, 0.4, c.z, 0x3a3436); }
 function plantDecoy(c) {
-  if (decoy || decoyCd > 0) return; if (scrap < DECOY_COST) { SFX.bonk(); tip('scrap'); return; } scrap -= DECOY_COST; c.used = true;
+  if (decoy || decoyCd > 0) return; if (scrap < DECOY_COST) { SFX.bonk(); tip('scrap'); return; } scrap -= DECOY_COST; c.used = true; burnOut(c);
   const g = new THREE.Group(), gem = new THREE.Mesh(new THREE.OctahedronGeometry(0.42, 0), new THREE.MeshLambertMaterial({ color: 0xb36bff, emissive: 0x401a66, flatShading: true })); gem.scale.y = 1.5; gem.position.y = 1.3;
   const ped = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.4, 0.5, 6), M(0x6b6470)); ped.position.y = 0.25; g.add(ped, gem); g.position.set(c.x, 0, c.z); scene.add(g);
   decoy = { i: c.i, j: c.j, hp: 300 + level * 25, max: 300 + level * 25, planted: true, decoy: true, mesh: g, gem, t: 120, hitT: 0 };
@@ -4017,21 +4075,21 @@ function endDecoy() {
 function updateDecoy(dt) {
   if (decoy) { decoy.t -= dt; decoy.gem.rotation.y += dt * 2; decoy.gem.position.y = 1.3 + Math.sin(time * 3) * 0.1; if (decoy.hitT > 0) decoy.hitT -= dt; decoy.gem.scale.x = decoy.gem.scale.z = decoy.hitT > 0 ? 1.15 : 1; if (decoy.t <= 0) endDecoy(); }
   else if (decoyCd > 0) decoyCd = Math.max(0, decoyCd - dt);
-  setHidden('decoyPill', !decoy || phase !== 'live'); if (decoy) setText('decoyN', fmtT(Math.ceil(decoy.t)));
+  setHidden('decoyPill', !decoy || phase !== 'live'); if (decoy) { setText('decoyN', fmtT(Math.ceil(decoy.t))); const dp = $('decoyPill'), hurt = decoy.hitT > 0; if (dp.classList.contains('hurt') !== hurt) dp.classList.toggle('hurt', hurt); dp.style.setProperty('--hp', Math.max(0, decoy.hp / decoy.max).toFixed(2)); }
 }
 function startLure() {
-  if (!lureOn || lureT > 0 || lureCd > 0 || phase !== 'live' || !crystal.planted) { SFX.bonk(); return; }
-  lureDir = lureSide(); lureT = 90; spawnBias = lureDir; openTree(false); SFX.raid(); shake = 0.3;
+  if (!lureOn || lureT > 0 || lureCd > 0 || phase !== 'live' || !crystal.planted || scrap < 300) { SFX.bonk(); return; }
+  scrap -= 300; lureDir = lureSide(); lureT = 90; spawnBias = lureDir; openTree(false); SFX.raid(); shake = 0.3;
   banner('Lure · ' + compass(Math.cos(lureDir), Math.sin(lureDir))); tempMark(tc(crystal.i) + Math.cos(lureDir) * 40, tc(crystal.j) + Math.sin(lureDir) * 40, '#ff6b6b', 'skull', 90);
 }
 function updateLure(dt) {
-  if (lureT > 0) { lureT -= dt; if (lureT <= 0) { lureT = 0; lureCd = 240; } } else if (lureCd > 0) lureCd = Math.max(0, lureCd - dt);
+  if (lureT > 0) { lureT -= dt; if (lureT <= 0) { lureT = 0; lureCd = 300; } } else if (lureCd > 0) lureCd = Math.max(0, lureCd - dt);
   setHidden('lurePill', !(lureT > 0) || phase !== 'live'); if (lureT > 0) setText('lureN', fmtT(Math.ceil(lureT)));
   lureBtn();
 }
 function lureBtn() {
   const b = $('bLure'); if (!b) return; b.hidden = !lureOn; if (!lureOn) return;
-  b.disabled = lureT > 0 || lureCd > 0; $('lureTxt').textContent = lureT > 0 ? 'Lure ' + fmtT(Math.ceil(lureT)) : lureCd > 0 ? 'Lure in ' + fmtT(Math.ceil(lureCd)) : 'Lure from ' + compass(Math.cos(lureSide()), Math.sin(lureSide()));
+  b.disabled = lureT > 0 || lureCd > 0; $('lureTxt').textContent = lureT > 0 ? 'Lure ' + fmtT(Math.ceil(lureT)) : lureCd > 0 ? 'Lure in ' + fmtT(Math.ceil(lureCd)) : 'Lure Hoard 300 · ' + compass(Math.cos(lureSide()), Math.sin(lureSide()));
 }
 let padNodes = null;
 function pauseFx(on) {
@@ -4098,17 +4156,18 @@ function updateMusic(dt) {
   if (want !== musMode) { if (musMode !== 'none') { musGain.gain.setTargetAtTime(0, ac.currentTime, 0.25); musFade = 0.8; } if (musFade > 0) { musFade -= dt; if (musFade > 0) return; } musMode = want; musBar = 0; musVar = (musVar + 1 + ((Math.random() * 2) | 0)); musNext = ac.currentTime + 0.1; if (want !== 'none') musGain.gain.setTargetAtTime(want === 'event' ? 0.55 : want === 'title' ? 0.8 : 0.7, ac.currentTime, 0.4); }
   if (musMode === 'none') return; while (musNext < ac.currentTime + 0.35) musNext = musBarAt(Math.max(musNext, ac.currentTime + 0.02));
 }
+const PEACE_COST = 400, surgeOn = () => toSpawn > 0 && !hoardeOn;
 function startPeace() {
-  if (peaceT > 0 || peaceCd > 0 || hoardeOn || phase !== 'live') { SFX.bonk(); if (bellAt >= 0) { const o = tileObj[bellAt]; if (o) o.userData.nope = 0.4; } return; }
-  peaceT = bossPeace ? 210 : 120; bossPeace = false; toSpawn = 0; spawnBias = null; raidPendT = -1; SFX.levelUp(); openTree(false); burst(tc(crystal.i), 1.4, tc(crystal.j), mat.gem, 24, 5);
+  if (peaceT > 0 || peaceCd > 0 || hoardeOn || (boss && !boss.dead) || surgeOn() || phase !== 'live' || scrap < PEACE_COST) { if (scrap < PEACE_COST && !hoardeOn && peaceCd <= 0 && bellAt >= 0) floater(tc(bellAt % N), tc((bellAt / N) | 0), 'Needs ' + PEACE_COST + ' scrap', '#ffd166'); SFX.bonk(); if (bellAt >= 0) { const o = tileObj[bellAt]; if (o) o.userData.nope = 0.4; } return; }
+  scrap -= PEACE_COST; peaceT = bossPeace ? Math.max(210, peaceLen) : peaceLen; bossPeace = false; toSpawn = 0; spawnBias = null; raidPendT = -1; SFX.levelUp(); openTree(false); burst(tc(crystal.i), 1.4, tc(crystal.j), mat.gem, 24, 5);
   let q = 0; for (const z of zombies) if (!z.dead) setTimeout(() => { if (!z.dead) { puff(z.x, 0.5, z.z, 0xbdf5c8); z.dead = true; scene.remove(z.g); } }, 100 + (q++ % 40) * 45);
   setTimeout(() => { zombies = zombies.filter(z => !z.dead); }, 2200);
   for (const n of npcs) if (n.raid) { n.raid = false; n.hostile = true; n.hx = n.x; n.hz = n.z; }
 }
 function updatePeaceUI() {
   lureBtn();
-  const b = $('bPeace'); if (!b) return; const ok = peaceT <= 0 && peaceCd <= 0 && !hoardeOn;
-  b.disabled = !ok; $('peaceTxt').textContent = peaceT > 0 ? 'Peaceful ' + fmtT(Math.ceil(peaceT)) : peaceCd > 0 ? 'Peace in ' + fmtT(Math.ceil(peaceCd)) : hoardeOn ? 'Not during a Hoarde' : bossPeace ? 'Peace (3:30)' : 'Peace (2:00)';
+  const b = $('bPeace'); if (!b) return; const ok = peaceT <= 0 && peaceCd <= 0 && !hoardeOn && !(boss && !boss.dead) && !surgeOn() && scrap >= PEACE_COST;
+  b.disabled = !ok; $('peaceTxt').textContent = peaceT > 0 ? 'Peaceful ' + fmtT(Math.ceil(peaceT)) : peaceCd > 0 ? 'Peace in ' + fmtT(Math.ceil(peaceCd)) : hoardeOn ? 'Not during a Hoarde' : boss && !boss.dead ? 'Not with a boss' : surgeOn() ? 'Not during a surge' : 'Peace ' + fmtT(peaceLen) + ' · ' + PEACE_COST;
   setHidden('peacePill', !(peaceT > 0) || phase !== 'live'); if (peaceT > 0) setText('peaceN', fmtT(Math.ceil(peaceT)));
 }
 function npcHurt(n, d) {
@@ -4170,7 +4229,7 @@ function comboPop() {
   if (copterOn && combo === 10 && !copterCharge && copterT <= 0) { copterCharge = 1; powerT = 10; SFX.levelUp(); buzz(60); }
   if (jetOn && combo === 15 && !jetCharge && jetT <= 0) { jetCharge = 1; powerT = 10; SFX.levelUp(); buzz(80); }
   if (frenzyOn && combo === 8 && !frenzyCharge && frenzyT <= 0) { frenzyCharge = 1; powerT = 10; SFX.levelUp(); buzz(60); }
-  if (combo >= nextSpinAt) { nextSpinAt += 5; if (spinCharges < scy) { powerT = 10; spinCharges++; SFX.levelUp(); buzz(40); tip(lastInput === 'touch' ? 'Spin ready! Tap Spin, then swipe a path.' : 'Spin ready! Press R, then drag a path.', 'spin'); } }
+  if (combo >= nextSpinAt) { nextSpinAt += 5; if (spinOn && spinCharges < scy) { powerT = 10; spinCharges++; SFX.levelUp(); buzz(40); tip(lastInput === 'touch' ? 'Spin ready! Tap Spin, then swipe a path.' : 'Spin ready! Press R, then drag a path.', 'spin'); } }
   if (combo >= 3) tone({ type: SQ, f: 500 + Math.min(combo, 30) * 40, t: 0.05, v: 0.05 });
 }
 function startFrenzy() {
@@ -4208,7 +4267,7 @@ function updateComboHud() {
 const spinLineGeo = new THREE.BufferGeometry(), spinLine = new THREE.Mesh(spinLineGeo, new THREE.MeshBasicMaterial({ color: 0xff6b3d, transparent: true, opacity: 0.9, depthWrite: false, side: THREE.DoubleSide }));
 function ribbon(pts, w) { const v = [], ix = []; for (let q = 0; q < pts.length; q++) { const a = pts[Math.max(0, q - 1)], c = pts[Math.min(pts.length - 1, q + 1)]; let dx = c[0] - a[0], dz = c[1] - a[1]; const l = Math.hypot(dx, dz) || 1; dx /= l; dz /= l; v.push(pts[q][0] - dz * w, 0.12, pts[q][1] + dx * w, pts[q][0] + dz * w, 0.12, pts[q][1] - dx * w); if (q) { const k = q * 2; ix.push(k - 2, k - 1, k, k - 1, k + 1, k); } } spinLineGeo.setAttribute('position', new THREE.Float32BufferAttribute(v, 3)); spinLineGeo.setIndex(ix); spinLineGeo.computeBoundingSphere(); }
 spinLine.visible = false; scene.add(spinLine);
-const spinMax = () => 6 + 3 * scy;
+const spinMax = () => 6 + 3 * scy + (spinLong ? 6 : 0);
 function setSpinAim(on) {
   spinAimT = 0;
   if (on && (spinCharges <= 0 || P.mount || P.spin || phase !== 'live')) return;
@@ -4481,7 +4540,7 @@ function droneUpdate(v, dt) {
   if (!v.drone) { if (Math.hypot(v.x - cx, v.z - cz) < baseR + 10) { v.drone = true; v.wd = 1; v.stk = 0; v.wa = Math.atan2(v.z - cz, v.x - cx); tip('Drone buggy on patrol!', 'drone'); } else return; }
   const R = baseR, myA = Math.atan2(v.z - cz, v.x - cx);
   let tgt = null, bd = 5; for (const z of zombies) { if (z.dead) continue; const dc = Math.hypot(z.x - cx, z.z - cz); if (dc < R - 1.5 || dc > R + 9) continue; const d = Math.hypot(z.x - v.x, z.z - v.z); if (d < bd) { bd = d; tgt = z; } }
-  let tx, tz; if (tgt) { tx = tgt.x; tz = tgt.z; } else { const a = myA + v.wd * 0.35; tx = cx + Math.cos(a) * R; tz = cz + Math.sin(a) * R; }
+  let tx, tz; if (pt.kind === 'zombie' && pt.follow && !tgt && !P.dead) { } else if (tgt) { tx = tgt.x; tz = tgt.z; } else { const a = myA + v.wd * 0.35; tx = cx + Math.cos(a) * R; tz = cz + Math.sin(a) * R; }
   let dx = tx - v.x, dz = tz - v.z; const d = Math.hypot(dx, dz) || 1; dx /= d; dz /= d;
   const spd = tgt ? 4.2 : 2.8; let moved = false;
   for (const off of [0, 0.5, -0.5, 1.0, -1.0, 1.6, -1.6]) { const c = Math.cos(off), s2 = Math.sin(off), ux = dx * c - dz * s2, uz = dx * s2 + dz * c, nx = v.x + ux * spd * dt, nz = v.z + uz * spd * dt;
@@ -4565,7 +4624,7 @@ function getInteract() {
   if (P.mount) { if (P.mount.water && junks.some(jk => Math.hypot(jk.x - P.x, jk.z - P.z) < 2)) return null; if (mountGun(P.mount)) return { label: 'Shoot' }; return { label: 'Get off', act: dismount }; }
   if (fishing) return { label: fishing.bite ? 'Reel!' : 'Fishing...', act: reel };
   if (bread > 0 && npcs.some(n => !n.dead && n.hostile && Math.hypot(n.x - P.x, n.z - P.z) < 7)) return { label: 'Throw bread', act: throwBread };
-  if (leashOn && kennelAt >= 0 && tamedCount() < petCap && !P.onWall) { let lz = null, ld = 1.5; for (const z of zombies) { if (z.dead || !(z.cut >= 1) || z.kind === 'brute') continue; const d = Math.hypot(z.x - P.x, z.z - P.z); if (d < ld) { ld = d; lz = z; } } if (lz && !zombies.some(o => o !== lz && !o.dead && Math.hypot(o.x - P.x, o.z - P.z) < 2.6)) return { label: 'Leash', act: () => leashZombie(lz) }; }
+  if (leashOn && kennelAt >= 0 && tamedCount() < petCap && pets.filter(q => q.tamed && q.kind === 'zombie').length < 3 && !P.onWall) { let lz = null, ld = 1.5; for (const z of zombies) { if (z.dead || !(z.cut >= 1) || z.kind === 'brute') continue; const d = Math.hypot(z.x - P.x, z.z - P.z); if (d < ld) { ld = d; lz = z; } } if (lz && !zombies.some(o => o !== lz && !o.dead && Math.hypot(o.x - P.x, o.z - P.z) < 2.6)) return { label: 'Leash', act: () => leashZombie(lz) }; }
   if (zombies.some(z => !z.dead && Math.hypot(z.x - P.x, z.z - P.z) < 1.4) || P.onWall || P.stuck) return null;
   let best = null, bd = 1.5;
   const consider = (x, z, o) => { const d = Math.hypot(x - P.x, z - P.z); if (d < bd) { bd = d; best = o; } };
@@ -4584,6 +4643,7 @@ function getInteract() {
   for (const pt of pets) {
     if (!pt.tamed) consider(pt.x, pt.z, { label: pt.kind === 'dog' ? 'Give bone' : 'Give fish', act: () => feedPet(pt) });
     else if (pt.tamed && pt.kind === 'wolf' && !pt.ridden) consider(pt.x, pt.z, { label: 'Ride wolf', act: () => mountWolf(pt) });
+    else if (pt.tamed && pt.kind === 'zombie') consider(pt.x, pt.z, { label: pt.follow ? 'Zombie: guard base' : 'Zombie: follow me', act: () => { pt.follow = !pt.follow; hearts(pt.x, pt.z); SFX.click(); } });
   }
   if (mystery) consider(mystery.x, mystery.z, { label: 'Open 20', act: openMystery });
   if (radio && radio.mesh.parent) consider(radio.x, radio.z + 0.75, { label: tuning ? 'Tune!' : !radio.fixed ? 'Fix radio 60' : radio.cd > 0 ? 'Radio ' + fmtT(Math.ceil(radio.cd)) : 'Call drop', act: useRadio });
@@ -4598,7 +4658,7 @@ function vehBlocked(x, z, water, fly) {
   const r = 0.32;
   for (let i = tt(x - r); i <= tt(x + r); i++) for (let j = tt(z - r); j <= tt(z + r); j++) {
     if (!inb(i, j)) return true; const g = grid[idx(i, j)];
-    if (water ? g !== WATER : (g === WATER || SOLID_Z[g] === 1 || (g === PIT && fill[idx(i, j)] < CAP))) return true;
+    if (water ? g !== WATER : (g === WATER || SOLID_Z[g] === 1 || g === MOAT || (g === DRAWB && !drawDown(idx(i, j))) || (g === PIT && fill[idx(i, j)] < CAP))) return true;
   }
   return false;
 }
@@ -4736,7 +4796,7 @@ function updateExtras(dt) {
     if ((stallMarkT -= dt) <= 0) { stallMarkT = 2; for (const z of zombies) if (!z.dead && z.hoarde) tempMark(z.x, z.z, '#ff5a4a', 'skull', 2.1); }
     if (hoardeStall > 45) { for (const z of zombies) z.hoarde = false; hoardeLeft = 0; endHoarde(); } } else hoardeStall = 0; updateGlobs(dt); updatePathVis(dt);
   if (boss && boss.dead) boss = null; setHidden('bossBar', !boss || phase !== 'live'); if (boss) $('bossFill').style.width = (Math.max(0, boss.hp / boss.maxHp) * 100).toFixed(1) + '%';
-  if (!safGate && crystal.planted && phase === 'live' && netRole !== 'guest') makeSafGate(); if (safGate) { safGate.mesh.userData.disc.rotation.z += dt * 2; const sOpen = stage === 'night' && !hoardeOn; safGate.mesh.userData.disc.material.opacity = sOpen ? 0.55 + Math.sin(time * 4) * 0.2 : 0.12; safGate.mesh.userData.sign.position.y = 4.4 + Math.sin(time * 2) * 0.08; if (safCd > 0) safCd -= dt; else if (!P.dead && !P.mount && phase === 'live' && Math.hypot(P.x - safGate.x, P.z - safGate.z) < 0.9) { if (!sOpen) { if (gate('safclosed', 2500)) floater(safGate.x, safGate.z, hoardeOn ? 'Closed during the hoarde' : 'Opens at night', '#ffd166'); } else if (scrap < 50) { if (gate('safpoor', 2500)) { floater(safGate.x, safGate.z, 'Entry costs 50 scrap', '#ffd166'); SFX.bonk(); } } else { scrap -= 50; floater(safGate.x, safGate.z, '-50', '#ffd166'); startSafari(); } } }
+ if (safGate) { safGate.mesh.userData.disc.rotation.z += dt * 2; const sOpen = stage === 'night' && !hoardeOn; safGate.mesh.userData.disc.material.opacity = sOpen ? 0.55 + Math.sin(time * 4) * 0.2 : 0.12; safGate.mesh.userData.sign.position.y = 4.4 + Math.sin(time * 2) * 0.08; if (safCd > 0) safCd -= dt; else if (!P.dead && !P.mount && phase === 'live' && Math.hypot(P.x - safGate.x, P.z - safGate.z) < 0.9) { if (!sOpen) { if (gate('safclosed', 2500)) floater(safGate.x, safGate.z, hoardeOn ? 'Closed during the hoarde' : 'Opens at night', '#ffd166'); } else if (scrap < 50) { if (gate('safpoor', 2500)) { floater(safGate.x, safGate.z, 'Entry costs 50 scrap', '#ffd166'); SFX.bonk(); } } else { scrap -= 50; floater(safGate.x, safGate.z, '-50', '#ffd166'); startSafari(); } } }
   if (gateway) { gateway.t -= dt; gateway.mesh.userData.disc.rotation.z += dt * 3; gateway.mesh.userData.disc.material.opacity = 0.55 + Math.sin(time * 4) * 0.2; if (gateway.t <= 0) { scene.remove(gateway.mesh); gateway = null; } else if (!P.dead && !P.mount && phase === 'live' && Math.hypot(P.x - gateway.x, P.z - gateway.z) < 0.9) startBonus(); } updateCopter(dt); if ((goalT -= dt) <= 0) { goalT = 0.25; updateGoals(); } if (phase === 'live') updateTraps(dt, netRole === 'guest'); updateMarkers(); updateNests(dt); if (phase === 'live' && (saveT -= dt) <= 0) { saveT = 20; saveGame(); } for (let q = animLm.length - 1; q >= 0; q--) { const a = animLm[q]; if (!inScene(a.obj)) { animLm.splice(q, 1); continue; } if (a.kind === 'spin') a.obj.rotation.z += dt * 1.2; else if ((a.t -= dt) <= 0 && Math.hypot(a.x - P.x, a.z - P.z) < 30) { a.t = 0.3; puff(a.x, a.y, a.z, a.col); } } updatePuffs(dt); for (const g of lootCrates) { const gl = g.getObjectByName('glint'); if (!g.parent) { lootCrates.delete(g); continue; } gl.rotation.y += dt * 2; gl.position.y = 0.85 + Math.sin(time * 3 + g.id) * 0.06; }
   for (const v of vehicles) if (v.kind === 'heli' && v.mesh) heliUpdate(v, dt);
   for (const v of vehicles) if (v.kind === 'buggy' && v.fixed && phase === 'live') { if (v !== P.mount && droneOn && crystal.planted) droneUpdate(v, dt); else v.drone = false; if (buggyGun && (v === P.mount || v.drone)) buggyGunUpdate(v, dt); }
@@ -4754,7 +4814,7 @@ function updateExtras(dt) {
   updateHeli(dt);
   if ((dogT -= dt) <= 0) { dogT = 1; if (phase === 'live' && !inBonus && Math.random() < 0.01) { const rb = regionBiome[regionAt(tt(P.x), tt(P.z))]; if (rb === 'forest' && pets.filter(q => q.kind === 'dog' && !q.tamed && !q.dead).length < 2) { for (let q = 0; q < 12; q++) { const a = Math.random() * 6.28, d = 10 + Math.random() * 8, x = P.x + Math.cos(a) * d, z = P.z + Math.sin(a) * d; if (inb(tt(x), tt(z)) && !blocked(x, z, 0.3, true) && grid[idx(tt(x), tt(z))] === EMPTY) { addPet('dog', x, z); break; } } } } }
   if (stage === 'night' && !hoardeOn) { roamT -= dt; if (roamT <= 0) { roamT = 35; if (regionAt(tt(P.x), tt(P.z)) !== 4) { const cnt = 3 + (Math.random() * 3 | 0), a = Math.random() * 6.28, d = 14 + Math.random() * 8; for (let q = 0; q < cnt; q++) { const x = P.x + Math.cos(a) * d + (Math.random() - 0.5) * 3, z = P.z + Math.sin(a) * d + (Math.random() - 0.5) * 3; if (inb(tt(x), tt(z)) && !SOLID_Z[grid[idx(tt(x), tt(z))]] && grid[idx(tt(x), tt(z))] !== WATER) spawnZombie(undefined, x, z); } tip('Something stirs in the dark...', 'roam'); } } }
-  updatePets(dt); updateNpcs(dt); updateAllies(dt); updateGraveyard(dt); updateFarms(dt); updateBreads(dt); updateRadio(dt);
+  updatePets(dt); updateNpcs(dt); updateAllies(dt); updateGraveyard(dt); updateStragglers(dt); updateFarms(dt); updateBreads(dt); updateRadio(dt);
   if (stage === 'day' && !hoardeOn && (wandT -= dt) <= 0) { wandT = 420 + Math.random() * 300; spawnWanderer(); }
   if (!hoardeOn && (slingT -= dt) <= 0) { slingT = 600 + Math.random() * 400; if (Math.random() < 0.3) spawnGunslinger(); }
   updateGun(dt);
@@ -4780,8 +4840,12 @@ function updatePets(dt) {
     if (false) {
     } else if (pt.tamed && (pt.kind === 'dog' || pt.kind === 'wolf' || pt.kind === 'zombie')) {
       const cx = tc(crystal.i), cz = tc(crystal.j); let tgt = null, bd = pt.mech ? 14 : 9; if (mechWolf && pt.kind === 'wolf' && !pt.mech) mechify(pt);
-      for (const z of zombies) { if (z.dead) continue; const d = Math.hypot(z.x - cx, z.z - cz); if (d < bd) { bd = d; tgt = z; } }
-      if (tgt) { tx = tgt.x; tz = tgt.z; spd = (pt.kind === 'wolf' ? 6.5 : pt.kind === 'zombie' ? 3 : 5.5) * (pt.rare ? 1.25 : 1) * (pt.mech ? 2 : 1); if (pt.mech && (pt.lz = (pt.lz || 0) - dt) <= 0 && Math.hypot(tgt.x - pt.x, tgt.z - pt.z) < 8) { pt.lz = 1.1; laser(pt.x, pt.z, tgt.x, tgt.z); } const d = Math.hypot(tgt.x - pt.x, tgt.z - pt.z); if (d < 0.8 && pt.cd <= 0) { pt.cd = 0.6; hitZombie(tgt, (pt.kind === 'wolf' ? 40 : 25) * (pt.rare ? 2.5 : 1), (tgt.x - pt.x) / (d || 1), (tgt.z - pt.z) / (d || 1), 'pet'); if (!tgt.dead && pt.kind !== 'zombie') petHurt(pt, (tgt.dmg || 10) * (pt.mech ? 0.25 : pt.rare ? 0.35 : 0.55)); } }
+      if (pt.kind === 'dog') { if (!pt.mhp) pt.mhp = 80; if (pt.hp === undefined) pt.hp = pt.mhp; pt.agroT = (pt.agroT || 0) - dt; for (const z of zombies) { if (z.dead) continue; if (Math.hypot(z.x - pt.x, z.z - pt.z) < 0.85) { petHurt(pt, 6 * dt); pt.attacker = z; pt.agroT = 4; break; } } if (pt.dead) continue;
+        if (pt.hp < pt.mhp * 0.4) { const hx = kennelAt >= 0 ? tc(kennelAt % N) : cx, hz = kennelAt >= 0 ? tc((kennelAt / N) | 0) + 0.9 : cz + 2; tx = hx; tz = hz; spd = 6; if (Math.random() < dt * 3) puff(pt.x, 0.4, pt.z, 0xffffff); const dx0 = tx - pt.x, dz0 = tz - pt.z, d0 = Math.hypot(dx0, dz0); pt.vx += ((d0 > 0.3 ? dx0 / d0 : 0) * spd - pt.vx) * (1 - Math.exp(-dt * 8)); pt.vz += ((d0 > 0.3 ? dz0 / d0 : 0) * spd - pt.vz) * (1 - Math.exp(-dt * 8)); moveEnt(pt, pt.vx * dt, pt.vz * dt, 0.22, true); pt.mesh.position.set(pt.x, 0, pt.z); if (Math.hypot(pt.vx, pt.vz) > 0.2) pt.mesh.rotation.y = Math.atan2(pt.vx, pt.vz); animPet(pt, Math.hypot(pt.vx, pt.vz), dt); continue; }
+        bd = 0; if (pt.agroT > 0 && pt.attacker && !pt.attacker.dead && Math.hypot(pt.attacker.x - pt.x, pt.attacker.z - pt.z) < 3.5) tgt = pt.attacker; }
+      else if (pt.kind === 'zombie' && pt.follow && !P.dead) { bd = 5; for (const z of zombies) { if (z.dead) continue; const d = Math.hypot(z.x - P.x, z.z - P.z); if (d < bd) { bd = d; tgt = z; } } if (!tgt) { const k2 = pets.filter(q => q.follow).indexOf(pt), a2 = P.face + Math.PI + (k2 - 1) * 0.7; tx = P.x + Math.sin(a2) * 1.6; tz = P.z + Math.cos(a2) * 1.6; spd = Math.hypot(tx - pt.x, tz - pt.z) > 4 ? 6 : 3.5; bd = 0; } }
+      if (bd > 0) for (const z of zombies) { if (z.dead) continue; const d = Math.hypot(z.x - cx, z.z - cz); if (d < bd) { bd = d; tgt = z; } }
+      if (tgt) { tx = tgt.x; tz = tgt.z; spd = (pt.kind === 'wolf' ? 6.5 : pt.kind === 'zombie' ? (pt.follow ? 4.5 : 3) : 5.5) * (pt.rare ? 1.25 : 1) * (pt.mech ? 2 : 1); if (pt.mech && (pt.lz = (pt.lz || 0) - dt) <= 0 && Math.hypot(tgt.x - pt.x, tgt.z - pt.z) < 8) { pt.lz = 1.1; laser(pt.x, pt.z, tgt.x, tgt.z); } const d = Math.hypot(tgt.x - pt.x, tgt.z - pt.z); if (d < 0.8 && pt.cd <= 0) { pt.cd = 0.6; hitZombie(tgt, (pt.kind === 'wolf' ? 40 : 25) * (pt.rare ? 2.5 : 1), (tgt.x - pt.x) / (d || 1), (tgt.z - pt.z) / (d || 1), 'pet'); if (!tgt.dead && pt.kind !== 'zombie') petHurt(pt, (tgt.dmg || 10) * (pt.mech ? 0.25 : pt.rare ? 0.35 : 0.55)); } }
       else if (pt.kind === 'dog' && (pt.pit = (pt.pitT = (pt.pitT || 0) - dt) <= 0 ? (pt.pitT = 1, pitCache.filter(q => fill[q] > 0 && Math.hypot(tc(q % N) - cx, tc((q / N) | 0) - cz) < 16).sort((a, b) => Math.hypot(tc(a % N) - pt.x, tc((a / N) | 0) - pt.z) - Math.hypot(tc(b % N) - pt.x, tc((b / N) | 0) - pt.z))[0] ?? -1) : pt.pit) >= 0) {
         const q = pt.pit, px = tc(q % N), pz = tc((q / N) | 0), d = Math.hypot(px - pt.x, pz - pt.z); tx = px; tz = pz; spd = 4.5;
         if (d < 1.1) { spd = 0; pt.eatT = (pt.eatT || 0) + dt; pt.mesh.userData.legs.forEach(l => { l.rotation.x = 0; }); pt.mesh.rotation.x = Math.sin(time * 16) * 0.12;
@@ -4822,7 +4886,7 @@ function resetExtras() {
   for (const n of npcs) { scene.remove(n.pm.g); if (n.mule) scene.remove(n.mule.mesh); } npcs = []; closeTrade(); repu = 0; wandT = 160; heliMesh.visible = false; for (const el of markEls.values()) el.remove(); markEls.clear();
   vehicles = []; pets = []; junks = []; totems = []; mystery = null; P.mount = null; P.air = null; P.stuck = false; heliShadow.visible = false;
   combo = 0; comboT = 0; gunAmmo = 0; gunTier = 0; chainOn = false; weapon = 'scythe'; bowOwned = false; fuel = 0; molotovs = 0; slingT = 420; spinCharges = 0; nextSpinAt = 5; if (spinAim) setSpinAim(false); P.spin = null; for (const f of fires) scene.remove(f.m); fires = []; gear = { head: 0, chest: 0, legs: 0, feet: 0 }; fish = 0; bones = 0; bagNew = false; lootQ.length = 0; $('bag').hidden = true; $('bagDot').hidden = true; rollBase = 0.6; rollSpeedBase = 12.5; dropT = 300; roamT = 35; heli = { t: -1, next: 200 + Math.random() * 120, crate: -1, smokeT: 0 }; lavaT = 3;
-  tarOn = false; jumpOn = false; totemMax = 0; lavaPits = false; buggyGun = false; truckGun = false; truckRam = false; droneOn = false; rollHit = 0; kennelOn = false; leashOn = false; petCap = 3; kennelAt = -1; scareLv = 0; scares.clear(); peaceT = 0; peaceCd = 0; peaceFree = false; bossPeace = false; lureOn = false; lureT = 0; lureCd = 0; frenzyOn = false; frenzyCharge = 0; frenzyT = 0; copterOn = false; copterLong = false; copterCharge = 0; copterT = 0; powerT = 0; for (const pt of pets) if (pt.aura) scene.remove(pt.aura); bearOn = false; spinnerMax = 0; spinFast = false; reaperBlades = false; roadOn = false; roadSeen = -1; shedAt = -1; vetOn = false; titanOn = false; shedLv = 1; shedPay = 0; SL.w = { lv: 1, ch: 0, pts: 1, cd: 0 }; SL.c = { lv: 1, ch: 0, pts: 1, cd: 0 }; compAt = -1; bellAt = -1; structHp = new Map(); samKills = 0; jetOn = false; jetCharge = 0; jetT = 0; if (ship) { scene.remove(ship.shadow); if (ship.rocket) scene.remove(ship.rocket); } ship = null; spdTier = 0; jumpMax = 4; gravOn = false; padDir = new Map(); quakeCd = 0; dashOn = false; scyRare = 0; heirOn = false; teslaOn = false; teslaCd = 0; killTimes = []; towerOn = false; samT = -1; if (sam) scene.remove(sam.g); sam = null; setBladeLook(); uziOn = false; uziAuto = false; heliGun = false; skyOn = false; mechWolf = false; for (const b of beams) scene.remove(b.m); beams = []; moatOn = false; drawOn = false; deepMoat = false; bears.clear(); spinners = []; drawbs = []; siloOn = false; bakeOn = false; farmSpeed = 1; siloAt = -1; wheat = 0; bread = 0; farms.clear(); for (const b of breads) scene.remove(b.m); breads = []; applyGear();
+  tarOn = false; jumpOn = false; totemMax = 0; lavaPits = false; samOn = false; samKills = 0; respawnT = 30; peaceLen = 120; spinOn = false; spinLong = false; landOn = false; cactusBag = 0; hoardeWait = false; buggyGun = false; truckGun = false; truckRam = false; droneOn = false; rollHit = 0; kennelOn = false; leashOn = false; petCap = 3; kennelAt = -1; scareLv = 0; scares.clear(); peaceT = 0; peaceCd = 0; peaceFree = false; bossPeace = false; lureOn = false; lureT = 0; lureCd = 0; frenzyOn = false; frenzyCharge = 0; frenzyT = 0; copterOn = false; copterLong = false; copterCharge = 0; copterT = 0; powerT = 0; for (const pt of pets) if (pt.aura) scene.remove(pt.aura); bearOn = false; spinnerMax = 0; spinFast = false; reaperBlades = false; roadOn = false; roadSeen = -1; shedAt = -1; vetOn = false; titanOn = false; shedLv = 1; shedPay = 0; SL.w = { lv: 1, ch: 0, pts: 0, cd: 0 }; SL.c = { lv: 1, ch: 0, pts: 0, cd: 0 }; compAt = -1; bellAt = -1; structHp = new Map(); samKills = 0; jetOn = false; jetCharge = 0; jetT = 0; if (ship) { scene.remove(ship.shadow); if (ship.rocket) scene.remove(ship.rocket); } ship = null; spdTier = 0; jumpMax = 4; gravOn = false; padDir = new Map(); quakeCd = 0; dashOn = false; scyRare = 0; heirOn = false; teslaOn = false; teslaCd = 0; killTimes = []; towerOn = false; samT = -1; if (sam) scene.remove(sam.g); sam = null; setBladeLook(); uziOn = false; uziAuto = false; heliGun = false; skyOn = false; mechWolf = false; for (const b of beams) scene.remove(b.m); beams = []; moatOn = false; drawOn = false; deepMoat = false; bears.clear(); spinners = []; drawbs = []; siloOn = false; bakeOn = false; farmSpeed = 1; siloAt = -1; wheat = 0; bread = 0; farms.clear(); for (const b of breads) scene.remove(b.m); breads = []; applyGear();
 }
 
 /* ---------- update ---------- */
@@ -4840,7 +4904,7 @@ function updatePlayer(dt) {
   if (updateSpecialMove(dt, mx, mz, ml)) return;
   if (frenzyT > 0) { frenzyT -= dt; if (P.dodgeT <= 0 && !P.onWall && !P.mount) { P.dodgeCd = 0; dodge(); { let bx = 0, bz = 0, bs = 0; for (const z of zombies) { if (z.dead) continue; const dx = z.x - P.x, dz = z.z - P.z, d = Math.hypot(dx, dz); if (d < 0.3 || d > 7) continue; let c = 0; for (const o of zombies) if (!o.dead && Math.hypot(o.x - z.x, o.z - z.z) < 1.6) c++; const sc = c / (1 + d * 0.35); if (sc > bs) { bs = sc; bx = dx / d; bz = dz / d; } } if (bs > 0) { P.dx = bx; P.dz = bz; P.ax = bx; P.az = bz; } } if (Math.random() < 0.6) puff(P.x, 0.3, P.z, 0xe0507a); } if (frenzyT <= 0) frenzyT = 0; }
   const SPEED = (inBonus && bTile(P.x, P.z) === 2 ? 0.5 : inBonus && BL && BL.type === 'stealth' && !BL.alarm ? 0.6 : 1) * (copterT > 0 ? 1.35 : 1) * (P.onWall ? wallSpeed : runSpeed * [1, 1.08, 1.16, 1.25][spdTier]) * (1 + 0.07 * gear.legs) * (P.stuck ? 0.06 : 1) * (!inBonus && !P.onWall && inb(tt(P.x), tt(P.z)) && grid[idx(tt(P.x), tt(P.z))] === TAR ? 0.4 : 1);
-  if (P.dodgeT > 0) { P.dodgeT -= dt; const dk = P.dash ? 1.15 : 1; P.vx = P.dx * rollSpeed * dk * (1 + 0.05 * gear.feet); P.vz = P.dz * rollSpeed * dk * (1 + 0.05 * gear.feet);
+  if (P.dodgeT > 0) { P.dodgeT -= dt; const ti = tt(P.x), tj = tt(P.z), gn = inb(ti, tj) ? idx(ti, tj) : -1, gap = gn >= 0 && ((grid[gn] === PIT && fill[gn] < CAP) || grid[gn] === MOAT), dk = (P.dash ? 1.15 : 1) * (gap ? 0.35 : 1); if (gap) P.dodgeT += dt * 0.55; P.vx = P.dx * rollSpeed * dk * (1 + 0.05 * gear.feet); P.vz = P.dz * rollSpeed * dk * (1 + 0.05 * gear.feet);
     if (P.dash) { puff(P.x, 0.3, P.z, 0x8fe3ff); for (const z of zombies) { if (P.dash <= 0) break; if (z.dead || z.dashed === P.rollId) continue; const d = Math.hypot(z.x - P.x, z.z - P.z); if (d < 0.95 + z.r) { z.dashed = P.rollId; P.dash--; if (z.boss) hitZombie(z, 300, P.dx, P.dz, 'roll'); else if (z.kind === 'brute') hitZombie(z, 260, P.dx, P.dz, 'roll'); else { hitZombie(z, 9999, P.dx, P.dz, 'roll'); } burst(z.x, 0.6, z.z, mat.gem, 6, 3); } } if (P.dodgeT <= 0) P.dash = 0; }
     const rh = frenzyT > 0 ? 3 : rollHit;
     if (rh && netRole !== 'guest') for (const z of zombies) { if (z.dead || z.rollId === P.rollId) continue; const dx = z.x - P.x, dz = z.z - P.z, d = Math.hypot(dx, dz); if (d > 0.62 + z.r) continue;
@@ -4916,7 +4980,7 @@ function updateZombies(dt) {
   for (let a = 0; a < zombies.length; a++) {
     const z = zombies[a]; if (z.dead) continue;
     if (!isFinite(z.x) || !isFinite(z.z)) { z.dead = true; scene.remove(z.g); if (z.hoarde && hoardeOn) hoardeLeft--; continue; }
-    if (z.fly) { const f = z.fly; f.t += dt / 0.9; const k = Math.min(1, f.t); z.x = f.x0 + (f.x1 - f.x0) * k; z.z = f.z0 + (f.z1 - f.z0) * k; z.g.position.set(z.x, Math.sin(k * Math.PI) * 3.2, z.z); z.g.rotation.x += dt * 9; if (k >= 1) { z.fly = null; z.g.rotation.x = 0; burst(z.x, 0.2, z.z, mat.dirt || mat.white, 6, 2); hitZombie(z, 30 + level * 2, 0, 0, 'boom'); } continue; }
+    if (z.fly) { const f = z.fly; f.t += dt / 0.9; const k = Math.min(1, f.t); z.x = f.x0 + (f.x1 - f.x0) * k; z.z = f.z0 + (f.z1 - f.z0) * k; z.g.position.set(z.x, Math.sin(k * Math.PI) * 3.2, z.z); z.g.rotation.x += dt * 9; if (k >= 1) { z.fly = null; z.g.rotation.x = 0; burst(z.x, 0.2, z.z, mat.dirt || mat.white, 6, 2); let pn = -1; for (let dj = -1; dj <= 1 && pn < 0; dj++) for (let di = -1; di <= 1; di++) { const a = tt(z.x) + di, b = tt(z.z) + dj; if (!inb(a, b)) continue; const m = idx(a, b); if (grid[m] === PIT && fill[m] < CAP && Math.hypot(tc(a) - z.x, tc(b) - z.z) < 1.0) { pn = m; break; } } if (pn >= 0 && z.kind !== 'jumper') { z.x = tc(pn % N); z.z = tc((pn / N) | 0); fill[pn] = Math.min(CAP, fill[pn] + (z.kind === 'brute' ? 2 : 1)); setPitVisual(pn); killZombie(z, 'pit'); SFX.pitFall(fill[pn]); if (fill[pn] >= CAP) { version++; computeFlow(); } } else hitZombie(z, 8 + level, 0, 0, 'boom'); } continue; }
     if (!z.boss && z.kind !== 'brute') { const gi = tt(z.x), gj = tt(z.z); if (inb(gi, gj)) { const gn = idx(gi, gj), gv = grid[gn] === GRAVPAD; if ((gv || grid[gn] === JUMPPAD) && (z.padCd || 0) < time) { let d; if (gv) d = padDir.get(gn) || [0, 1]; else { const C0 = crystalFor(z.x, z.z), ddx = C0.i - gi, ddj = C0.j - gj, dl = Math.hypot(ddx, ddj) || 1; d = [ddx / dl, ddj / dl]; } const D = gv ? 6 : 4; let ti = gi, tj = gj; for (let q = D; q >= 1; q--) { const a = Math.round(gi + d[0] * q), b = Math.round(gj + d[1] * q); if (inb(a, b) && zPass(idx(a, b)) && grid[idx(a, b)] !== JUMPPAD && grid[idx(a, b)] !== GRAVPAD) { ti = a; tj = b; break; } } ti = Math.max(2, Math.min(N - 3, ti)); tj = Math.max(2, Math.min(N - 3, tj)); z.fly = { x0: z.x, z0: z.z, x1: tc(ti), z1: tc(tj), t: 0 }; z.padWise = true; z.padCd = time + 2; if (gate('grav', 120)) tone({ type: SQ, f: 200, f2: 900, t: 0.2, v: 0.06 }); continue; } } }
     const CR = crystalFor(z.x, z.z), cx = tc(CR.i), cz = tc(CR.j);
     z.hitCd -= dt; if (z.flash > 0 && (z.flash -= dt) <= 0) z.body.material = z.baseMat;
@@ -4935,6 +4999,7 @@ function updateZombies(dt) {
         continue;
       }
     }
+    if (landOn && n >= 0 && (z.prickT = (z.prickT || 0) - dt) <= 0) { z.prickT = 0.4; for (const [di, dj] of D4) { const a = i + di, b = j + dj; if (!inb(a, b)) continue; const m = idx(a, b); if (grid[m] !== CACTUS || !built[m]) continue; if (Math.hypot(tc(a) - z.x, tc(b) - z.z) > 0.95) continue; hitZombie(z, 10 + level, (z.x - tc(a)) * 0.5, (z.z - tc(b)) * 0.5, 'spike'); wallHp[m] -= 6; if (wallHp[m] <= 0) { burst(tc(a), 0.5, tc(b), mat.cactus, 8, 2); removeTile(m); flowDirty = true; } break; } if (z.dead) continue; }
     if (n >= 0 && grid[n] === QSAND && z.kind !== 'jumper') {
       z.sink = (z.sink || 0) + dt; z.g.position.y = -z.sink * 0.6; z.inner.rotation.z = Math.sin(time * 20) * 0.2;
       if (z.sink > 1.3) killZombie(z, 'sink'); continue;
@@ -4947,7 +5012,7 @@ function updateZombies(dt) {
     let tx, tz; const dcx = cx - z.x, dcz = cz - z.z, dc = Math.hypot(dcx, dcz);
     if (dc < 1.05) {
       z.climb = (z.climb || 0) + dt; z.roll.position.y += Math.min(1, z.climb / Math.max(0.01, climbTime)) * (crystal.towerH || 0);
-      { const hitting = z.climb >= climbTime; CR.hp -= z.dps * dt * (hitting ? 0.8 : 0.25); CR.hitT = 0.15; if (hitting || gate('crysClaw', 300)) SFX.crystal(); } tx = dcx / dc * 0.05; tz = dcz / dc * 0.05;
+      { const hitting = z.climb >= climbTime; CR.hp -= z.dps * dt * (hitting ? 0.8 : 0.25); CR.hitT = 0.15; if (CR.decoy) { if (gate('decoyHit', 1400)) tone({ type: TR, f: 520, f2: 460, t: 0.06, v: 0.025 }); } else if (hitting || gate('crysClaw', 300)) SFX.crystal(); } tx = dcx / dc * 0.05; tz = dcz / dc * 0.05;
       tip('Crystal under attack!', 'crys');
       if (CR.hp <= 0) { crystalFell(CR); break; }
     } else {
@@ -5010,8 +5075,11 @@ function updateZombies(dt) {
   zombies = zombies.filter(z => !z.dead);
 }
 
+const crysZone = new THREE.Mesh(new THREE.CircleGeometry(1, 48).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: 0xe2483d, transparent: true, opacity: 0.22, depthWrite: false })); crysZone.renderOrder = 4; crysZone.visible = false; scene.add(crysZone);
+const crysEdge = new THREE.Mesh(new THREE.RingGeometry(0.97, 1, 64).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: 0xff5a4a, transparent: true, opacity: 0.8, depthWrite: false })); crysZone.add(crysEdge);
 function updateBuild() {
   ghost.visible = false;
+  crysZone.visible = !!buildMode && buildMode !== ERASE && phase === 'live' && crystal.planted; if (crysZone.visible) { const r = keepOut(buildMode); crysZone.scale.set(r, 1, r); crysZone.position.set(tc(crystal.i), 0.05, tc(crystal.j)); crysZone.material.opacity = 0.16 + Math.sin(time * 4) * 0.06; }
   for (let q = 0; q < 3; q++) PAD_TRAIL[q].opacity = 0.25 + 0.6 * Math.max(0, Math.sin(time * 5 - q * 0.9));
   gravPrev.visible = buildMode === GRAVPAD && phase === 'live' && !P.dead; if (gravPrev.visible) { const f = Math.abs(P.ax) > Math.abs(P.az) ? [Math.sign(P.ax), 0] : [0, Math.sign(P.az) || 1]; let gx = P.x, gz = P.z; if (lastInput === 'mouse' && mouse.has && screenGround(mouse.x, mouse.y)) { gx = tc(tt(hit.x)); gz = tc(tt(hit.z)); } gravPrev.position.set(gx, 0, gz); gravPrev.rotation.y = Math.atan2(f[0], f[1]); gravPrev.children[0].material.opacity = 0.6 + Math.sin(time * 6) * 0.25; }
   if (!buildMode || buildMode === ERASE || phase === 'over' || phase === 'menu' || lastInput !== 'mouse' || !mouse.has || !screenGround(mouse.x, mouse.y)) return;
@@ -5062,6 +5130,7 @@ function updateFx(dt) {
     b.t += dt; b.x += b.vx * dt; b.z += b.vz * dt; b.m.position.x = b.x; b.m.position.z = b.z;
     for (const z of zombies) { if (z.dead || (b.hits && b.hits.has(z))) continue; const dx = z.x - b.x, dz = z.z - b.z; if (dx * dx + dz * dz < 0.16) { hitZombie(z, b.dmg || 30, b.vx / 20, b.vz / 20, 'gun'); if (b.pierce > 0) { b.pierce--; b.hits.add(z); } else { b.dead = true; break; } } }
     if (!b.dead && !b.foe) for (const n of npcs) { if (n.dead || !n.hostile || (b.hits && b.hits.has(n))) continue; const dx = n.x - b.x, dz = n.z - b.z; if (dx * dx + dz * dz < 0.2) { hitNpc(n, b.dmg || 30, b.vx / 60, b.vz / 60, true); if (b.pierce > 0) { b.pierce--; b.hits.add(n); } else { b.dead = true; break; } } }
+    if (!b.dead && !b.foe) for (const nt of nests) { if (nt.dead) continue; if (Math.hypot(nt.x - b.x, nt.z - b.z) < 1.25) { hitNest(nt, (b.dmg || 30) * 0.12); b.dead = true; break; } }
     const i = tt(b.x), j = tt(b.z); if (inb(i, j) && grid[idx(i, j)] === BARREL) { lightFuse(idx(i, j), 0.15); b.dead = true; }
     if (b.t > (b.life || 0.55) || b.dead) { scene.remove(b.m); b.dead = true; }
   }
@@ -5244,7 +5313,7 @@ function step(dt) {
       }
       const cap = Math.min(120, 60 + level * 4 + (hoardeOn ? 30 : 0));
       if (toSpawn <= 0 && spawnBias !== null) spawnBias = null;
-      if (peaceful) { }
+      if (peaceful) { trickleT -= dt; if (trickleT <= 0 && zombies.length < 20) { const zz = spawnZombie('walker'); if (zz) zz.hoarde = false; trickleT = 9 + Math.random() * 5; } }
       else if (toSpawn > 0) { spawnT -= dt; if (spawnT <= 0 && zombies.length < cap) { spawnZombie(); toSpawn--; spawnT = hoardeOn ? 0.18 : 0.28; } }
       else if (!hoardeOn) { trickleT -= dt; if (trickleT <= 0 && zombies.length < cap) { spawnZombie(); trickleT = 1.25 * Math.max(0.5, 4.2 * Math.pow(0.86, level - 1)) * (stage === 'day' ? 3.2 : stage === 'night' ? 0.7 : 1) / (1 + 0.15 * nests.length) / (bloodMoon ? 2 : 1); } }
     }
@@ -5321,7 +5390,7 @@ function frame(now) {
   const raw = (now - last) / 1000, dt = Math.min(0.05, raw); last = now; time += dt; if (raw < 1) adaptQuality(raw);
   if (spinAim && (spinAimT += dt) > 4) setSpinAim(false);
   { const mh = $('menu').hidden; if (hudCache.mm !== mh) { hudCache.mm = mh; $('bMusic').hidden = mh; } }
-  step(spinAim && !hostHasGuests() ? dt * 0.2 : dt); if (!treeOpen || !frozenDrawn) { renderer.render(scene, camera); frozenDrawn = treeOpen; } requestAnimationFrame(frame);
+  if (!(quitPause && !hostHasGuests())) step(spinAim && !hostHasGuests() ? dt * 0.2 : dt); if (!treeOpen || !frozenDrawn) { renderer.render(scene, camera); frozenDrawn = treeOpen; } requestAnimationFrame(frame);
 }
 addEventListener('resize', () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
 window.__game = { GRAVPAD, JUMPPAD, setBuild, get buildModeV() { return buildMode; }, get MUS() { return [musGain && musGain.gain.value, musNext, musBar, musVar, muted]; }, get AC() { return ac; }, get MASTER() { return master; }, get rode() { return [...rode]; }, set gunTier(v) { gunTier = v; }, get gunTier() { return gunTier; }, W_ICON, get spawnOff() { return spawnOff; }, set chainOn(v) { chainOn = v; }, startSafari, get safGate() { return safGate && [safGate.i, safGate.j]; }, get BLt() { return BL && BL.t; }, hitZombie, get zl() { return zombies.map(z=>[+z.x.toFixed(1),+z.z.toFixed(1)]); }, get phase() { return phase; }, get level() { return level; }, get vehicles() { return vehicles; }, get npcs() { return npcs; }, get carried() { return !!carried; }, set gravOn(v) { gravOn = v; }, get quakeCd() { return quakeCd; }, menuDone, get frenzyT2() { return frenzyT; }, get attract() { return attract; }, set touchActV(v) { touchAct = v; }, get musMode() { return musMode; }, set musEventT(v) { musEventT = v; }, hitStruct, get structOff() { return [shedAt, compAt, siloAt].map(isOff); }, set uziOn(v) { uziOn = v; }, get SL() { return SL; }, set shedLvV(v) { shedLv = v; refreshShed(); }, get fades() { return fadeSet.size; }, COMPILER, BELL, get bellAt() { return bellAt; }, get compAt() { return compAt; }, set crysHp(v) { crystal.hp = v; }, get crysHp() { return crystal.hp; }, get navDbg() { return [awayHp, crysAlertT, regionAt(tt(P.x), tt(P.z)), Math.round(P.x), Math.round(P.z), crystal.max]; }, startShip, get ship() { return !!ship; }, startJet, set jetCharge(v) { jetCharge = v; }, get jetT() { return jetT; }, set jetOn(v) { jetOn = v; setJetLook(); }, get shedLv() { return shedLv; }, upgradeShed, get samKills() { return samKills; }, spitBlock, placeCosmic, openCosmic, get cosmic() { return cosmic && Math.round(cosmic.t); }, get BL() { return BL; }, sendFishing, spawnGearItem, get scyRare() { return scyRare; }, get sam() { return !!sam; }, set samT(v) { samT = v; }, get killTimes() { return killTimes.length; }, dodge, TITAN, set titanOn(v) { titanOn = v; updateBuildButtons(); }, set vetOn(v) { vetOn = v; }, petHurt, npcHurt, SHED, get shedAt() { return shedAt; }, get treeMode() { return treeMode; }, set mechWolf(v) { mechWolf = v; }, set heliGun(v) { heliGun = v; }, set skyOn(v) { skyOn = v; }, get regionBiome2() { return regionBiome; }, addVehicle, useVehicle, dismount, addPet, get zraw() { return zombies; }, get roadNextArr() { return roadNext; }, set roadOn(v) { roadOn = v; updateBuildButtons(); }, set reaperBlades(v) { reaperBlades = v; }, set spinnerMax(v) { spinnerMax = v; }, ROAD, SPINNER, get gearDrops() { return gearDrops.map(d => [d.sl, d.t]); }, equipFirst: () => gearDrops[0] && equipDrop(gearDrops[0]), get sabCamps() { return sabCamps; }, plantDecoy, get decoy() { return decoy && Math.round(decoy.t); }, get tradeTax() { return tradeTax; }, set hoardeLeftV(v) { hoardeLeft = v; }, get hoardeStall() { return hoardeStall; }, startHoarde, killBoss: () => boss && killZombie(boss, "scythe"), startPeace, spawnBoss, get boss() { return boss && Math.round(boss.hp); }, get pathLen() { return pathPts.length; }, set pathShowT(v) { pathShowT = v; }, get globs() { return globs.length; }, get buildMode() { return buildMode; }, hurtPlayer, set droneOn(v) { droneOn = v; }, get crystalIJ() { return [crystal.i, crystal.j]; }, startLure, startFrenzy, get lureT() { return lureT; }, get frenzyT() { return frenzyT; }, set frenzyCharge(v) { frenzyCharge = v; }, set lureOn(v) { lureOn = v; }, set frenzyOn(v) { frenzyOn = v; }, get peaceT() { return peaceT; }, endHoarde, get baseR() { return baseR; }, openGateway, startBonus, endBonus, get inBonus() { return inBonus; }, get gateway() { return gateway; }, get mazeF() { return mazeF; }, get goals() { return goals.map(g => g.t); }, addHero, get scares() { return [...scares.values()].map(s2 => Math.round(s2.hp)); }, set weapon(v) { weapon = v; }, get weapon() { return weapon; }, set bowOwned(v) { bowOwned = v; }, set fuel(v) { fuel = v; }, set molotovs(v) { molotovs = v; }, get net() { return net; }, get netRole() { return netRole; }, set netRole(v) { netRole = v; }, hostRecv, guestRecv, buildSave, sendWorld, saveGame, loadGame, readSave, get worldSeed() { return worldSeed; }, openCavern, get nests() { return nests; }, placeMystery, get mystery() { return mystery; }, compass, get radio() { return radio; }, spawnWanderer, useRadio, get heliOn() { return heli.t >= 0; }, addNpc, openTrade, maybeRaid, set repu(v) { repu = v; }, set wheat(v) { wheat = v; }, get wheat() { return wheat; }, set bread(v) { bread = v; }, get bread() { return bread; }, get farms() { return farms; }, SILO, FARM, get repu() { return repu; }, set level(v) { level = v; }, get pets() { return pets; }, get junks() { return junks.length; }, set fish(v) { fish = v; }, set bones(v) { bones = v; }, set spinCharges(v) { spinCharges = v; }, get spinCharges() { return spinCharges; }, get combo() { return combo; }, setSpinAim, spinAddPoint, spinRelease, get spinning() { return !!P.spin; }, set scy(v) { scy = v; }, get bones() { return bones; }, showLoot, toggleBag, get fish() { return fish; }, get gear() { return gear; }, get fishing() { return fishing && { t: fishing.t, wait: fishing.wait, bite: fishing.bite }; }, dropGear, getInteract, useVehicle, crystalDrop, startHeli, TAR, JUMPPAD, TOTEM, QSAND, WATER, get regionBiome() { return regionBiome; }, swapBiome, get pickups() { return pickups.length; }, WIRE, get points() { return points; }, set points(v) { points = v; }, buyNode, openTree, set levelCd(v) { levelCd = v; }, get levelCd() { return levelCd; }, SENTRY, SHIELD, get owned() { return owned; }, get charge() { return charge; }, set charge(v) { charge = v; }, set hoardeT(v) { hoardeT = v; }, get hoardeOn() { return hoardeOn; }, get hoardeLeft() { return hoardeLeft; }, set graceT(v) { graceT = v; }, levelUp, spawnZombie, feedCrystal, get wallHp() { return wallHp; }, get zombies() { return zombies.length; }, get scrap() { return scrap; }, set scrap(v) { scrap = v; },
