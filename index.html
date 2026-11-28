@@ -507,7 +507,7 @@ body.attract #menu .card{background:rgba(30,20,40,.72);border-radius:22px;paddin
       <p class="cstat" id="coopStat" hidden></p>
     </div>
     <div class="runs" id="runs"></div>
-    <div class="keys">Best: <span id="menuBest">Lv 0</span><br>v0.75</div>
+    <div class="keys">Best: <span id="menuBest">Lv 0</span><br>v0.76</div>
   </div>
 </div>
 <div class="screen" id="over" hidden>
@@ -1973,13 +1973,13 @@ function padIdx() { return crystal.planted && inb(crystal.i, crystal.j + 1) ? id
 function onPad() { return crystal.planted && !P.onWall && phase === 'live' && Math.hypot(P.x - tc(crystal.i), P.z - tc(crystal.j + 1)) < 0.8; }
 function nearCrystal() { return crystal.planted && Math.hypot(P.x - tc(crystal.i), P.z - tc(crystal.j)) < 2.4; }
 function zombieStats() {
-  let hp = 40 + 9 * level; if (level > 12) hp *= Math.pow(1.06, level - 12);
+  let hp = 40 + 10.5 * level; if (level > 10) hp *= Math.pow(1.06, level - 10);
   return { hp, speed: Math.min(2.8, 1.55 + 0.055 * level) };
 }
 function startHoarde() {
   hoardes++;
   let defence = 0; for (let n = 0; n < N * N; n++) { if (grid[n] === WALL) defence += 0.12; else if (grid[n] === PIT) defence += 0.5; }
-  let count = Math.round(14 + 5 * level + 3 * hoardes + Math.min(30, defence));
+  let count = Math.round(14 + 6 * level + 3 * hoardes + Math.min(30, defence));
   if (crystal.hp < crystal.max * 0.5) count = Math.round(count * 0.8);
   hoardeCount = count; hoardeLeft = count; hoardeOn = true; toSpawn += count; hoardeT = 600;
   spawnBias = null; banner('THE HOARDE', '', 2.2); SFX.hoarde(); shake = 0.5;
@@ -2045,7 +2045,7 @@ function updateGlobs(dt) {
 }
 function spawnBoss() {
   if (phase !== 'live') return; spawnZombie('brute'); const z = zombies[zombies.length - 1]; if (!z) return;
-  z.boss = true; z.hp *= 6; z.maxHp = z.hp; z.speed *= 0.85; z.dmg = 40; z.dps = 60; z.g.scale.setScalar(2.4); z.r = 0.6; z.baseMat = BOSS_M; z.body.material = BOSS_M; if (hoardeOn) { hoardeLeft++; hoardeCount++; z.hoarde = true; }
+  z.boss = true; z.hp *= 6; z.maxHp = z.hp; z.speed *= 0.85; z.dmg = 40 * (1 + 0.05 * Math.max(0, level - 1)); z.dps = 60 * (1 + 0.05 * Math.max(0, level - 1)); z.g.scale.setScalar(2.4); z.r = 0.6; z.baseMat = BOSS_M; z.body.material = BOSS_M; if (hoardeOn) { hoardeLeft++; hoardeCount++; z.hoarde = true; }
   const crown = new THREE.Group(); for (let q = 0; q < 5; q++) { const c = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.16, 4), mat.gold); c.position.set(Math.cos(q * 1.256) * 0.14, 0.5, Math.sin(q * 1.256) * 0.14); crown.add(c); } z.roll.add(crown);
   boss = z; banner('BOSS', '', 2.4); SFX.hoarde(); shake = 0.6; tempMark(z.x, z.z, '#ff3d3d', 'skull', 12);
 }
@@ -2074,7 +2074,7 @@ function spawnZombie(kind, px, pz) {
   if (!kind) {
     const r = Math.random(), bruteBoost = hoardeOn ? 0.08 : 0;
     const r2 = Math.random();
-    kind = level >= 4 && r2 < 0.06 ? 'boomer' : level >= 7 && r2 < 0.085 ? 'spitter' : level >= 8 && r < 0.06 ? 'digger' : level >= 5 && r < 0.1 + 0.012 * level + bruteBoost ? 'brute' : level >= 6 && r < 0.27 + 0.012 * level ? 'jumper' : (level >= 3 || hoardeOn) && r < 0.42 ? 'runner' : 'walker';
+    kind = level >= 4 && r2 < 0.06 ? 'boomer' : level >= 7 && r2 < 0.085 ? 'spitter' : level >= 8 && r < 0.06 ? 'digger' : level >= 5 && r < 0.1 + 0.015 * level + bruteBoost ? 'brute' : level >= 6 && r < 0.27 + 0.015 * level ? 'jumper' : (level >= 3 || hoardeOn) && r < 0.42 ? 'runner' : 'walker';
   }
   const s = pickSpawnTile(), i = s % N, j = (s / N) | 0;
   const bm = kind === 'boomer' ? BOOM_M : kind === 'spitter' ? SPIT_M : kind === 'runner' ? mat.runner : kind === 'brute' ? mat.brute : kind === 'jumper' ? mat.jumper : kind === 'digger' ? DIGM : mat.zomb;
@@ -2091,6 +2091,7 @@ function spawnZombie(kind, px, pz) {
   else if (kind === 'spitter') { z.hp *= 0.7; z.g.scale.setScalar(0.92); p.inner.rotation.x = -0.15; z.spitCd = 1.5; const jaw = new THREE.Mesh(new THREE.SphereGeometry(0.09, 6, 5), SPIT_M2); jaw.position.set(0, 0.08, 0.27); p.roll.add(jaw); }
   else if (kind === 'jumper') { z.speed *= 1.2; z.g.scale.setScalar(0.9); p.inner.rotation.x = 0.3; tip('Jumpers leap over pits and wire!', 'jumper'); }
   else { p.inner.rotation.x = 0.16; p.g.scale.setScalar(0.94 + Math.random() * 0.14); }
+  const dk = 1 + 0.05 * Math.max(0, level - 1); z.dmg *= dk; z.dps *= dk;
   z.g.position.set(z.x, 0, z.z); zombies.push(z); if (Math.random() < 0.1) z.sentryHunt = true;
   if (kind === 'runner') tip('Runners! Fast but fragile.', 'runner');
   if (kind === 'brute') tip('Brute! It smashes walls.', 'brute');
