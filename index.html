@@ -511,7 +511,7 @@ body.attract #menu .card{background:rgba(30,20,40,.72);border-radius:22px;paddin
       <p class="cstat" id="coopStat" hidden></p>
     </div>
     <div class="runs" id="runs"></div>
-    <div class="keys">Best: <span id="menuBest">Lv 0</span><br>v0.80</div>
+    <div class="keys">Best: <span id="menuBest">Lv 0</span><br>v0.81</div>
   </div>
 </div>
 <div class="screen" id="over" hidden>
@@ -4603,12 +4603,14 @@ function spinRelease() {
 }
 function updateSpinMove(dt) {
   const sp = P.spin, speed = 18 + 3 * scy, R = 1.2 + 0.3 * scy;
+  if (sp.maxT === undefined) { let L = 0; for (let q = 1; q < sp.path.length; q++) L += Math.hypot(sp.path[q][0] - sp.path[q - 1][0], sp.path[q][1] - sp.path[q - 1][1]); sp.maxT = L / speed + 1.2; sp.t = 0; }
+  if ((sp.t += dt) > sp.maxT) sp.seg = sp.path.length;
   if (sp.ls !== sp.seg) { sp.ls = sp.seg; sp.segT = 0; } else if ((sp.segT += dt) > 0.45) { sp.seg++; sp.segT = 0; }
   let move = speed * dt;
   while (move > 0 && sp.seg < sp.path.length) {
     const [tx, tz] = sp.path[sp.seg], dx = tx - P.x, dz = tz - P.z, d = Math.hypot(dx, dz);
     const stepL = Math.min(move, d), nx = P.x + (d ? dx / d * stepL : 0), nz = P.z + (d ? dz / d * stepL : 0);
-    const okS = (x, z) => !blocked(x, z, 0.3, true) && !(inb(tt(x), tt(z)) && grid[idx(tt(x), tt(z))] === WATER);
+    const okS = (x, z) => !blocked(x, z, 0.3, false) && !(inb(tt(x), tt(z)) && grid[idx(tt(x), tt(z))] === WATER);
     if (!okS(nx, nz)) { const sx = nx - P.x, sz = nz - P.z; move -= stepL;
       if (okS(P.x + sx, P.z)) P.x += sx; else if (okS(P.x, P.z + sz)) P.z += sz; else if (okS(P.x - sz, P.z + sx)) { P.x -= sz; P.z += sx; } else if (okS(P.x + sz, P.z - sx)) { P.x += sz; P.z -= sx; }
       else { sp.stk = (sp.stk || 0) + dt; if (sp.stk > 0.2) { sp.stk = 0; sp.seg++; } break; }
@@ -4624,6 +4626,7 @@ function updateSpinMove(dt) {
   player.scythe.scale.setScalar(1 + 0.2 * scy);
   trail.position.set(P.x, 0, P.z); trail.rotation.y += dt * 38; trailMesh.material.opacity = 0.85; trail.scale.setScalar(R / 1.8); trailMesh.material.color.setHex(scy >= 4 ? 0xffb347 : 0xfff4d6);
   if (sp.seg >= sp.path.length) {
+    if (blocked(P.x, P.z, 0.3, true)) { let best = null; for (let r = 0.5; r <= 5 && !best; r += 0.5) for (let a = 0; a < 16; a++) { const x = P.x + Math.cos(a * 0.393) * r, z = P.z + Math.sin(a * 0.393) * r; if (!blocked(x, z, 0.3, true) && !(inb(tt(x), tt(z)) && grid[idx(tt(x), tt(z))] === WATER)) { best = [x, z]; break; } } if (best) { puff(P.x, 0.4, P.z, 0xd8d0c0); P.x = best[0]; P.z = best[1]; } }
     P.spin = null; player.scythe.scale.setScalar(1); P.vx = P.vz = 0; shake = 0.35;
     if (scy >= 3 && netRole !== 'guest') { burst(P.x, 0.4, P.z, scy >= 4 ? mat.lava : mat.gem, 14, 5); for (const z of zombies) { const d = Math.hypot(z.x - P.x, z.z - P.z); if (!z.dead && d < R + 1.2) hitZombie(z, 200, (z.x - P.x) / (d || 1), (z.z - P.z) / (d || 1), 'spin'); } SFX.boom(); }
   }
