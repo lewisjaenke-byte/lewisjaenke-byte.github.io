@@ -511,7 +511,7 @@ body.attract #menu .card{background:rgba(30,20,40,.72);border-radius:22px;paddin
       <p class="cstat" id="coopStat" hidden></p>
     </div>
     <div class="runs" id="runs"></div>
-    <div class="keys">Best: <span id="menuBest">Lv 0</span><br>v0.81</div>
+    <div class="keys">Best: <span id="menuBest">Lv 0</span><br>v0.82</div>
   </div>
 </div>
 <div class="screen" id="over" hidden>
@@ -1336,7 +1336,7 @@ function genRegion(r) {
   const freeSpot = () => { for (let t = 0; t < 40; t++) { const [i, j] = rp(); if (ok(i, j)) return [i, j]; } return null; };
   if (bm !== 'lake' && bm !== 'mountain') {
     if (Math.random() < (bm === 'town' ? 0.5 : 0.12)) { const f = freeSpot(); if (f) addVehicle('bike', tc(f[0]), tc(f[1])); }
-    if (bm === 'airstrip') { const st = site(28, 5); if (st) { const [i, j] = st, cn = idx(i + 14, j + 2);
+    if (bm === 'airstrip') { const st = site(28, 5); if (st) { const [i, j] = st, cn = idx(i + 14, j + 2); if (Math.abs(Math.sin(worldSeed * 12.9898 + r * 78.233) * 43758.5453) % 1 < 0.18) airJet = [tc(i + 4), tc(j + 6)];
         const rw = new THREE.Group(), slab = new THREE.Mesh(new THREE.PlaneGeometry(28, 4).rotateX(-Math.PI / 2), new THREE.MeshLambertMaterial({ color: 0x55524d })); slab.position.set(0, 0.02, 0); slab.receiveShadow = true; rw.add(slab);
         for (let q = 0; q < 12; q++) { const ds = new THREE.Mesh(new THREE.PlaneGeometry(1.2, 0.16).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: 0xf2efe6 })); ds.position.set(-12.5 + q * 2.2, 0.03, 0); rw.add(ds); }
         for (const ex of [-13.6, 13.6]) for (let q = 0; q < 5; q++) { const st2 = new THREE.Mesh(new THREE.PlaneGeometry(0.18, 0.5).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: 0xf2efe6 })); st2.position.set(ex, 0.03, -1.4 + q * 0.7); rw.add(st2); }
@@ -1502,13 +1502,13 @@ function generateWorld() {
   { const outer = [0, 1, 2, 3, 5, 6, 7, 8].filter(q => regionBiome[q] !== 'lake').sort(() => Math.random() - 0.5); const rr = outer.filter(q => regionBiome[q] !== 'town'); radioRegion = Math.random() < 0.45 ? rr[0] ?? -1 : -1; campRegion = outer.filter(q => q !== radioRegion)[0] ?? -1; radio = null; subRegion = waterRegion = -1; sites = []; if (genVer >= 6) { const o2 = outer.filter(q => q !== radioRegion && q !== campRegion && regionBiome[q] !== 'town'); subRegion = o2[0] ?? -1; waterRegion = o2[1] ?? -1; } }
   for (const r of [0, 1, 2, 3, 5, 6, 7, 8].filter(q => regionBiome[q] === 'town').concat([0, 1, 2, 3, 4, 5, 6, 7, 8].filter(q => regionBiome[q] !== 'town'))) genRegion(r);
   paintWorld();
-  buildDecor(); visited = new Set(); lastRegion = -1;
+  buildDecor(); visited = new Set(); lastRegion = -1; buildRamps();
 }
 function doSwap(r, nb, key) { clearRegion(r); regionBiome[r] = nb; seeded(key, () => { genRegion(r); paintWorld(); buildDecor(); }); const rx = r % 3, rz = (r / 3) | 0; for (let j = Math.max(0, rz * 72 - 10); j < Math.min(N, rz * 72 + 82); j++) for (let i = Math.max(0, rx * 72 - 10); i < Math.min(N, rx * 72 + 82); i++) { const n = idx(i, j); if (regionAt(i, j) === r) genGrid[n] = built[n] ? 0 : grid[n]; } }
 function swapBiome() {
   const outer = [0, 1, 2, 3, 5, 6, 7, 8], r = outer[(Math.random() * 8) | 0], nb = pickBiome(regionBiome[r]), key = (Math.random() * 1e9) | 0;
   doSwap(r, nb, key); swaps.push([r, nb, key]); if (netRole === 'host') { netSend({ t: 'swap', r, nb, key }); net.prevGrid && net.prevGrid.set(grid); } visited.delete(r); version++; computeFlow();
-  setTimeout(() => { banner('The land shifts', 'The ' + DIRS[r] + ' is now ' + BIOMES[nb].name, 3); SFX.dusk(); }, 3400);
+  setTimeout(() => { banner('The land has shifted ' + DIRS[r].split('-').map(w => w[0].toUpperCase() + w.slice(1)).join(' '), 'It is now ' + BIOMES[nb].name, 3.4); SFX.dusk(); tempMark(tc((r % 3) * REG + REG / 2), tc(((r / 3) | 0) * REG + REG / 2), '#8fe3f8', 'star', 12); }, 3400);
 }
 /* ---------- building ---------- */
 const BIG_STRUCT = new Set([SHED, COMPILER, BELL, SILO, KENNEL, TITAN, SCARE, TOTEM, SHIELD]);
@@ -1894,7 +1894,7 @@ function buyNode(bi, ni) {
   if (netRole === 'guest') { if (menuPts() <= 0) { SFX.bonk(); return; } netSend({ t: 'node', bi, ni }); SFX.buy(); selNode = ni + 1 < UPG[bi].nodes.length ? [bi, ni + 1] : null; return; }
   const tab = TAB_OF[UPG[bi].name], key = tab === 2 ? 'w' : tab === 0 ? 'c' : null;
   if (key ? SL[key].pts <= 0 : points <= 0) { SFX.bonk(); return; }
-  const nd = UPG[bi].nodes[ni]; if (key) SL[key].pts--; else points--; owned.add(nd[0]); nd[3](); if (!guestCtx) SFX.buy(); updateBuildButtons(); if (owned.size % 10 === 0 && netRole !== 'guest') setTimeout(swapBiome, 1500);
+  const nd = UPG[bi].nodes[ni]; if (key) SL[key].pts--; else points--; owned.add(nd[0]); nd[3](); if (!guestCtx) SFX.buy(); updateBuildButtons(); 
   if (!guestCtx) selNode = ni + 1 < UPG[bi].nodes.length ? [bi, ni + 1] : null; if (treeOpen) renderTree(); if (netRole === 'host') netActNow();
 }
 function openTree(open, mode) {
@@ -1937,7 +1937,7 @@ function levelUp() {
   crystal.max += 60; crystal.hp = Math.min(crystal.max, crystal.hp + crystal.max * 0.27);
   points++; levelCd = levelCdFor(level); recount();
 
-  banner('Level ' + level, '+1 upgrade point · more walls and pits allowed', 3.2);
+  banner('Level ' + level, '+1 upgrade point · more walls and pits allowed', 3.2); if (level % 7 === 0 && netRole !== 'guest') setTimeout(swapBiome, 4000);
   if (level === 3) setTimeout(() => tip('Runners now join the horde.'), 3400);
   if (level === 5) setTimeout(() => tip('Brutes now smash walls.'), 3400);
   const bonus = 8 + level * 4; scrap += bonus; floater(tc(crystal.i), tc(crystal.j), '+' + bonus);
@@ -2213,7 +2213,7 @@ function hitBridge(n) {
   const span = new Set([n]), st = [n]; while (st.length) { const c = st.pop(), ci = c % N, cj = (c / N) | 0; for (const [a, b] of D4) { const i = ci + a, j = cj + b; if (!inb(i, j)) continue; const m = idx(i, j); if (grid[m] === BRIDGE && !span.has(m)) { span.add(m); st.push(m); } } }
   let land = null; for (const m of span) { for (const [a, b] of D4) { const i = (m % N) + a, j = ((m / N) | 0) + b; if (inb(i, j) && grid[idx(i, j)] === EMPTY) { land = [tc(i), tc(j)]; break; } } if (land) break; }
   const on = (ex, ez) => span.has(idx(tt(ex), tt(ez)));
-  for (const m of span) { bridgeHp.delete(m); removeTile(m); grid[m] = CANYON; addObj(m, makeCanyon(m)); setGround(m, true); clearDecorAt(m); burst(tc(m % N), 0.2, tc((m / N) | 0), mat.wood, 8, 3); }
+  for (const m of span) { bridgeHp.delete(m); removeTile(m); grid[m] = CANYON; addObj(m, makeCanyon(m)); setGround(m, false); clearDecorAt(m); burst(tc(m % N), 0.2, tc((m / N) | 0), mat.wood, 8, 3); }
   version++; flowDirty = true; computeFlow(); SFX.crumble(); shake = 0.6; banner('Bridge down!', '', 1.6); let fell = 0;
   for (const z of zombies) if (!z.dead && !z.fly && on(z.x, z.z)) { killZombie(z, 'sink'); fell++; }
   for (const nn of npcs) if (!nn.dead && on(nn.x, nn.z)) { npcHurt(nn, 99999); fell++; }
@@ -2284,8 +2284,8 @@ function fireBullet(x, y, z, dx, dz, dmg, quiet) {
 const mountGun = v => !!v && ((v.kind === 'bike' && uziOn) || (v.kind === 'buggy' && buggyGun) || v.kind === 'tank');
 function dodge() {
   if (P.seatK !== undefined) { const v = vehicles.find(q => q.kind === 'truck'); P.seatK = undefined; P.y = 0; if (v) { P.x = v.x + Math.cos(v.face) * 1.6; P.z = v.z - Math.sin(v.face) * 1.6; } netSend({ t: 'unseat' }); SFX.drop(); return; }
-  if (P.mount && mountGun(P.mount)) { dismount(); return; }
-  if (P.mount || P.air) return;
+  if (P.mount) { dismount(); return; }
+  if (P.air) return;
   if (P.stuck) { P.qsRolls++; burst(P.x, 0.1, P.z, mat.qsand, 5, 2); SFX.roll(); shake = 0.15; if (P.qsRolls >= 4) { P.stuck = false; P.qsImmune = 1.5; tip('Free!'); } else return; }
   if (P.dodgeCd > 0 || P.dodgeT > 0 || phase === 'menu' || phase === 'over') return;
   let mx = joy.x, mz = joy.y;
@@ -2733,7 +2733,7 @@ function hostTick(dt) {
     netSend({ t: 'a', npcs: npcs.filter(n => !n.dead).map(n => [n.hero ? 'hero:' + n.heroType : n.kind, +n.x.toFixed(2), +n.z.toFixed(2), +n.face.toFixed(2), n.hostile ? 1 : 0]),
       pets: pets.map(pt => [pt.kind, +pt.x.toFixed(2), +pt.z.toFixed(2), +(pt.face || 0).toFixed(2)]),
       veh: vehicles.map(v => [v.kind, +v.x.toFixed(2), +v.z.toFixed(2), +(v.face || 0).toFixed(2), v.fixed ? 1 : 0]),
-      bg: inBonus && BL && BL.got ? BL.got : null, bc: inBonus && BL && BL.chests ? BL.chests.map(c => c.open ? 1 : 0) : null, gw: gateway && !inBonus ? [+gateway.x.toFixed(2), +gateway.z.toFixed(2)] : null, nests: nests.filter(nt => !nt.dead).map(nt => [nt.tiles[0], Math.round(nt.hp), nt.max]), mys: mystery ? [mystery.x, mystery.z] : null, up: [...owned], c2: crystal2.planted ? [crystal2.i, crystal2.j, Math.round(crystal2.hp), crystal2.max] : null, c1: [crystal.i, crystal.j] });
+      bg: inBonus && BL && BL.got ? BL.got : null, sd: sites.map(st => [st.kind, +st.x.toFixed(2), +st.z.toFixed(2), [...st.done]]), bc: inBonus && BL && BL.chests ? BL.chests.map(c => c.open ? 1 : 0) : null, gw: gateway && !inBonus ? [+gateway.x.toFixed(2), +gateway.z.toFixed(2)] : null, nests: nests.filter(nt => !nt.dead).map(nt => [nt.tiles[0], Math.round(nt.hp), nt.max]), mys: mystery ? [mystery.x, mystery.z] : null, up: [...owned], c2: crystal2.planted ? [crystal2.i, crystal2.j, Math.round(crystal2.hp), crystal2.max] : null, c1: [crystal.i, crystal.j] });
   }
 }
 /* --- guest --- */
@@ -2817,6 +2817,7 @@ function reconcile(list, data, make, kill, keyOf) {
 function guestActors(m) {
   if (m.bc && inBonus && BL && BL.chests) m.bc.forEach((o, q) => { const c = BL.chests[q]; if (c && o && !c.open) { c.open = true; c.mesh.rotation.z = 0.5; c.mesh.position.y = 0.05; burst(c.mesh.position.x, 0.6, c.mesh.position.z, mat.gold, 14, 3); } });
   if (m.bg && inBonus && BL && BL.gemM) m.bg.forEach((o, q) => { if (o && BL.gemM[q] && BL.gemM[q].visible) { BL.gemM[q].visible = false; burst(BL.gemM[q].position.x, 1, BL.gemM[q].position.z, mat.gem, 8, 2); } });
+  if (m.sd) sites = m.sd.map(([k, x, z, dn]) => ({ kind: k, x, z, done: new Set(dn) }));
   if (m.gw && !inBonus) { if (!net.gw) { net.gw = makeGateMesh(2); scene.add(net.gw); } net.gw.position.set(m.gw[0], 0, m.gw[1]); net.gw.userData.disc.rotation.z += 0.2; } else if (net.gw) { scene.remove(net.gw); net.gw = null; }
   if (m.c1 && (m.c1[0] !== crystal.i || m.c1[1] !== crystal.j)) { if (grid[idx(crystal.i, crystal.j)] === CRYS) grid[idx(crystal.i, crystal.j)] = EMPTY; crystal.i = m.c1[0]; crystal.j = m.c1[1]; crystal.g.position.set(tc(crystal.i), 0, tc(crystal.j)); glow.position.set(tc(crystal.i), 0.01, tc(crystal.j)); }
   if (m.c2) { if (!crystal2.planted || crystal2.i !== m.c2[0] || crystal2.j !== m.c2[1]) plantCrystal2(m.c2[0], m.c2[1]); crystal2.hp = m.c2[2]; crystal2.max = m.c2[3]; } else if (crystal2.planted) loseCrystal2();
@@ -2895,7 +2896,7 @@ function buildSave() {
       npcs: npcs.filter(n => !n.dead && !n.wanderer && !n.raid).map(n => n.hero ? ['hero', +n.x.toFixed(2), +n.z.toFixed(2), +n.hx.toFixed(1), +n.hz.toFixed(1), 0, 0, 0, 0, null, n.heroType, n.hired ? 1 : 0, n.mode, n.free ? 1 : 0] : [n.kind, +n.x.toFixed(2), +n.z.toFixed(2), +n.hx.toFixed(1), +n.hz.toFixed(1), n.hostile ? 1 : 0, n.angry ? 1 : 0, n.camp || n.campR ? 1 : 0, n.calm ? 1 : 0, n.stock ? n.stock.map(st => [OFFERS.indexOf(st.o), st.left, st.o.get[0]]) : null]),
       junks: junks.map(jk => [+jk.x.toFixed(2), +jk.z.toFixed(2), jk.hp]),
       pick: pickups.filter(pk => !pk.dead).map(pk => [pk.kind, +pk.x.toFixed(2), +pk.z.toFixed(2)]),
-      mys: mystery ? [mystery.x, mystery.z] : null, wg: wendyGrave ? [+wendyGrave.x.toFixed(2), +wendyGrave.z.toFixed(2)] : null, mysteryT, radio: radio ? [radio.fixed ? 1 : 0, Math.round(radio.cd), radio.used ? 1 : 0] : null, ms: sites.filter(o => o.done.size || o.fueled || o.blown).map(o => [o.kind, Math.round(o.x * 10), Math.round(o.z * 10), [...o.done], o.fueled ? 1 : 0, o.blown ? 1 : 0]), lt: lights.map(l => [+l.x.toFixed(2), +l.z.toFixed(2)]), ls: lightStock, mo: millOn ? 1 : 0, mt: Math.round(millT), rb: rocketBoost, fs: farmSpeed,
+      mys: mystery ? [mystery.x, mystery.z] : null, wg: wendyGrave ? [+wendyGrave.x.toFixed(2), +wendyGrave.z.toFixed(2)] : null, mysteryT, radio: radio ? [radio.fixed ? 1 : 0, Math.round(radio.cd), radio.used ? 1 : 0] : null, ms: sites.filter(o => o.done.size || o.fueled || o.blown).map(o => [o.kind, Math.round(o.x * 10), Math.round(o.z * 10), [...o.done], o.fueled ? 1 : 0, o.blown ? 1 : 0]), lt: lights.map(l => [+l.x.toFixed(2), +l.z.toFixed(2)]), ls: lightStock, jf: jetFound ? 1 : 0, mo: millOn ? 1 : 0, mt: Math.round(millT), rb: rocketBoost, fs: farmSpeed,
       nests: nests.filter(nt => !nt.dead).map(nt => [nt.tiles[0], Math.round(nt.hp), nt.max])
     };
     if (mv && mv.kind !== 'wolf') { const v = d.veh[vehicles.indexOf(mv)]; if (v) { v[1] = +P.x.toFixed(2); v[2] = +P.z.toFixed(2); } }
@@ -2941,6 +2942,7 @@ function loadGame(given) {
       else place(i, j, t);
     }
     loadingSave = false;
+    for (const n of drawbs) { const o = tileObj[n]; if (o) o.rotation.y = (grid[n - N] === MOAT || grid[n + N] === MOAT) && !(grid[n - 1] === MOAT || grid[n + 1] === MOAT) ? Math.PI / 2 : 0; }
     d.owned = d.owned.map(id => id === 'pistol' ? 'longscy' : id); if (d.owned.includes('tesla') && !d.owned.includes('gtower')) d.owned.push('gtower'); if (d.owned.includes('gtower') && !d.owned.includes('sam')) d.owned.push('sam'); if (!d.owned.includes('spin')) d.owned.push('spin');
     for (const id of d.owned) for (const br of UPG) for (const nd of br.nodes) if (nd[0] === id && !owned.has(id)) { owned.add(id); nd[3](); }
     for (let q = 0; q < d.fills.length; q += 2) { fill[d.fills[q]] = d.fills[q + 1]; if (grid[d.fills[q]] === PIT) setPitVisual(d.fills[q]); }
@@ -2955,7 +2957,7 @@ function loadGame(given) {
     if (d.wg) placeWendyGrave(d.wg[0], d.wg[1]); cactusBag = d.cb || 0;
     if (radio && d.radio) { radio.fixed = !!d.radio[0]; radio.cd = d.radio[1]; radio.used = !!d.radio[2] || radio.fixed; }
     for (const [k, x, z, dn, fu, bl] of d.ms || []) { const st = sites.find(o => o.kind === k && Math.abs(o.x * 10 - x) < 2 && Math.abs(o.z * 10 - z) < 2); if (st) { st.done = new Set(dn); st.fueled = !!fu; st.blown = !!bl; } }
-    for (const [x, z] of d.lt || []) placeLight(x, z, false); lightStock = d.ls || 0; millOn = !!d.mo; millT = d.mt || 0; rocketBoost = d.rb || 0; if (d.fs) farmSpeed = d.fs;
+    for (const [x, z] of d.lt || []) placeLight(x, z, false); lightStock = d.ls || 0; jetFound = !!d.jf; millOn = !!d.mo; millT = d.mt || 0; rocketBoost = d.rb || 0; if (d.fs) farmSpeed = d.fs;
     graceT = 8; stage = 600 - hoardeT < 240 ? 'day' : 600 - hoardeT < 420 ? 'dusk' : 'night';
     if (netRole === 'host' && !given) setTimeout(sendWorld, 300);
     version++; computeFlow(); recount(); updateBuildButtons(); camTarget.set(P.x, 0, P.z); $('bPlant').hidden = true;
@@ -2993,7 +2995,7 @@ function openCavern() {
   }
 }
 function hitNest(nt, dmg) {
-  if (nt.dead) return; nt.hp -= dmg; nt.flash = 0.1; nt.angry = 6; burst(nt.x, 0.8, nt.z, DIRT_M, 4, 2); SFX.clank(); shake = Math.max(shake, 0.12);
+  if (nt.dead) return; nt.hp -= dmg; nt.flash = 0.1; nt.angry = 6; if (nt.hp > 0 && netRole !== 'guest' && Math.random() < 0.3 && gate('nestspawn' + nt.tiles[0], 600)) { const a = Math.random() * 6.28; const z = spawnZombie(Math.random() < 0.25 ? 'runner' : 'walker', nt.x + Math.cos(a) * 1.3, nt.z + Math.sin(a) * 1.3); if (z) { z.hoarde = false; z.hunt = true; puff(z.x, 0.3, z.z, 0x6b5a48); } } burst(nt.x, 0.8, nt.z, DIRT_M, 4, 2); SFX.clank(); shake = Math.max(shake, 0.12);
   if (nt.hp <= 0) {
     nt.dead = true; cnt.caves++; for (const n of nt.tiles) { built[n] = 0; tileObj[n] = null; grid[n] = EMPTY; } scene.remove(nt.mesh); version++; computeFlow();
     burst(nt.x, 0.8, nt.z, DIRT_M, 18, 5); burst(nt.x, 0.8, nt.z, mat.zomb, 10, 4); SFX.boom(); shake = 0.5;
@@ -3107,7 +3109,7 @@ function genBonus(type) {
     w = 9; h = 96; G = new Uint8Array(w * h).fill(1); for (let j = 1; j < h - 1; j++) for (let i = 2; i <= 6; i++) set(i, j, 0);
     const gems = []; for (let j = 8; j < h - 6; j += 3 + ((Math.random() * 3) | 0)) gems.push([Math.random() < 0.5 ? 1 : 7, j]);
     for (let q = 0; q < 6; q++) { const j = 14 + ((Math.random() * (h - 24)) | 0); set(Math.random() < 0.5 ? 2 : 6, j, 1); }
-    start = [4, 2]; exit = [4, h - 3]; chests.push([5, h - 4, 2]);
+    start = [4, 2]; exit = [4, h - 3]; chests.push([5, h - 16, 2]);
     for (let q = 0; q < 18 + L; q++) en.push([Math.random() < 0.3 ? 'runner' : 'walker', 2 + ((Math.random() * 5) | 0), 10 + ((Math.random() * (h - 18)) | 0)]);
     BLx.mine = true; BLx.gems = gems;
   } else if (type === 'train') {
@@ -3859,7 +3861,7 @@ function updateGun(dt) {
   gunMesh.visible = weapon === 'minigun' && !P.mount; bowMesh.visible = weapon === 'bow' && !gunTier && !P.mount; pewMesh.visible = weapon === 'bow' && gunTier > 0 && !P.mount; if (pewMesh.visible) pewMesh.userData.body.scale.z = GUNS[gunTier].len * 2;
   molMesh.visible = weapon === 'molotov' && !P.mount; molMesh.userData.fl.scale.setScalar(0.8 + Math.random() * 0.5); molRet.visible = weapon === 'molotov' && !P.mount && phase === 'live' && !P.dead; if (molRet.visible) { molRet.position.set(P.x + P.ax * 4.5, 0.06, P.z + P.az * 4.5); molRet.material.opacity = 0.45 + Math.sin(time * 8) * 0.25; } flamerMesh.visible = weapon === 'flamer' && !P.mount;
   if (weapon !== 'scythe' && !P.mount) player.scythe.visible = false; else if (!P.mount) player.scythe.visible = true;
-  { const vg = P.mount && mountGun(P.mount), L = vg ? (P.mount.kind === 'tank' ? 12 : 10) : aimRange(); aimBeam.visible = L > 0 && (!P.mount || vg) && !P.dead && phase === 'live' && !buildMode; if (aimBeam.visible) { aimBeam.position.set(P.x + P.ax * (vg ? 1 : 0.45), vg ? (P.mount.seat || 0.5) + 0.35 : P.y + 0.52, P.z + P.az * (vg ? 1 : 0.45)); aimBeam.rotation.y = Math.atan2(P.ax, P.az); aimBeam.scale.set(1, 1, L); aimBeam.userData.dot.scale.set(1, 1, 1 / L); aimBeam.material.opacity = 0.75 + Math.sin(time * 6) * 0.15; } }
+  { const vg = P.mount && mountGun(P.mount), L = vg ? (P.mount.kind === 'tank' ? 12 : 10) : aimRange(); aimBeam.visible = L > 0 && (!P.mount || vg) && !P.dead && phase === 'live' && !buildMode; if (aimBeam.visible) { const [bx, bz] = vg ? (P.mount.aimV || [P.ax, P.az]) : [P.ax, P.az]; aimBeam.position.set(P.x + bx * (vg ? 1 : 0.45), vg ? (P.mount.seat || 0.5) + 0.35 : P.y + 0.52, P.z + bz * (vg ? 1 : 0.45)); aimBeam.rotation.y = Math.atan2(bx, bz); aimBeam.scale.set(1, 1, L); aimBeam.userData.dot.scale.set(1, 1, 1 / L); aimBeam.material.opacity = 0.75 + Math.sin(time * 6) * 0.15; } }
   const cnt = weapon === 'minigun' ? gunAmmo : weapon === 'flamer' ? Math.ceil(fuel) : weapon === 'molotov' ? molotovs : weapon === 'bow' ? '∞' : '';
   { const ap = $('ammoPill'); const mol = weapon === 'molotov'; if (ap.classList.contains('mol') !== mol) ap.classList.toggle('mol', mol); }
   setHidden('ammoPill', weapon === 'scythe' || phase !== 'live'); setText('ammoN', String(cnt));
@@ -3903,7 +3905,8 @@ function updateMarkers() {
   if (!inBonus) for (const nt of nests) if (!nt.dead && Math.hypot(nt.x - P.x, nt.z - P.z) < 30) list.push(['cv' + nt.tiles[0], nt.x, nt.z, '#ff6b6b', 'cave']);
   if (decoy) list.push(['decoy', tc(decoy.i), tc(decoy.j), '#b36bff', 'decoy']);
   if (deathBag) list.push(['bag', deathBag.x, deathBag.z, '#ffffff', 'scrap']);
-  if (radio && radio.fixed && radio.cd <= 0) list.push(['radio', radio.x, radio.z, '#5fd4ff', 'radio']);
+  if (radio && radio.fixed && radio.cd <= 0 && !radio.used) list.push(['radio', radio.x, radio.z, '#5fd4ff', 'radio']);
+  if (!inBonus) sites.forEach((st, q) => { if (!siteDone(st) && Math.hypot(st.x - P.x, st.z - P.z) < 30) list.push(['st' + st.kind + q, st.x, st.z, '#f2b632', 'star']); });
   tempMarks = tempMarks.filter(m => m.until > time); for (const m of tempMarks) list.push([m.id, m.x, m.z, m.col, m.ic]);
   const seen = new Set(), W = innerWidth, H = innerHeight;
   for (const [id, x, z, col, ic] of list) {
@@ -3938,7 +3941,7 @@ function makeSub() { const g = new THREE.Group(), pad = new THREE.Mesh(new THREE
 function makeWaterTower() { const g = new THREE.Group(), lg = M(0x7a5a3a); for (const [x, z] of [[-0.6, -0.6], [0.6, -0.6], [-0.6, 0.6], [0.6, 0.6]]) { const l = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.09, 2.6, 6), lg); l.position.set(x, 1.3, z); g.add(l); }
   const tank = new THREE.Mesh(new THREE.CylinderGeometry(1.0, 1.0, 1.3, 14), M(0x8fb3c4)); tank.position.y = 3.2; tank.castShadow = true; g.add(tank); const cap = new THREE.Mesh(new THREE.ConeGeometry(1.1, 0.6, 14), M(0x5a7a8a)); cap.position.y = 4.15; g.add(cap);
   const pipe = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 2.6, 6), M(0x8a8f96)); pipe.position.set(0, 1.3, 0); g.add(pipe); return g; }
-let sites = [], mg = null, lights = [], lightStock = 0, millOn = false, millT = 0, rocketBoost = 0, flyUps = [];
+let airJet = null, jetFound = false, ramps = [], sites = [], mg = null, lights = [], lightStock = 0, millOn = false, millT = 0, rocketBoost = 0, flyUps = [];
 const SITE_INFO = {
   plane: { label: 'Pick the lock', game: 'lock', team: false },
   bank: { label: 'Crack the vault', game: 'vault', team: false },
@@ -3997,6 +4000,25 @@ function relaunchRocket(st) {
   rocketBoost = 1; const v = Math.round(120 * coopK()); scrap += v; banner('Lift off!', 'If another rocket falls, a hero is more likely aboard', 3); showLoot('scrap', '+' + v + ' scrap', 'Rocket relaunched', '#5fe0ff'); SFX.surge();
   sites = sites.filter(o => o !== st);
 }
+const RAMP_M = new THREE.MeshLambertMaterial({ color: 0x8a8278, flatShading: true });
+function buildRamps() {
+  for (const r of ramps) scene.remove(r.mesh); ramps = []; let sd = (worldSeed ^ 0x5bd1e995) >>> 0; const rnd = () => { sd = (sd * 1664525 + 1013904223) >>> 0; return sd / 4294967296; };
+  for (let t = 0; t < 400 && ramps.length < 16; t++) { const i = 8 + ((rnd() * (N - 16)) | 0), j = 8 + ((rnd() * (N - 16)) | 0), dir = (rnd() * 4) | 0, [di, dj] = D4[dir];
+    if (Math.hypot(i - HALF, j - HALF) < 22) continue; let ok = true; for (let k = -2; k <= 4 && ok; k++) { const a = i + di * k, b = j + dj * k; if (!inb(a, b) || grid[idx(a, b)] !== EMPTY || spawnMask[idx(a, b)] || road[idx(a, b)]) ok = false; } if (!ok || ramps.some(o => Math.hypot(o.x - tc(i), o.z - tc(j)) < 10)) continue;
+    const g = new THREE.Group(), slab = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.12, 1.7), RAMP_M); slab.rotation.x = -0.3; slab.position.set(0, 0.26, 0); g.add(slab);
+    for (let q = 0; q < 3; q++) { const rk = new THREE.Mesh(new THREE.DodecahedronGeometry(0.22 + q * 0.05, 0), RAMP_M); rk.position.set((q - 1) * 0.35, 0.15, 0.55); g.add(rk); }
+    const ang = Math.atan2(di, dj); g.rotation.y = ang; g.position.set(tc(i), 0, tc(j)); scene.add(g); ramps.push({ x: tc(i), z: tc(j), dx: di, dz: dj, mesh: g }); }
+}
+function wheelie(v, dt, spd) {
+  if (v.kind !== 'bike') return; if (v.wheelT > 0) { v.wheelT -= dt; moveEnt(P, P.vx * dt * 0.35, P.vz * dt * 0.35, 0.3, true); if (Math.random() < 0.3) puff(P.x - Math.sin(v.face) * 0.5, 0.15, P.z - Math.cos(v.face) * 0.5, 0x9a8f80); return; }
+  const firing = actHeld || touchAct, hd = Math.atan2(P.vx, P.vz), turn = Math.abs(Math.atan2(Math.sin(hd - (v.lastHd ?? hd)), Math.cos(hd - (v.lastHd ?? hd)))); v.lastHd = hd;
+  if (spd > (v.speed || 9) * 0.8 && turn < dt * 0.8 && !firing) { v.strT = (v.strT || 0) + dt; if (v.strT > 1.6) { v.strT = 0; v.wheelT = 1.4; tone({ type: SQ, f: 180, f2: 420, t: 0.3, v: 0.05 }); } } else v.strT = 0;
+}
+function rampCheck(v, dt, spd) {
+  if (v.jumpT > 0) { v.jumpT -= dt; const k = 1 - v.jumpT / 0.9; v.jy = Math.sin(Math.min(1, k) * Math.PI) * 1.5; if (v.jumpT <= 0) { v.jy = 0; shake = Math.max(shake, 0.25); burst(P.x, 0.1, P.z, mat.wood, 6, 2); SFX.drop(); } return; }
+  if (v.fly || v.water || spd < 4.5) return; const ux = P.vx / spd, uz = P.vz / spd;
+  for (const r of ramps) { if (Math.abs(r.x - P.x) > 1.2 || Math.abs(r.z - P.z) > 1.2) continue; if (Math.hypot(r.x - P.x, r.z - P.z) < 0.75 && ux * r.dx + uz * r.dz > 0.6) { v.jumpT = 0.9; SFX.roll(); tone({ type: SQ, f: 300, f2: 900, t: 0.25, v: 0.06 }); break; } }
+}
 function homeSpot() { const cx = tc(crystal.i), cz = tc(crystal.j); for (let t = 0; t < 40; t++) { const a = Math.random() * 6.28, r = 3.6 + Math.random() * 2.5, x = cx + Math.cos(a) * r, z = cz + Math.sin(a) * r; if (!blocked(x, z, 0.3)) return [x, z]; } return [cx + 3.6, cz]; }
 function sendHome(o, quiet) {
   if (!crystal.planted || inBonus) return; const [x, z] = homeSpot(); puff(o.x, 0.5, o.z, 0xd8d0f0); burst(o.x, 0.6, o.z, mat.gem, 8, 2); o.x = x; o.z = z; o.hx = x; o.hz = z; o.vx = o.vz = 0; o.path = null;
@@ -4010,6 +4032,7 @@ function recallStrays(dt) {
 }
 function updateSites(dt) {
   recallStrays(dt);
+  if (airJet && !jetFound && phase === 'live' && netRole !== 'guest') { spawnGearItem('jetpack', 1, airJet[0], airJet[1]); const d = gearDrops[gearDrops.length - 1]; if (d) { d.air = true; d.life = 1e9; } airJet = null; }
   for (let q = flyUps.length - 1; q >= 0; q--) { const f = flyUps[q]; f.t += dt; f.m.position.y += dt * (2 + f.t * 8); f.m.userData.fire.visible = true; f.m.userData.fire.scale.y = 1 + Math.sin(time * 30) * 0.3; if (Math.random() < 0.7) puff(f.m.position.x, f.m.position.y - 1.6, f.m.position.z, 0xb0aaa4); if (f.t > 5) { scene.remove(f.m); flyUps.splice(q, 1); } }
   const night = stage === 'night' ? 1 : stage === 'dusk' ? 0.5 : 0; for (const l of lights) l.L.intensity = 0.3 + night * 2.6;
   if (millOn && netRole !== 'guest' && phase === 'live' && !inBonus) { millT += dt; if (millT >= 300) { millT = 0; bread++; showLoot('bread', '+1 bread', 'From the windmill', '#f1c27d'); for (const G of liveGuests()) asGuestFull(G, () => { bread++; showLoot('bread', '+1 bread', 'From the windmill', '#f1c27d'); }, true); } }
@@ -4330,11 +4353,18 @@ function hitNpc(n, dmg, nx, nz, gun) {
   }
 }
 function keepClear(n, tx, tz) { if (n.hostile || n.raid || n.seat) return [tx, tz]; const spots = [[tc(crystal.i), tc(crystal.j) + 0.6, 3.0]]; for (const at of [shedAt, compAt, bellAt, siloAt]) if (at >= 0) spots.push([tc(at % N), tc((at / N) | 0), 2.4]); for (const gd of gearDrops) if (Math.abs(gd.x - tx) + Math.abs(gd.z - tz) < 3) spots.push([gd.x, gd.z, 1.1]); for (const pk of pickups) if (!pk.dead && Math.abs(pk.x - tx) + Math.abs(pk.z - tz) < 3) spots.push([pk.x, pk.z, 0.9]); for (const [x, z, r] of spots) { const dx = tx - x, dz = tz - z, d = Math.hypot(dx, dz); if (d < r) { const nx = d > 0.01 ? dx / d : 1, nz = d > 0.01 ? dz / d : 0; tx = x + nx * (r + 0.3); tz = z + nz * (r + 0.3); } } return [tx, tz]; }
+function viaBridge(e, dt, tx, tz) {
+  if ((e.viaT || 0) > 0) { e.viaT -= dt; const [vx, vz] = e.via; if (Math.hypot(e.x - vx, e.z - vz) < 0.45) { e.viaT = 0; e.viaPast = 1.2; e.viaDir = [tx - vx, tz - vz]; } else return [vx, vz]; }
+  if ((e.viaPast || 0) > 0) { e.viaPast -= dt; const l = Math.hypot(e.viaDir[0], e.viaDir[1]) || 1; return [e.x + e.viaDir[0] / l * 2, e.z + e.viaDir[1] / l * 2]; }
+  return [tx, tz];
+}
+function bridgeStuck(e) { if (!drawbs.length || !moatAt(e.x + e.vx * 0.3, e.z + e.vz * 0.3, 0.35)) return; let best = null, bd = 16; for (const n of drawbs) { if (!drawDown(n)) continue; const x = tc(n % N), z = tc((n / N) | 0), d = Math.hypot(x - e.x, z - e.z); if (d < bd) { bd = d; best = [x, z]; } } if (best) { e.via = best; e.viaT = 8; } }
 function stepNpc(n, tx, tz, spd, dt, fp) {
   if (crystal.planted && !(n.hired && n.mode === 'follow')) [tx, tz] = keepClear(n, tx, tz);
+  [tx, tz] = viaBridge(n, dt, tx, tz);
   const dx = tx - n.x, dz = tz - n.z, d = Math.hypot(dx, dz), want = d > 0.3 ? spd : 0, k = 1 - Math.exp(-dt * 8);
   n.vx += ((d > 0.01 ? dx / d : 0) * want - n.vx) * k; n.vz += ((d > 0.01 ? dz / d : 0) * want - n.vz) * k;
-  { const ox = n.x, oz = n.z; moveEnt(n, n.vx * dt, n.vz * dt, 0.28, fp); const want = Math.hypot(n.vx, n.vz); if (want > 1 && Math.hypot(n.x - ox, n.z - oz) < want * dt * 0.2) { if ((n.stk = (n.stk || 0) + dt) > 2.5) { n.stk = 0; breakAhead(n, n.x + n.vx, n.z + n.vz); } } else n.stk = 0; }
+  { const ox = n.x, oz = n.z; moveEnt(n, n.vx * dt, n.vz * dt, 0.28, fp); const want = Math.hypot(n.vx, n.vz); if (want > 1 && Math.hypot(n.x - ox, n.z - oz) < want * dt * 0.2) { if (n.stk > 0.5 && !(n.viaT > 0)) bridgeStuck(n); if ((n.stk = (n.stk || 0) + dt) > 2.5) { n.stk = 0; breakAhead(n, n.x + n.vx, n.z + n.vz); } } else n.stk = 0; }
   const sp = Math.hypot(n.vx, n.vz); if (sp > 0.2) n.face = angLerp(n.face, Math.atan2(n.vx, n.vz), 1 - Math.exp(-dt * 8));
   n.pm.g.position.set(n.x, 0, n.z); n.pm.g.rotation.y = n.face; n.pm.inner.rotation.x *= Math.exp(-dt * 8);
   n.pm.roll.position.y = 0.5 + Math.abs(Math.sin(time * 9 + n.hx)) * 0.06 * Math.min(1, sp);
@@ -4401,7 +4431,7 @@ function updateLure(dt) {
 }
 function lureBtn() {
   const b = $('bLure'); if (!b) return; b.hidden = shedAt < 0; if (shedAt < 0) return;
-  b.disabled = lureT > 0 || lureCd > 0 || scrap < 300; { const t = lureT > 0 ? 'Lure Hoard on · ' + fmtT(Math.ceil(lureT)) : lureCd > 0 ? 'Lure Hoard 300 · ' + fmtT(Math.ceil(lureCd)) : 'Lure Hoard 300 · ' + compass(Math.cos(lureSide()), Math.sin(lureSide())); if ($('lureTxt').textContent !== t) $('lureTxt').textContent = t; }
+  b.disabled = lureT > 0 || lureCd > 0 || scrap < 300; { const t = lureT > 0 ? 'Lure Hoard on · ' + fmtT(Math.ceil(lureT)) : lureCd > 0 ? 'Lure Hoard 300 · ' + fmtT(Math.ceil(lureCd)) : 'Lure Hoard 300 · from ' + compass(Math.cos(lureSide()), Math.sin(lureSide())); if ($('lureTxt').textContent !== t) $('lureTxt').textContent = t; }
 }
 let padNodes = null;
 function pauseFx(on) {
@@ -4610,7 +4640,7 @@ function updateSpinMove(dt) {
   while (move > 0 && sp.seg < sp.path.length) {
     const [tx, tz] = sp.path[sp.seg], dx = tx - P.x, dz = tz - P.z, d = Math.hypot(dx, dz);
     const stepL = Math.min(move, d), nx = P.x + (d ? dx / d * stepL : 0), nz = P.z + (d ? dz / d * stepL : 0);
-    const okS = (x, z) => !blocked(x, z, 0.3, false) && !(inb(tt(x), tt(z)) && grid[idx(tt(x), tt(z))] === WATER);
+    const inS = blocked(P.x, P.z, 0.3, false), okS = (x, z) => (inS || !blocked(x, z, 0.3, false)) && !(inb(tt(x), tt(z)) && grid[idx(tt(x), tt(z))] === WATER);
     if (!okS(nx, nz)) { const sx = nx - P.x, sz = nz - P.z; move -= stepL;
       if (okS(P.x + sx, P.z)) P.x += sx; else if (okS(P.x, P.z + sz)) P.z += sz; else if (okS(P.x - sz, P.z + sx)) { P.x -= sz; P.z += sx; } else if (okS(P.x + sz, P.z - sx)) { P.x += sz; P.z -= sx; }
       else { sp.stk = (sp.stk || 0) + dt; if (sp.stk > 0.2) { sp.stk = 0; sp.seg++; } break; }
@@ -4673,7 +4703,7 @@ function renderBag() {
   for (const k of ['head', 'chest', 'legs', 'feet']) g += '<div class="slot" style="--c:' + (gear[k] ? hexC(TIER_COL[gear[k]]) : 'transparent') + ';--o:' + (gear[k] ? 1 : 0.25) + '"><svg viewBox="0 0 24 24">' + ICON[k] + '</svg>' + (gear[k] ? '<b>' + gear[k] + '</b>' : '') + '</div>';
   $('bagGear').innerHTML = g;
   { const [nm, col] = repName(); $('bagRep').innerHTML = 'Reputation: <span style="color:' + col + '">' + nm + '</span>'; }
-  $('bagItems').innerHTML = [['fish', fish], ['bone', bones], ['wheat', wheat], ['bread', bread]].map(([k, n]) => '<div class="slot" style="--o:' + (n ? 1 : 0.25) + '"><svg viewBox="0 0 24 24">' + ICON[k] + '</svg><b>' + n + '</b></div>').join('');
+  $('bagItems').innerHTML = [['fish', fish], ['bone', bones], ['wheat', wheat], ['bread', bread], ...(landOn ? [['cactus', cactusBag]] : [])].map(([k, n]) => '<div class="slot" style="--o:' + (n ? 1 : 0.25) + '"><svg viewBox="0 0 24 24">' + (ICON[k] || '<path d="M11 21V6a2 2 0 0 1 4 0v15M8 13V9a1.5 1.5 0 0 1 3 0v4M15 11V8a1.5 1.5 0 0 1 3 0v4h-3" fill="#5fae4a" stroke="#3a7a2e" stroke-width="1.4"/>') + '</svg><b>' + n + '</b></div>').join('');
 }
 function toggleBag(open) { const b = $('bag'); b.hidden = open === undefined ? !b.hidden : !open; if (!b.hidden) { bagNew = false; renderBag(); } $('bagDot').hidden = !bagNew; SFX.click(); }
 function gotItem() { bagNew = $('bag').hidden; $('bagDot').hidden = !bagNew; if (!$('bag').hidden) renderBag(); }
@@ -4727,6 +4757,7 @@ function spawnGearItem(sl, t, x, z) {
 }
 function equipDrop(d) {
   d.dead = true; scene.remove(d.mesh);
+  if (d.air) jetFound = true;
   if (d.sl === 'jetpack') { if (!jetOn) { jetOn = true; setJetLook(); SFX.gear(); burst(d.x, 0.6, d.z, M(0x5fe0ff), 16, 4); showLoot('chest', 'Jetpack', 'Hit a 15-kill combo to fly', '#5fe0ff'); } else { scrap += 100; SFX.coins(3); } return; }
   if (d.sl === 'scythe') { if (d.t > scyRare) { scyRare = d.t; setBladeLook(); SFX.gear(); burst(d.x, 0.6, d.z, M(SCY_COL[d.t]), 16, 4); showLoot('chest', d.t === 2 ? 'Ancient scythe' : 'Farmer\'s scythe', 'Equipped', d.t === 2 ? '#c86bff' : '#d9a24a'); } else { scrap += 40 * d.t; SFX.coins(3); } return; }
   if (d.t > gear[d.sl]) { const old = gear[d.sl]; gear[d.sl] = d.t; applyGear(); SFX.gear(); burst(d.x, 0.6, d.z, M(TIER_COL[d.t]), 12, 3); showLoot(d.sl, TIER[d.t] + ' ' + SLOT_NAME[d.sl], old ? 'Equipped · old one scrapped +' + 5 * old : 'Equipped', hexC(TIER_COL[d.t])); if (old) scrap += 5 * old; gotItem(); }
@@ -4790,8 +4821,14 @@ function vehMesh(kind, fixed) {
   g.traverse(o => { if (o.isMesh) o.castShadow = true; }); return g;
 }
 const VEH = { tank: { cost: 250, speed: 6, water: false, seat: 0.95, name: 'Tank' }, hover: { cost: 90, speed: 10.5, water: false, seat: 0.5, name: 'Hovercraft' }, truck: { cost: 120, speed: 9, water: false, seat: 0.95, name: 'Army truck' }, heli: { cost: 300, speed: 12, water: false, seat: 1.7, name: 'Helicopter', fly: true }, bike: { cost: 25, speed: 9, water: false, seat: 0.35, name: 'Bike' }, buggy: { cost: 80, speed: 11, water: false, seat: 0.45, name: 'Buggy', ram: true }, canoe: { cost: 0, speed: 4.5, water: true, seat: 0.12, name: 'Canoe' }, dinghy: { cost: 0, speed: 6.5, water: true, seat: 0.16, name: 'Dinghy' }, speedboat: { cost: 60, speed: 11, water: true, seat: 0.24, name: 'Speedboat' } };
+function vehAim(v) {
+  let ax = Math.sin(v.face || P.face), az = Math.cos(v.face || P.face);
+  if (lastInput === 'mouse' && mouse.has && screenGround(mouse.x, mouse.y)) { const dx = hit.x - P.x, dz = hit.z - P.z, l = Math.hypot(dx, dz); if (l > 0.3) { ax = dx / l; az = dz / l; } }
+  else { let best = null, bd = v.kind === 'tank' ? 11 : 9; for (const zb of zombies) { if (zb.dead) continue; const dx = zb.x - P.x, dz = zb.z - P.z, d = Math.hypot(dx, dz); if (d < bd && (dx * ax + dz * az) / (d || 1) > -0.3) { bd = d; best = [dx / (d || 1), dz / (d || 1)]; } } if (best) [ax, az] = best; }
+  v.aimV = [ax, az]; return v.aimV;
+}
 function tankUpdate(v, dt, spd) {
-  v.rcd = (v.rcd || 0) - dt; const u = v.mesh.userData; if (u.tur) { let ax = Math.sin(P.face), az = Math.cos(P.face); if (lastInput === 'mouse' && mouse.has && screenGround(mouse.x, mouse.y)) { const dx = hit.x - P.x, dz = hit.z - P.z, l = Math.hypot(dx, dz); if (l > 0.3) { ax = dx / l; az = dz / l; } } else { let best = null, bd = 11; for (const zb of zombies) { if (zb.dead) continue; const d = Math.hypot(zb.x - P.x, zb.z - P.z); if (d < bd) { bd = d; best = zb; } } if (best) { ax = (best.x - P.x) / bd; az = (best.z - P.z) / bd; } } v.aim = [ax, az]; u.tur.rotation.y = Math.atan2(ax, az) - v.face; }
+  v.rcd = (v.rcd || 0) - dt; const u = v.mesh.userData; if (u.tur) { const [ax, az] = vehAim(v); v.aim = [ax, az]; u.tur.rotation.y = Math.atan2(ax, az) - v.face; }
   if ((actHeld || touchAct) && v.rcd <= 0 && v.aim) { v.rcd = 4; const [ax, az] = v.aim; let tx = P.x + ax * 8, tz = P.z + az * 8; for (let d = 1.5; d <= 8; d += 0.5) { const x = P.x + ax * d, z = P.z + az * d; if (zombies.some(zb => !zb.dead && Math.hypot(zb.x - x, zb.z - z) < 1) || nests.some(nt => !nt.dead && Math.hypot(nt.x - x, nt.z - z) < 1.3)) { tx = x; tz = z; break; } }
     const m = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.5, 6).rotateX(Math.PI / 2), mat.metalDark), sx = P.x, sz = P.z, t0 = time; m.position.set(sx, 1.3, sz); m.rotation.y = Math.atan2(ax, az); scene.add(m); SFX.surge(); shake = Math.max(shake, 0.25);
     const fly = () => { const k = Math.min(1, (time - t0) / 0.35); m.position.set(sx + (tx - sx) * k, 1.3 - k * 0.9, sz + (tz - sz) * k); if (Math.random() < 0.6) puff(m.position.x, m.position.y, m.position.z, 0x9a9490); if (k < 1) { requestAnimationFrame(fly); return; } scene.remove(m); tankBlast(tx, tz); }; fly(); }
@@ -4970,10 +5007,10 @@ function getInteract() {
   if (inBonus && BL && BL.cage && !BL.freed && !BL.alarm && Math.hypot(bwx(BL.cage[0]) - P.x, bwz(BL.cage[1]) - P.z) < 1.5) return { label: 'Free Bruce', act: () => { BL.freed = true; BL.cageMesh.visible = false; banner('Bruce freed'); SFX.levelUp(); hearts(P.x, P.z); } };
   if (inBonus && BL) { let bc = null, bd = 1.4; for (const c of BL.chests) { if (c.open) continue; const d = Math.hypot(c.x - P.x, c.z - P.z); if (d < bd) { bd = d; bc = c; } } if (bc) return { label: 'Open', act: () => openChest(bc) }; }
   if (P.mount && P.mount.water) { let gd = null, gb = 1.7; for (const d of gearDrops) { if (d.dead) continue; const dd = Math.hypot(d.x - P.x, d.z - P.z); if (dd < gb) { gb = dd; gd = d; } } if (gd) return { label: 'Grab', act: () => equipDrop(gd) }; }
-  if (P.mount) { if (P.mount.water && junks.some(jk => Math.hypot(jk.x - P.x, jk.z - P.z) < 2)) return null; if (mountGun(P.mount)) return { label: 'Shoot' }; return { label: 'Get off', act: dismount }; }
+  if (P.mount) { if (P.mount.water && junks.some(jk => Math.hypot(jk.x - P.x, jk.z - P.z) < 2)) return null; if (mountGun(P.mount) && lastInput === 'touch') return { label: 'Shoot' }; return { label: 'Get off', act: dismount }; }
   if (fishing) return { label: fishing.bite ? 'Reel!' : 'Fishing...', act: reel };
   if (bread > 0 && npcs.some(n => !n.dead && n.hostile && Math.hypot(n.x - P.x, n.z - P.z) < 7)) return { label: 'Throw bread', act: throwBread };
-  if (leashOn && kennelAt >= 0 && tamedCount() < petCap && pets.filter(q => q.tamed && q.kind === 'zombie').length < 3 && !P.onWall) { let lz = null, ld = 1.5; for (const z of zombies) { if (z.dead || !(z.cut >= 1) || z.kind === 'brute') continue; const d = Math.hypot(z.x - P.x, z.z - P.z); if (d < ld) { ld = d; lz = z; } } if (lz && !zombies.some(o => o !== lz && !o.dead && Math.hypot(o.x - P.x, o.z - P.z) < 2.6)) return { label: 'Leash', act: () => leashZombie(lz) }; }
+  if (leashOn && !inBonus && kennelAt >= 0 && tamedCount() < petCap && pets.filter(q => q.tamed && q.kind === 'zombie').length < 3 && !P.onWall) { let lz = null, ld = 1.5; for (const z of zombies) { if (z.dead || !(z.cut >= 1) || z.kind === 'brute') continue; const d = Math.hypot(z.x - P.x, z.z - P.z); if (d < ld) { ld = d; lz = z; } } if (lz && !zombies.some(o => o !== lz && !o.dead && Math.hypot(o.x - P.x, o.z - P.z) < 2.6)) return { label: 'Leash', act: () => leashZombie(lz) }; }
   if (zombies.some(z => !z.dead && Math.hypot(z.x - P.x, z.z - P.z) < 1.4) || P.onWall || P.stuck) return null;
   let best = null, bd = 1.5;
   const consider = (x, z, o) => { const d = Math.hypot(x - P.x, z - P.z); if (d < bd) { bd = d; best = o; } };
@@ -5019,7 +5056,7 @@ function vehBlocked(x, z, water, fly, kind) {
 function updateSpecialMove(dt, mx, mz, ml) {
   P.qsImmune = Math.max(0, (P.qsImmune || 0) - dt); P.jumpCd = Math.max(0, (P.jumpCd || 0) - dt);
   const tick = () => { P.swingCd -= dt; P.buffer -= dt; P.swingT -= dt; P.hurtT += dt; };
-  if (P.spin) { tick(); updateSpinMove(dt); return true; }
+  if (P.spin) { tick(); P.spin.age = (P.spin.age || 0) + dt; if (P.spin.age > 8) P.spin.seg = P.spin.path.length; updateSpinMove(dt); return true; }
   if (P.air) { tick();
     const a = P.air; a.t += dt; const k = Math.min(1, a.t / a.dur);
     P.x = a.sx + (a.ex - a.sx) * k; P.z = a.sz + (a.ez - a.sz) * k; P.y = Math.sin(k * Math.PI) * 1.8;
@@ -5035,14 +5072,15 @@ function updateSpecialMove(dt, mx, mz, ml) {
     if (!vehBlocked(P.x, nz, water, v.fly, v.kind)) P.z = nz; else P.vz *= -0.2;
     if (v.kind === 'tank') { const ti = tt(P.x + Math.sin(v.face) * 0.6), tj = tt(P.z + Math.cos(v.face) * 0.6); if (inb(ti, tj)) { const n = idx(ti, tj), g = grid[n]; if (built[n] && (g === WALL || g === WIRE || g === HAY || g === TAR || g === SCARE || g === TOTEM)) { burst(tc(ti), 0.4, tc(tj), mat.wall, 12, 4); SFX.crumble(); shake = Math.max(shake, 0.3); removeTile(n); recount(); flowDirty = true; } } }
     const spd = Math.hypot(P.vx, P.vz); if (spd > 0.3) v.face = angLerp(v.face, Math.atan2(P.vx, P.vz), 1 - Math.exp(-dt * 8));
-    P.face = v.face; v.x = P.x; v.z = P.z; P.y = v.seat; if (v.kind === 'truck') truckUpdate(v, dt, spd);
+    rampCheck(v, dt, spd); wheelie(v, dt, spd); P.face = v.face; v.x = P.x; v.z = P.z; P.y = v.seat + (v.jy || 0); if (v.kind === 'truck') truckUpdate(v, dt, spd);
     if (v.ram || v.kind === 'wolf') for (const z of zombies) { if (z.dead || (z.ramCd = (z.ramCd || 0) - dt) > 0) continue; const d = Math.hypot(z.x - P.x, z.z - P.z); if (d < 0.95 && (v.kind === 'wolf' || spd > 4)) { z.ramCd = 0.5; hitZombie(z, v.kind === 'wolf' ? 35 : 60, (z.x - P.x) / (d || 1), (z.z - P.z) / (d || 1), 'ram'); } }
-    if (v.mesh) { v.mesh.position.set(P.x, v.fly ? 1.3 + Math.sin(time * 2) * 0.08 : water ? Math.sin(time * 3) * 0.03 : 0, P.z); v.mesh.rotation.y = v.face; }
+    if (v.mesh) { v.mesh.position.set(P.x, v.fly ? 1.3 + Math.sin(time * 2) * 0.08 : water ? Math.sin(time * 3) * 0.03 : (v.jy || 0), P.z); v.mesh.rotation.order = 'YXZ'; v.mesh.rotation.y = v.face; v.mesh.rotation.x = v.wheelT > 0 ? -0.42 * Math.min(1, v.wheelT * 3, (1.4 - v.wheelT) * 4 + 0.2) : (v.jumpT > 0 ? -0.2 : 0); }
     if (v.mech && (v.lz = (v.lz || 0) - dt) <= 0) { let tg = null, tb = 8; for (const zb of zombies) { if (zb.dead) continue; const dd = Math.hypot(zb.x - P.x, zb.z - P.z); if (dd < tb) { tb = dd; tg = zb; } } if (tg) { v.lz = 0.9; laser(P.x, P.z, tg.x, tg.z); } }
+    if (mountGun(v) && v.kind !== 'tank') { vehAim(v); const hd = v.mesh && v.mesh.userData.head; if (hd) hd.rotation.y = Math.atan2(v.aimV[0], v.aimV[1]) - v.face; }
     if (v.kind === 'bike' && uziOn && uziAuto && !(actHeld || touchAct)) autoGun(v, P.x, 0.6, P.z, 7, 0.09, 8 + level, dt);
     if (v.kind === 'tank') tankUpdate(v, dt, spd);
     if (v.kind === 'hover') autoGun(v, P.x, 0.9, P.z, 8, 0.2, 18 + level * 1.5, dt);
-    if (v.kind !== 'tank' && mountGun(v) && (actHeld || touchAct) && (uziT -= dt) <= 0) { uziT = 0.09; let ax = P.ax, az = P.az; if (lastInput === 'mouse' && mouse.has && screenGround(mouse.x, mouse.y)) { const dx = hit.x - P.x, dz = hit.z - P.z, l = Math.hypot(dx, dz); if (l > 0.2) { ax = dx / l; az = dz / l; } } const sp = (Math.random() - 0.5) * 0.12, c = Math.cos(sp), s2 = Math.sin(sp); fireBullet(P.x + ax * 0.6, 0.6, P.z + az * 0.6, ax * c - az * s2, ax * s2 + az * c, 9 + level, true); if (gate('uzi', 70)) SFX.gun(); }
+    if (v.kind !== 'tank' && mountGun(v) && (actHeld || touchAct) && (uziT -= dt) <= 0) { uziT = 0.09; const [ax, az] = v.aimV || vehAim(v); const sp = (Math.random() - 0.5) * 0.12, c = Math.cos(sp), s2 = Math.sin(sp); fireBullet(P.x + ax * 0.6, 0.6, P.z + az * 0.6, ax * c - az * s2, ax * s2 + az * c, 9 + level, true); if (gate('uzi', 70)) SFX.gun(); }
     if (v.fly && heliGun) autoGun(v, P.x, 1.6, P.z, 10, 0.08, 16 + level * 1.5, dt);
     finishMoveVisual(dt, spd); return true;
   }
@@ -5157,7 +5195,7 @@ function updateExtras(dt) {
   if (gateway) { gateway.t -= dt; gateway.mesh.userData.disc.rotation.z += dt * 3; gateway.mesh.userData.disc.material.opacity = 0.55 + Math.sin(time * 4) * 0.2; if (gateway.t <= 0) { scene.remove(gateway.mesh); gateway = null; } else if (!P.dead && !P.mount && phase === 'live' && Math.hypot(P.x - gateway.x, P.z - gateway.z) < 0.9) { const gs = liveGuests().filter(G => G.hp > 0), here = gs.filter(G => Math.hypot(G.x - gateway.x, G.z - gateway.z) < 2.4).length; if (here === gs.length) startBonus(); else if (gate('gwwait', 1500)) floater(gateway.x, gateway.z, 'Everyone to the gateway (' + (here + 1) + '/' + (gs.length + 1) + ')', '#e2b8ff'); } } updateCopter(dt); if ((goalT -= dt) <= 0) { goalT = 0.25; updateGoals(); } if (phase === 'live') updateTraps(dt, netRole === 'guest'); updateMarkers(); updateNests(dt); if (phase === 'live' && (saveT -= dt) <= 0) { saveT = 20; saveGame(); } for (let q = animLm.length - 1; q >= 0; q--) { const a = animLm[q]; if (!inScene(a.obj)) { animLm.splice(q, 1); continue; } if (a.kind === 'spin') a.obj.rotation.z += dt * 1.2; else if ((a.t -= dt) <= 0 && Math.hypot(a.x - P.x, a.z - P.z) < 30) { a.t = 0.3; puff(a.x, a.y, a.z, a.col); } } updatePuffs(dt); for (const g of lootCrates) { const gl = g.getObjectByName('glint'); if (!g.parent) { lootCrates.delete(g); continue; } gl.rotation.y += dt * 2; gl.position.y = 0.85 + Math.sin(time * 3 + g.id) * 0.06; }
   for (const v of vehicles) if (v.kind === 'heli' && v.mesh) heliUpdate(v, dt);
   for (const v of vehicles) if (v.kind === 'hover' && v.fixed) { const u = v.mesh.userData; if (u.fan) u.fan.rotation.z += dt * 20; if (v !== P.mount) { if (hoverDrone && crystal.planted && phase === 'live') { droneUpdate(v, dt); if (v.drone) autoGun(v, v.x, 0.9, v.z, 8, 0.25, 16 + level * 1.5, dt); } v.mesh.position.y = 0.12 + Math.sin(time * 3 + v.x) * 0.05; } else v.mesh.position.y = 0.15 + Math.sin(time * 3) * 0.05; }
-  for (const v of vehicles) if (v.kind === 'buggy' && v.fixed && phase === 'live') { if (v !== P.mount && droneOn && crystal.planted) droneUpdate(v, dt); else v.drone = false; if (buggyGun && (v === P.mount || v.drone)) buggyGunUpdate(v, dt); }
+  for (const v of vehicles) if (v.kind === 'buggy' && v.fixed && phase === 'live') { if (v !== P.mount && droneOn && crystal.planted) droneUpdate(v, dt); else v.drone = false; if (buggyGun && v !== P.mount && v.drone) buggyGunUpdate(v, dt); }
   for (const v of vehicles) if (v !== P.mount && v.water) v.mesh.position.y = Math.sin(time * 2 + v.x) * 0.03;
   for (const jk of junks) { jk.mesh.position.y = Math.sin(time * 1.6 + jk.seed) * 0.04; jk.mesh.rotation.y += dt * 0.1; }
   if (mystery) { mystery.q.position.y = 1.35 + Math.sin(time * 3) * 0.1; mystery.q.rotation.y += dt * 2; if ((mystery.sp -= dt) <= 0) { mystery.sp = 0.5; puff(mystery.x + (Math.random() - 0.5) * 0.6, 0.6, mystery.z + (Math.random() - 0.5) * 0.6, 0xffe066); } }
@@ -5234,7 +5272,7 @@ function wander(pt, dt) { pt.wanderT -= dt; if (pt.wanderT <= 0) { pt.wanderT = 
 function animPet(pt, spd, dt) { const u = pt.mesh.userData, w = Math.min(1, spd / 3); (u.legs || []).forEach((l, q) => { l.rotation.x = Math.sin(time * 14 + q * Math.PI) * 0.6 * w; }); if (u.tail) u.tail.rotation.y = Math.sin(time * (pt.tamed ? 12 : 4)) * 0.5; else pt.mesh.rotation.z = Math.sin(time * 6) * 0.08 * w; }
 function resetExtras() {
   goldenT = 0; if (cosmic) scene.remove(cosmic.mesh); cosmic = null; lastPK = -1;
-  for (const d of gearDrops) scene.remove(d.mesh); gearDrops = []; for (const l of lights) scene.remove(l.mesh); lights = []; lightStock = 0; millOn = false; millT = 0; rocketBoost = 0; for (const f of flyUps) scene.remove(f.m); flyUps = []; if (mg) closeMini(false); if (decoy) scene.remove(decoy.mesh); decoy = null; decoyCd = 0; tradeTax = 0; sabCamps = []; hoardeStall = 0; if (wendyGrave) scene.remove(wendyGrave.mesh); wendyGrave = null; for (const a of allies) scene.remove(a.pm.g); allies = []; graveT = 2;
+  for (const d of gearDrops) scene.remove(d.mesh); gearDrops = []; for (const l of lights) scene.remove(l.mesh); lights = []; lightStock = 0; jetFound = false; millOn = false; millT = 0; rocketBoost = 0; for (const f of flyUps) scene.remove(f.m); flyUps = []; if (mg) closeMini(false); if (decoy) scene.remove(decoy.mesh); decoy = null; decoyCd = 0; tradeTax = 0; sabCamps = []; hoardeStall = 0; if (wendyGrave) scene.remove(wendyGrave.mesh); wendyGrave = null; for (const a of allies) scene.remove(a.pm.g); allies = []; graveT = 2;
   for (const g of globs) scene.remove(g.m); globs = []; boss = null; pathShowT = 0; if (pathMesh) pathMesh.visible = false;
   if (inBonus) endBonus(false); if (gateway) { scene.remove(gateway.mesh); gateway = null; } if (safGate) { scene.remove(safGate.mesh); safGate = null; }
   if (crystal2.planted) loseCrystal2(); crystal2.planted = false; crystal2.g.visible = false;
@@ -5362,7 +5400,7 @@ function updateZombies(dt) {
       z.sink = (z.sink || 0) + dt; z.g.position.y = -z.sink * 0.6; z.inner.rotation.z = Math.sin(time * 20) * 0.2;
       if (z.sink > 1.3) killZombie(z, 'sink'); continue;
     }
-    if (n >= 0 && z.kind !== 'jumper' && !z.boss && grid[n] === PIT && fill[n] < CAP && (z.x - tc(i)) ** 2 + (z.z - tc(j)) ** 2 < 0.12) {
+    if (n >= 0 && z.kind !== 'jumper' && !z.boss && grid[n] === PIT && fill[n] < CAP && (z.x - tc(i)) ** 2 + (z.z - tc(j)) ** 2 < (z.kind === 'brute' ? 0.3 : 0.12)) {
       fill[n] = Math.min(CAP, fill[n] + (z.kind === 'brute' ? 2 : 1)); setPitVisual(n); killZombie(z, 'pit'); SFX.pitFall(fill[n]);
       if (fill[n] >= CAP) { version++; computeFlow(); tip('Pit full! Swing at it to harvest.', 'full'); }
       continue;
