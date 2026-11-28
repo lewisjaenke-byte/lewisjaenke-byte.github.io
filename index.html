@@ -511,7 +511,7 @@ body.attract #menu .card{background:rgba(30,20,40,.72);border-radius:22px;paddin
       <p class="cstat" id="coopStat" hidden></p>
     </div>
     <div class="runs" id="runs"></div>
-    <div class="keys">Best: <span id="menuBest">Lv 0</span><br>v0.79</div>
+    <div class="keys">Best: <span id="menuBest">Lv 0</span><br>v0.80</div>
   </div>
 </div>
 <div class="screen" id="over" hidden>
@@ -4882,10 +4882,13 @@ function droneUpdate(v, dt) {
   let tgt = null, bd = 5; for (const z of zombies) { if (z.dead) continue; const dc = Math.hypot(z.x - cx, z.z - cz); if (dc < R - 1.5 || dc > R + 9) continue; const d = Math.hypot(z.x - v.x, z.z - v.z); if (d < bd) { bd = d; tgt = z; } }
   let tx, tz; if (tgt) { tx = tgt.x; tz = tgt.z; } else { const a = myA + v.wd * 0.35; tx = cx + Math.cos(a) * R; tz = cz + Math.sin(a) * R; }
   let dx = tx - v.x, dz = tz - v.z; const d = Math.hypot(dx, dz) || 1; dx /= d; dz /= d;
+  if ((v.escT || 0) > 0) { v.escT -= dt; dx = Math.cos(v.escA); dz = Math.sin(v.escA); }
+  if ((v.chkT = (v.chkT ?? 1.5) - dt) <= 0) { const prog = Math.hypot(v.x - (v.cx0 ?? v.x + 9), v.z - (v.cz0 ?? v.z + 9)); v.chkT = 1.5; v.cx0 = v.x; v.cz0 = v.z;
+    if (prog < 0.6 && !(tgt && bd < 1.2)) { v.esc = (v.esc || 0) + 1; v.wd = -(v.wd || 1); v.escT = 0.9; v.escA = Math.atan2(-dz, -dx) + (Math.random() - 0.5) * 1.6; if (v.esc >= 3) { v.esc = 0; v.stk = 3.1; } } else v.esc = 0; }
   const spd = tgt ? 4.2 : 2.8; let moved = false;
   for (const off of [0, 0.5, -0.5, 1.0, -1.0, 1.6, -1.6]) { const c = Math.cos(off), s2 = Math.sin(off), ux = dx * c - dz * s2, uz = dx * s2 + dz * c, nx = v.x + ux * spd * dt, nz = v.z + uz * spd * dt;
     if (!vehBlocked(nx, nz, false, false, v.kind)) { v.vx = ux * spd; v.vz = uz * spd; v.x = nx; v.z = nz; moved = true; break; } }
-  if (!moved) { v.vx = v.vz = 0; v.stk = (v.stk || 0) + dt; if (v.stk > 0.8) v.wd = -(v.wd || 1); if (v.stk > 3) { for (let t = 0; t < 24; t++) { const a = myA + (t % 2 ? 1 : -1) * Math.ceil(t / 2) * 0.25, rr = R + (t % 3), nx = cx + Math.cos(a) * rr, nz = cz + Math.sin(a) * rr; if (!vehBlocked(nx, nz, false)) { puff(v.x, 0.4, v.z, 0x8a8478); v.x = nx; v.z = nz; puff(nx, 0.4, nz, 0x8a8478); break; } } v.stk = 0; } } else v.stk = Math.max(0, (v.stk || 0) - dt);
+  if (!moved || v.stk > 3) { v.vx = v.vz = 0; v.stk = (v.stk || 0) + dt; if (v.stk > 0.8) v.wd = -(v.wd || 1); if (v.stk > 3) { for (let t = 0; t < 24; t++) { const a = myA + (t % 2 ? 1 : -1) * Math.ceil(t / 2) * 0.25, rr = R + (t % 3), nx = cx + Math.cos(a) * rr, nz = cz + Math.sin(a) * rr; if (!vehBlocked(nx, nz, false)) { puff(v.x, 0.4, v.z, 0x8a8478); v.x = nx; v.z = nz; puff(nx, 0.4, nz, 0x8a8478); break; } } v.stk = 0; } } else v.stk = Math.max(0, (v.stk || 0) - dt);
   if (Math.hypot(v.vx, v.vz) > 0.3) v.face = angLerp(v.face, Math.atan2(v.vx, v.vz), 1 - Math.exp(-dt * 5));
   for (const z of zombies) { if (z.dead || (z.ramCd = (z.ramCd || 0) - dt) > 0) continue; const dd = Math.hypot(z.x - v.x, z.z - v.z); if (dd < 0.95) { z.ramCd = 0.5; hitZombie(z, 45, (z.x - v.x) / (dd || 1), (z.z - v.z) / (dd || 1), 'ram'); } }
   v.mesh.position.set(v.x, 0, v.z); v.mesh.rotation.y = v.face;
