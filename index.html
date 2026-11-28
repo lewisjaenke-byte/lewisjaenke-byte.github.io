@@ -515,7 +515,7 @@ body.attract #menu .card{background:rgba(30,20,40,.72);border-radius:22px;paddin
       <p class="cstat" id="coopStat" hidden></p>
     </div>
     <div class="runs" id="runs"></div>
-    <div class="keys">Best: <span id="menuBest">Lv 0</span><br>v0.86</div>
+    <div class="keys">Best: <span id="menuBest">Lv 0</span><br>v0.87</div>
   </div>
 </div>
 <div class="screen" id="over" hidden>
@@ -1796,7 +1796,7 @@ const UPG = [
     ['heir', 'Buried relics', 'Harvesting wheat can dig up rare scythes: Farmer\'s scythe (0.3%) or the Ancient scythe (extremely rare)', () => { heirOn = true; }]] },
   { name: 'Workshop', nodes: [
     ['gtower', 'Guard tower', 'Turn the workshop roof into a lookout tower', () => { towerOn = true; refreshShed(); }],
-    ['sam', 'Sniper Sam', 'Sniper Sam moves into the tower within a couple of minutes and picks off zombies from the top', () => { samOn = true; if (!sam && samT < 0) samT = loadingSave ? 4 : 40 + Math.random() * 80; }],
+    ['sam', 'Sniper Sam', 'Sniper Sam moves into the tower within a couple of minutes and picks off zombies from the top', () => { samOn = true; if (!sam && samT < 0) { samT = loadingSave ? 4 : 40 + Math.random() * 80; samQuiet = loadingSave; } }],
     ['tesla', 'Tesla coil', 'Every 25 kills by Sniper Sam, the tower pulses electricity and freezes everything nearby. The 5 lights show his progress', () => { teslaOn = true; refreshShed(); }]] },
   { name: 'Bike', nodes: [
     ['uzi', 'Bike Uzi', 'Hold Swing while riding the bike to fire an Uzi where you aim. Roll to get off', () => { uziOn = true; }],
@@ -2982,6 +2982,7 @@ function loadGame(given) {
     for (const n of drawbs) { const o = tileObj[n]; if (o) o.rotation.y = (grid[n - N] === MOAT || grid[n + N] === MOAT) && !(grid[n - 1] === MOAT || grid[n + 1] === MOAT) ? Math.PI / 2 : 0; }
     d.owned = d.owned.map(id => id === 'pistol' ? 'longscy' : id); if (d.owned.includes('tesla') && !d.owned.includes('gtower')) d.owned.push('gtower'); if (d.owned.includes('gtower') && !d.owned.includes('sam')) d.owned.push('sam'); if (!d.owned.includes('spin')) d.owned.push('spin');
     for (const id of d.owned) for (const br of UPG) for (const nd of br.nodes) if (nd[0] === id && !owned.has(id)) { owned.add(id); nd[3](); }
+    if (samOn && !sam) { samT = 4; samQuiet = true; }
     for (let q = 0; q < d.fills.length; q += 2) { fill[d.fills[q]] = d.fills[q + 1]; if (grid[d.fills[q]] === PIT) setPitVisual(d.fills[q]); }
     for (let q = 0; q < d.walls.length; q += 2) wallHp[d.walls[q]] = d.walls[q + 1];
     for (const [n, g] of d.farms) { const f = farms.get(n); if (f) { f.g = g; setFarmLook(n); } }
@@ -3697,10 +3698,11 @@ function updateShedPowers(dt) {
   if (sam) { sam.g.position.set(sx, shedTop() + 0.12, sz); sam.cd -= dt; let tg = null, bd = 17; for (const z of zombies) { if (z.dead) continue; const d = Math.hypot(z.x - sx, z.z - sz); if (d < bd && d > 1) { bd = d; tg = z; } }
     if (tg) { sam.g.rotation.y = Math.atan2(tg.x - sx, tg.z - sz); if (sam.cd <= 0) { sam.cd = level < 8 ? 2.4 : level < 14 ? 1.9 : 1.5; hitZombie(tg, 55 + level * 13, (tg.x - sx) / bd, (tg.z - sz) / bd, 'boom'); if (tg.dead) { samLast = time; if (teslaCd <= 0) samKills++; } const L = bd, m = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.035, L), new THREE.MeshBasicMaterial({ color: 0xfff2a0, transparent: true, opacity: 0.9 })); m.position.set((sx + tg.x) / 2, 1.2, (sz + tg.z) / 2); m.rotation.y = Math.atan2(tg.x - sx, tg.z - sz); m.rotation.x = Math.atan2(0.8, L) * 0; scene.add(m); beams.push({ m, t: 0.12 }); if (gate('sam', 200)) SFX.gun(); } } }
 }
+let samQuiet = false;
 function spawnSam(sx, sz) {
   const pm = makeNpcMesh('recruit'); pm.body.material = M(0x5a6b3a); const rifle = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.06, 0.7), mat.black); rifle.position.set(0.18, 0.1, 0.35); pm.roll.add(rifle);
   const hat = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.24, 0.1, 10), M(0x3d4a2a)); hat.position.y = 0.45; pm.roll.add(hat); pm.g.scale.setScalar(0.85);
-  sam = { g: pm.g, cd: 1 }; banner('Sniper Sam arrived'); SFX.levelUp(); burst(sx, 2, sz, mat.gold, 14, 3); tempMark(sx, sz, '#ffd166', 'star', 6);
+  sam = { g: pm.g, cd: 1 }; if (samQuiet) { samQuiet = false; return; } banner('Sniper Sam arrived'); SFX.levelUp(); burst(sx, 2, sz, mat.gold, 14, 3); tempMark(sx, sz, '#ffd166', 'star', 6);
 }
 const shedTop = () => 0.75 + (Math.min(6, shedLv) - 1) * 0.55;
 function makeCompiler() {
