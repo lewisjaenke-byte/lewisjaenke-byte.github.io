@@ -181,6 +181,7 @@ body:not(.is-touch) .pcspin:not([hidden]){display:block;position:absolute;right:
 .inmenu .hud>*:not(.screen),.inmenu .touch,.inmenu .pc-build,.inmenu .hint{visibility:hidden}
 .peacebtn{display:flex;align-items:center;gap:8px;margin:0 auto 8px;border:0;border-radius:999px;padding:9px 16px;background:#3d8a5a;color:#fff8ec;font:800 15px/1 Nunito,sans-serif;cursor:pointer}
 .peacebtn:disabled{background:rgba(255,255,255,.12);opacity:.7;cursor:default}
+.mg{position:fixed;inset:0;display:grid;place-items:center;background:rgba(10,6,14,.55);z-index:7;pointer-events:auto}.mg[hidden]{display:none}.mg .mgp{background:#24162e;border:2px solid #f2b632;border-radius:18px;padding:12px 14px 14px;width:min(360px,92vw);text-align:center;position:relative}.mg h3{font:22px/1.1 'Lilita One',sans-serif;margin:2px 0 2px;color:#ffe9a8}.mg p{margin:0 0 8px;font-size:13px;opacity:.85}.mg canvas{position:static;inset:auto;height:auto;width:100%;aspect-ratio:16/10;border-radius:12px;background:#140c1a;touch-action:none;display:block}.mg .mgx{position:absolute;right:8px;top:6px;width:32px;height:32px;border-radius:50%;border:0;background:#3a2a46;color:#fff;font-size:18px}
 .tune{position:absolute;left:50%;top:58%;transform:translateX(-50%);width:min(300px,80vw);background:rgba(32,20,40,.92);border:2px solid #5fd4ff;border-radius:16px;padding:14px;pointer-events:auto;z-index:5}
 .tune[hidden]{display:none}
 .tbar{position:relative;height:26px;border-radius:8px;background:repeating-linear-gradient(90deg,#1a2a3a 0 6px,#22384c 6px 12px)}
@@ -220,6 +221,7 @@ body:not(.is-touch) .pcspin:not([hidden]){display:block;position:absolute;right:
 #bDodge.mash{background:var(--amber);color:#2a1d10;animation:glow .5s ease-in-out infinite}
 .hurt{position:absolute;inset:0;box-shadow:inset 0 0 90px 20px rgba(226,72,61,.55);opacity:0;transition:opacity .25s}
 .hurt.show{opacity:1;transition:none}
+.lowhp{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 45%,rgba(200,20,20,.55) 100%);opacity:0}.lowhp b{position:absolute;left:50%;top:22%;transform:translateX(-50%);font:22px/1 'Lilita One',sans-serif;color:#ff5a4a;text-shadow:0 2px 0 #000;letter-spacing:1px}
 .floater{position:absolute;font:20px/1 'Lilita One',sans-serif;color:var(--gold);text-shadow:0 2px 0 rgba(0,0,0,.35);transform:translate(-50%,-50%);white-space:nowrap}
 .touch{display:none}
 .is-touch .touch{display:block}
@@ -396,13 +398,15 @@ body.attract #menu .card{background:rgba(30,20,40,.72);border-radius:22px;paddin
   <div class="pcspin" id="pcSpin" hidden>R · Spin attack ready</div>
   <div class="trade" id="trade" hidden><div class="thd"><b>Trader</b><button id="bTradeX" aria-label="Close">✕</button></div><div id="tradeList"></div></div>
   <div class="goals" id="goals"></div>
+  <div class="mg" id="petBox" hidden><div class="mgp"><button class="mgx" id="petX">✕</button><h3>Your pets</h3><p id="petSub"></p><div id="petList" style="display:grid;gap:6px;max-height:50vh;overflow:auto"></div></div></div>
+  <div class="mg" id="mg" hidden><div class="mgp"><button class="mgx" id="mgX">✕</button><h3 id="mgT"></h3><p id="mgH"></p><canvas id="mgC" width="480" height="300"></canvas></div></div>
   <div class="tune" id="tune" hidden><div class="tbar"><i id="tuneZone"></i><b id="tuneNeedle"></b></div><div class="tdots"><i></i><i></i><i></i></div></div>
   <div class="marks" id="marks"></div>
   <div class="respawn" id="respawn" hidden><b id="respawnN">30</b></div>
   <div class="room" id="roomPill" hidden><i></i><span id="roomTxt"></span></div>
   <div class="tip" id="tip"></div><div id="hintPop" hidden></div>
   <div class="banner" id="banner"><div id="bannerT"></div><div class="bsub" id="bannerS"></div></div>
-  <div class="hurt" id="hurt"></div>
+  <div class="hurt" id="hurt"></div><div class="lowhp" id="lowHp"><b>LOW HEALTH</b></div>
   <div id="floaters"></div>
   <div class="touch">
     <div class="tray" id="tray" hidden></div>
@@ -507,7 +511,7 @@ body.attract #menu .card{background:rgba(30,20,40,.72);border-radius:22px;paddin
       <p class="cstat" id="coopStat" hidden></p>
     </div>
     <div class="runs" id="runs"></div>
-    <div class="keys">Best: <span id="menuBest">Lv 0</span><br>v0.77</div>
+    <div class="keys">Best: <span id="menuBest">Lv 0</span><br>v0.78</div>
   </div>
 </div>
 <div class="screen" id="over" hidden>
@@ -672,7 +676,7 @@ function buildDecor() {
       for (let s2 = 0; s2 < 18 && n < MAXW; s2++) {
         d.position.set(ci - HALF + (Math.random() - 0.5) * 2.4, 0, cj - HALF + (Math.random() - 0.5) * 2.4);
         d.rotation.set((Math.random() - 0.5) * 0.4, Math.random() * 3, (Math.random() - 0.5) * 0.4);
-        d.scale.setScalar(0.7 + Math.random() * 0.6); d.updateMatrix(); { const tn = idx(tt(d.position.x), tt(d.position.z)); if (built[tn] && grid[tn] !== EMPTY) { d.scale.setScalar(0); d.updateMatrix(); } else { let l = decorByTile.get(tn); if (!l) decorByTile.set(tn, l = []); l.push(n); } } decor.setMatrixAt(n, d.matrix); decor.setColorAt(n, tmpCol); n++;
+        d.scale.setScalar(0.7 + Math.random() * 0.6); d.updateMatrix(); { const tn = idx(tt(d.position.x), tt(d.position.z)); if ((built[tn] && grid[tn] !== EMPTY) || grid[tn] === CANYON || grid[tn] === WATER || grid[tn] === MOAT || grid[tn] === PIT || grid[tn] === CLIFF || grid[tn] === BRIDGE) { d.scale.setScalar(0); d.updateMatrix(); } else { let l = decorByTile.get(tn); if (!l) decorByTile.set(tn, l = []); l.push(n); } } decor.setMatrixAt(n, d.matrix); decor.setColorAt(n, tmpCol); n++;
       }
     }
   }
@@ -1306,20 +1310,22 @@ function genRegion(r) {
       const pl = new THREE.Group(), body = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.4, 6.6, 12).rotateZ(Math.PI / 2), LM.white); body.position.y = 0.45; body.castShadow = true; pl.add(body);
       box(pl, LM.red, 6.4, 0.08, 0.3, 0, 0.75, 0.42); box(pl, LM.white, 1.1, 0.1, 6.2, 0.4, 0.35, 0, 0.12); box(pl, LM.white, 0.9, 1.1, 0.12, -3, 0.95, 0); box(pl, LM.red, 0.5, 0.5, 0.13, -3.1, 1.25, 0);
       const nose = new THREE.Mesh(new THREE.ConeGeometry(0.4, 0.8, 12).rotateZ(-Math.PI / 2), mat.metalDark); nose.position.set(3.6, 0.45, 0); pl.add(nose);
-      pl.rotation.y = 0.25; pl.rotation.z = 0.06; footprint(i, j + 2, 7, 3, pl); for (let q = -2; q <= 4; q++) if (q < 0 || q > 2) lmk(i + 4, j + 2 + q, null);
+      pl.rotation.y = 0.25; pl.rotation.z = 0.06; footprint(i, j + 2, 7, 3, pl); addSite('plane', tc(i + 3), tc(j + 5)); for (let q = -2; q <= 4; q++) if (q < 0 || q > 2) lmk(i + 4, j + 2 + q, null);
       animLm.push({ kind: 'smoke', obj: pl, x: tc(i + 6), z: tc(j + 3), y: 0.8, t: 0, col: 0x3a3634 }); richCrate(i + 2, j + 6); put([[i + 7, j + 6]], SCRAPPILE); put([[i, j]], SCRAPPILE); put([[i + 1, j + 6]], BARREL); }
     else if (bm === 'grass') { const s2 = site(8, 6); if (!s2) return; const [i, j] = s2;
       const mill = new THREE.Group(); const tw = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.95, 2.6, 8), LM.white); tw.position.y = 1.3; tw.castShadow = true; const cap = new THREE.Mesh(new THREE.ConeGeometry(0.85, 0.8, 8), LM.roof); cap.position.y = 3; mill.add(tw, cap);
       const blades = new THREE.Group(); blades.position.set(0, 2.5, 0.75); for (let q = 0; q < 4; q++) { const b = new THREE.Group(); box(b, LM.timber, 0.08, 1.6, 0.05, 0, 0.8, 0); box(b, LM.sail, 0.4, 1.2, 0.03, 0.22, 0.9, 0); b.rotation.z = q * Math.PI / 2; blades.add(b); } mill.add(blades);
-      footprint(i, j, 2, 2, mill); animLm.push({ kind: 'spin', obj: blades });
+      footprint(i, j, 2, 2, mill); animLm.push({ kind: 'spin', obj: blades }); addSite('mill', tc(i) + 0.5, tc(j + 2));
       room(i + 3, j, 5, 4, 's', LM.roof, 0.85); richCrate(i + 5, j + 1); for (let q = 0; q < 6; q++) put([[i + q, j + 5]], HAY); }
     else if (bm === 'mountain') { const s2 = site(6, 5); if (!s2) return; const [i, j] = s2;
       for (let x = 0; x < 6; x++) for (let y = 0; y < 2; y++) if (!(y === 1 && (x === 2 || x === 3))) put([[i + x, j + y]], CLIFF);
       const mouth = new THREE.Group(); box(mouth, LM.dark, 1.9, 1.0, 0.9, 0, 0.5, 0); box(mouth, LM.timber, 0.16, 1.15, 0.16, -0.95, 0.58, 0.45); box(mouth, LM.timber, 0.16, 1.15, 0.16, 0.95, 0.58, 0.45); box(mouth, LM.timber, 2.1, 0.16, 0.18, 0, 1.15, 0.45);
       for (let q = 0; q < 4; q++) { box(mouth, LM.timber, 0.9, 0.04, 0.12, 0, 0.02, 0.9 + q * 0.45); } box(mouth, LM.steel, 0.05, 0.05, 1.9, -0.3, 0.06, 1.6); box(mouth, LM.steel, 0.05, 0.05, 1.9, 0.3, 0.06, 1.6);
-      footprint(i + 2, j + 1, 2, 1, mouth); const cart = new THREE.Group(); box(cart, LM.steel, 0.7, 0.4, 0.8, 0, 0.35, 0); box(cart, mat.gem, 0.5, 0.15, 0.6, 0, 0.6, 0); lmk(i + 2, j + 3, cart);
+      footprint(i + 2, j + 1, 2, 1, mouth); addSite('mine', tc(i + 2) + 0.5, tc(j + 2)); const cart = new THREE.Group(); box(cart, LM.steel, 0.7, 0.4, 0.8, 0, 0.35, 0); box(cart, mat.gem, 0.5, 0.15, 0.6, 0, 0.6, 0); lmk(i + 2, j + 3, cart);
       richCrate(i + 3, j + 3); put([[i + 1, j + 3]], ORE); put([[i + 4, j + 4]], ORE); }
   };
+  if (genVer >= 6 && r === subRegion) { const st = site(4, 4); if (st) { const [i, j] = st; footprint(i, j, 3, 3, makeSub()); addSite('sub', tc(i) + 1, tc(j + 3)); } }
+  if (genVer >= 6 && r === waterRegion) { const st = site(3, 3); if (st) { const [i, j] = st; footprint(i, j, 2, 2, makeWaterTower()); addSite('water', tc(i) + 0.5, tc(j + 2)); } }
   if (r === radioRegion && bm !== 'town') { const st = site(3, 3); if (st) { const [i, j] = st, n = idx(i + 1, j + 1), m = makeRadio(); grid[n] = LMK; addObj(n, m); radio = { i: i + 1, j: j + 1, x: tc(i + 1), z: tc(j + 1), fixed: false, cd: 0, mesh: m }; } }
   if (r === campRegion) { const st = site(7, 6); if (st) { const [i, j] = st;
     const fire = new THREE.Group(); for (let q = 0; q < 5; q++) { const l = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.08, 0.08), mat.trunk); l.rotation.y = q * 1.25; l.position.y = 0.05; fire.add(l); } const fl = new THREE.Mesh(new THREE.OctahedronGeometry(0.2, 0), B(0xffb347)); fl.position.y = 0.3; fl.scale.y = 1.6; fire.add(fl);
@@ -1380,9 +1386,11 @@ function genRegion(r) {
     const startsY = [Y0 + 1, ...hRoads.map(h => h + 3)], endsY = [...hRoads.map(h => h - 2), Y0 + REG - 2];
     for (let bx = 0; bx < startsX.length; bx++) for (let by = 0; by < startsY.length; by++) {
       const ax = startsX[bx], bxe = endsX[bx], ay = startsY[by], bye = endsY[by]; if (bxe - ax < 6 || bye - ay < 5) continue;
+      if (genVer >= 6 && bx === 0 && by === 0) { const i = ax + 1, j = ay + 1; let good = true; for (let y = 0; y < 4 && good; y++) for (let x = 0; x < 4 && good; x++) if (!ok(i + x, j + y)) good = false;
+        if (good) { footprint(i, j, 4, 3, makeBank()); addSite('bank', tc(i) + 1.5, tc(j + 3)); continue; } }
       if (bx === 1 && by === 1) { const i = ax + 2, j = ay + 2;
         const can = new THREE.Group(); box(can, LM.white, 6.2, 0.25, 3.4, 0, 2.0, 0); box(can, LM.red, 6.3, 0.12, 3.5, 0, 1.84, 0); for (const [x, z] of [[-2.6, -1.3], [2.6, -1.3], [-2.6, 1.3], [2.6, 1.3]]) box(can, LM.steel, 0.2, 1.9, 0.2, x, 0.95, z);
-        if ([[0, 0], [5, 0], [0, 2], [5, 2]].every(([x, y]) => ok(i + x, j + y))) { for (const [x, y] of [[0, 0], [5, 0], [0, 2], [5, 2]]) lmk(i + x, j + y, null); can.children.forEach(c => { if (Math.abs(c.position.x) > 2) c.position.x = Math.sign(c.position.x) * 2.5, c.position.z = Math.sign(c.position.z) * 1; }); can.position.set(tc(i) + 2.5, 0, tc(j) + 1); scene.add(can); tileObj[idx(i, j)] = can; }
+        if ([[0, 0], [5, 0], [0, 2], [5, 2]].every(([x, y]) => ok(i + x, j + y))) { addSite('petrol', tc(i + 3), tc(j + 1)); for (const [x, y] of [[0, 0], [5, 0], [0, 2], [5, 2]]) lmk(i + x, j + y, null); can.children.forEach(c => { if (Math.abs(c.position.x) > 2) c.position.x = Math.sign(c.position.x) * 2.5, c.position.z = Math.sign(c.position.z) * 1; }); can.position.set(tc(i) + 2.5, 0, tc(j) + 1); scene.add(can); tileObj[idx(i, j)] = can; }
         for (const [x, y] of [[2, 1], [4, 1]]) { const pump = new THREE.Group(); box(pump, LM.red, 0.5, 1.0, 0.4, 0, 0.5, 0); box(pump, LM.white, 0.4, 0.25, 0.42, 0, 0.75, 0); if (ok(i + x, j + y)) lmk(i + x, j + y, pump); }
         room(i, j + 5, 6, 4, 'n', LM.white, 1.0); richCrate(i + 2, j + 7); put([[i + 6, j + 5]], BARREL); put([[i + 6, j + 6]], BARREL); continue; }
       for (let h = 0; h < 2; h++) {
@@ -1470,7 +1478,7 @@ function clearRegion(r) {
   for (let j = Math.max(0, rz * REG - 10); j < Math.min(N, rz * REG + REG + 10); j++) for (let i = Math.max(0, rx * REG - 10); i < Math.min(N, rx * REG + REG + 10); i++) {
     if (regionAt(i, j) !== r) continue; const n = idx(i, j); road[n] = 0; if (PROP_TYPES.has(grid[n]) && !built[n]) removeTile(n);
   }
-  pickups = pickups.filter(pk => { if (regionAt(tt(pk.x), tt(pk.z)) === r) { scene.remove(pk.m); return false; } return true; });
+  pickups = pickups.filter(pk => { if (regionAt(tt(pk.x), tt(pk.z)) === r) { scene.remove(pk.m); return false; } return true; }); sites = sites.filter(o => regionAt(tt(o.x), tt(o.z)) !== r);
   for (let j = Math.max(0, (r / 3 | 0) * REG - 10); j < Math.min(N, (r / 3 | 0) * REG + REG + 10); j++) for (let i = Math.max(0, (r % 3) * REG - 10); i < Math.min(N, (r % 3) * REG + REG + 10); i++) { const n = idx(i, j); if (regionAt(i, j) === r && grid[n] === WATER) { grid[n] = EMPTY; deep[n] = 0; } }
   vehicles = vehicles.filter(v => { if (v !== P.mount && !(v.fixed && VEH[v.kind].cost > 0) && regionAt(tt(v.x), tt(v.z)) === r) { scene.remove(v.mesh); return false; } return true; });
   pets = pets.filter(pt => { if (!pt.tamed && pt !== P.mount && regionAt(tt(pt.x), tt(pt.z)) === r) { scene.remove(pt.mesh); return false; } return true; });
@@ -1485,13 +1493,13 @@ function pickBiome(avoid) {
     if (b === 'mountain' && hasMtn) continue; if (b === 'airstrip' && avoid === 'airstrip') continue; if (b !== avoid) return b;
   }
 }
-let genVer = 5, worldSeed = 1, swaps = [], genGrid = new Uint8Array(N * N), loadingSave = false;
+let genVer = 6, worldSeed = 1, swaps = [], genGrid = new Uint8Array(N * N), loadingSave = false;
 function seeded(seed, fn) { let a = seed >>> 0; const orig = Math.random; Math.random = () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; try { return fn(); } finally { Math.random = orig; } }
 function snapGen() { for (let n = 0; n < N * N; n++) genGrid[n] = built[n] ? 0 : grid[n]; }
 function generateWorld() {
   wseed = [Math.random() * 9, Math.random() * 9, Math.random() * 9, Math.random() * 9]; road.fill(0); deep.fill(0);
   for (let r = 0; r < 9; r++) regionBiome[r] = r === 4 ? 'home' : pickBiome();
-  { const outer = [0, 1, 2, 3, 5, 6, 7, 8].filter(q => regionBiome[q] !== 'lake').sort(() => Math.random() - 0.5); const rr = outer.filter(q => regionBiome[q] !== 'town'); radioRegion = Math.random() < 0.45 ? rr[0] ?? -1 : -1; campRegion = outer.filter(q => q !== radioRegion)[0] ?? -1; radio = null; }
+  { const outer = [0, 1, 2, 3, 5, 6, 7, 8].filter(q => regionBiome[q] !== 'lake').sort(() => Math.random() - 0.5); const rr = outer.filter(q => regionBiome[q] !== 'town'); radioRegion = Math.random() < 0.45 ? rr[0] ?? -1 : -1; campRegion = outer.filter(q => q !== radioRegion)[0] ?? -1; radio = null; subRegion = waterRegion = -1; sites = []; if (genVer >= 6) { const o2 = outer.filter(q => q !== radioRegion && q !== campRegion && regionBiome[q] !== 'town'); subRegion = o2[0] ?? -1; waterRegion = o2[1] ?? -1; } }
   for (const r of [0, 1, 2, 3, 5, 6, 7, 8].filter(q => regionBiome[q] === 'town').concat([0, 1, 2, 3, 4, 5, 6, 7, 8].filter(q => regionBiome[q] !== 'town'))) genRegion(r);
   paintWorld();
   buildDecor(); visited = new Set(); lastRegion = -1;
@@ -1774,7 +1782,7 @@ const UPG = [
     ['kennel', 'Kennel', 'Build a kennel to tame dogs, cats and wolves', () => { kennelOn = true; }],
     ['leash', 'Zombie leash', 'Leash up to 3 cut-down zombies. They guard your base, or follow you around as bodyguards', () => { leashOn = true; }],
     ['pack', 'Big kennel', 'Keep up to 6 pets', () => { petCap = 6; }],
-    ['vet', 'Vet kennel', 'Hurt dogs, cats and wolves limp back to the kennel and recover in 30s instead of dying', () => { vetOn = true; }],
+    ['vet', 'Vet kennel', 'Hurt dogs, cats, wolves and leashed zombies limp back to the kennel and recover in 30s instead of dying', () => { vetOn = true; }],
     ['mech', 'Mech wolf', 'Wolves get a mech suit: twice as fast, with a laser that cuts through lines of zombies', () => { mechWolf = true; for (const pt of pets) if (pt.kind === 'wolf' && pt.tamed) mechify(pt); }]] },
   { name: 'Farm', nodes: [
     ['silo', 'Silo', 'Build a silo and plant wheat farms around it', () => { siloOn = true; }],
@@ -2174,6 +2182,48 @@ function ancientSweep(R, dmg) {
   for (const z of zombies) { if (z.dead) continue; const dx = z.x - P.x, dz = z.z - P.z, d = Math.hypot(dx, dz); if (d < R) hitZombie(z, dmg * 0.8, dx / (d || 1), dz / (d || 1)); }
   burst(P.x, 0.5, P.z, M(0xb36bff), 14, 4); SFX.swing(); if (!P.mount && !P.onWall) { P.dx = P.ax; P.dz = P.az; P.dodgeT = 0.16; }
 }
+function startMine(st) {
+  if (inBonus || netRole === 'guest') return; if (gateway && gateway.type !== 'mine') { tip('Another gateway is already open.'); SFX.bonk(); return; } if (gateway) return;
+  const g = makeGateMesh(0); g.position.set(st.x, 0, st.z); scene.add(g); gateway = { i: tt(st.x), j: tt(st.z), x: st.x, z: st.z, type: 'mine', mesh: g, t: 90, site: st };
+  banner('Mine cart ready', hostHasGuests() ? 'Everyone stand on the cart to ride' : 'Stand on the cart to ride', 2.4); SFX.surge();
+}
+function mineCart(dt) {
+  if (!inBonus || !BL || !BL.mine || P.dead) return; const sp = 2.4 * dt; if (!blocked(P.x, P.z + 0.35 + sp, 0.28)) P.z += sp;
+  if (BL.lantern) BL.lantern.position.set(P.x, 2, P.z + 1.5);
+  if (!BL.cartM && BL.group) { const c = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.45, 0.9), M(0x6b6470)); c.position.y = 0.25; const g2 = new THREE.Group(); g2.add(c); for (const sx of [-0.3, 0.3]) for (const sz of [-0.3, 0.3]) { const w = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.06, 8).rotateZ(Math.PI / 2), mat.metalDark); w.position.set(sx * 1.4, 0.1, sz); g2.add(w); } BL.group.add(g2); BL.cartM = g2; }
+  if (BL.cartM) BL.cartM.position.set(P.x, 0, P.z);
+}
+function mineGemHit() {
+  if (!inBonus || !BL || !BL.mine || !BL.got) return; const k = coopK();
+  BL.gems.forEach(([i, j], q) => { if (BL.got[q]) return; const gx = bwx(i) + (i === 1 ? 0.5 : -0.5), gz = bwz(j); if (Math.hypot(gx - P.x, gz - P.z) > 2.1) return; BL.got[q] = 1; BL.gemM[q].visible = false;
+    const b0 = charge, add = Math.max(2, Math.round(7 * k)); charge += add; if (levelCd > 0) charge = Math.min(charge, need(level)); const got = Math.round(charge - b0); if (got) floater(gx, gz, 'Crystal +' + got, '#8fe3f8'); else { scrap += add; floater(gx, gz, '+' + add, '#ffe066'); }
+    burst(gx, 1, gz, mat.gem, 12, 3); SFX.coin(); });
+}
+const bridgeHp = new Map();
+function dropAllGear(x, z) {
+  const put = (sl, t) => { const a = Math.random() * 6.28; spawnGearItem(sl, t, x + Math.cos(a) * 0.9, z + Math.sin(a) * 0.9); const d = gearDrops[gearDrops.length - 1]; if (d) d.life = 900; };
+  for (const sl of ['head', 'chest', 'legs', 'feet']) if (gear[sl]) { put(sl, gear[sl]); gear[sl] = 0; }
+  if (scyRare) { put('scythe', scyRare); scyRare = 0; } if (jetOn) { put('jetpack', 1); jetOn = false; }
+  applyGear(); setBladeLook(); setJetLook();
+}
+function hitBridge(n) {
+  if (!gate('br' + (guestCtx ? guestCtx.slot : 0), 250)) return;
+  const h = (bridgeHp.get(n) ?? 4) - 1; bridgeHp.set(n, h); const x = tc(n % N), z = tc((n / N) | 0); burst(x, 0.3, z, mat.wood, 6, 2); SFX.chew(); shake = Math.max(shake, 0.2);
+  if (h > 0) { floater(x, z, h === 1 ? 'One more hit!' : 'Creak...', '#ffd166'); return; }
+  const span = new Set([n]), st = [n]; while (st.length) { const c = st.pop(), ci = c % N, cj = (c / N) | 0; for (const [a, b] of D4) { const i = ci + a, j = cj + b; if (!inb(i, j)) continue; const m = idx(i, j); if (grid[m] === BRIDGE && !span.has(m)) { span.add(m); st.push(m); } } }
+  let land = null; for (const m of span) { for (const [a, b] of D4) { const i = (m % N) + a, j = ((m / N) | 0) + b; if (inb(i, j) && grid[idx(i, j)] === EMPTY) { land = [tc(i), tc(j)]; break; } } if (land) break; }
+  const on = (ex, ez) => span.has(idx(tt(ex), tt(ez)));
+  for (const m of span) { bridgeHp.delete(m); removeTile(m); grid[m] = CANYON; addObj(m, makeCanyon(m)); setGround(m, true); clearDecorAt(m); burst(tc(m % N), 0.2, tc((m / N) | 0), mat.wood, 8, 3); }
+  version++; flowDirty = true; computeFlow(); SFX.crumble(); shake = 0.6; banner('Bridge down!', '', 1.6); let fell = 0;
+  for (const z of zombies) if (!z.dead && !z.fly && on(z.x, z.z)) { killZombie(z, 'sink'); fell++; }
+  for (const nn of npcs) if (!nn.dead && on(nn.x, nn.z)) { npcHurt(nn, 99999); fell++; }
+  pets = pets.filter(pt => { if (pt !== P.mount && on(pt.x, pt.z)) { if (pt.mesh) scene.remove(pt.mesh); fell++; return false; } return true; });
+  const L = land || [tc(n % N), tc((n / N) | 0)];
+  const fly = copterT > 0 || jetT > 0 || (P.mount && P.mount.fly);
+  if (!P.dead && !fly && on(P.x, P.z) && !guestCtx) { dropAllGear(L[0], L[1]); P.mount = null; playerDown(); fell++; }
+  if (netRole === 'host') for (const G of liveGuests()) if (G.hp > 0 && on(G.x, G.z)) { asGuestFull(G, () => dropAllGear(L[0], L[1]), true); G.hp = 0; fell++; }
+  if (fell) floater(L[0], L[1], fell + ' fell!', '#ff6b3d');
+}
 function doSwing() {
   if (netRole === 'guest') { P.swingCd = 0.3; P.swingT = 0.17; P.buffer = 0; SFX.swing(); trail.position.set(P.x, 0, P.z); trail.rotation.y = -Math.atan2(P.az, P.ax); trailMesh.material.opacity = 0.85; trail.scale.setScalar(SCY.r[scy] / 1.8); netSend({ t: 'sw', x: P.x, z: P.z, ax: P.ax, az: P.az }); return; }
   P.swingCd = 0.3; P.swingT = 0.17; P.buffer = 0; SFX.swing(); swingJunk();
@@ -2185,11 +2235,12 @@ function doSwing() {
     if (z.dead) continue; const dx = z.x - P.x, dz = z.z - P.z, d = Math.hypot(dx, dz);
     if (d < sR && (d < 0.6 || (dx * P.ax + dz * P.az) / d > sC)) hitZombie(z, sD, dx / (d || 1), dz / (d || 1));
   }
-  swingNpcs(SCY.r[scy], SCY.cos[scy], SCY.dmg[scy] * 0.8); for (const nt of nests) { const dx = nt.x - P.x, dz = nt.z - P.z, d = Math.hypot(dx, dz); if (!nt.dead && d < SCY.r[scy] + 1.1 && (d < 1.4 || (dx * P.ax + dz * P.az) / d > SCY.cos[scy])) hitNest(nt, SCY.dmg[scy]); }
+  mineGemHit(); swingNpcs(SCY.r[scy], SCY.cos[scy], SCY.dmg[scy] * 0.8); for (const nt of nests) { const dx = nt.x - P.x, dz = nt.z - P.z, d = Math.hypot(dx, dz); if (!nt.dead && d < SCY.r[scy] + 1.1 && (d < 1.4 || (dx * P.ax + dz * P.az) / d > SCY.cos[scy])) hitNest(nt, SCY.dmg[scy]); }
   const pi = tt(P.x), pj = tt(P.z);
   if (!inBonus) for (let i = pi - 2; i <= pi + 2; i++) for (let j = pj - 2; j <= pj + 2; j++) {
     if (!inb(i, j)) continue; const n = idx(i, j), g = grid[n];
     if (g === FARM) { const f = farms.get(n), dxf = tc(i) - P.x, dzf = tc(j) - P.z; if (f && f.g >= 1 && Math.hypot(dxf, dzf) < 1.8) { f.g = 0; wheat++; if (heirOn) { const rr = Math.random(); if (rr < 0.0004) spawnGearItem('scythe', 2, tc(i), tc(j)); else if (rr < 0.0034) spawnGearItem('scythe', 1, tc(i), tc(j)); if (rr < 0.0115) { SFX.levelUp(); showLoot('chest', rr < 0.0015 ? 'Ancient scythe' : 'Farmer\'s scythe', 'Dug up! Pick it up', rr < 0.0015 ? '#c86bff' : '#d9a24a'); } } floater(tc(i), tc(j), '+1 wheat', '#f2d16a'); burst(tc(i), 0.3, tc(j), FARMM.ripe, 5, 2); SFX.coin(); gotItem(); setFarmLook(n); tip('Wheat! Trade it, or bake it into bread.', 'wheat'); } continue; }
+    if (g === BRIDGE) { const dxb = tc(i) - P.x, dzb = tc(j) - P.z, db = Math.hypot(dxb, dzb); if (db < 1.5 && (db < 0.7 || (dxb * P.ax + dzb * P.az) / db > 0.5) && !(tt(P.x) === i && tt(P.z) === j)) { hitBridge(n); break; } continue; }
     if (landOn && (g === CACTUS || g === ROCK)) { const dx0 = tc(i) - P.x, dz0 = tc(j) - P.z, d0 = Math.hypot(dx0, dz0); if (!(d0 < 1.7 && (d0 < 0.9 || (dx0 * P.ax + dz0 * P.az) / d0 > 0.3))) continue;
       if (g === CACTUS) { if (cactusBag >= 24) { floater(tc(i), tc(j), 'Cactus bag full', '#ffd166'); continue; } removeTile(n); computeFlow(); cactusBag++; floater(tc(i), tc(j), '+1 cactus', '#8fd35a'); burst(tc(i), 0.5, tc(j), mat.cactus, 6, 2); SFX.coin(); continue; }
       { const o = tileObj[n]; if (!o) continue; o.userData.rolls = o.userData.rolls || 0; const fx = Math.abs(P.ax) > Math.abs(P.az) ? Math.sign(P.ax) : 0, fz = fx ? 0 : Math.sign(P.az) || 1, a = i + fx, b = j + fz, m = inb(a, b) ? idx(a, b) : -1;
@@ -2249,7 +2300,7 @@ function hurtPlayer(d) {
   if (attract) return;
   if (P.dead || copterT > 0 || jetT > 0) return;
   if (P.dodgeT > 0 || P.onWall || P.air || P.spin || phase !== 'live') return;
-  if (hostHasGuests() && (treeOpen || spinAim || quitPause)) return;
+  if (hostHasGuests() && (treeOpen || spinAim || quitPause || mg)) return;
   d *= (1 - 0.08 * gear.head) * (1 - 0.1 * gear.chest);
   P.hp -= d; P.hurtT = 0; shake = Math.max(shake, 0.25); SFX.hurt(); if (buildMode) setBuild(buildMode);
   const h = $('hurt'); h.classList.add('show'); setTimeout(() => h.classList.remove('show'), 120);
@@ -2321,6 +2372,7 @@ addEventListener('keydown', e => {
   if (e.code === 'KeyZ') setBuild(MOAT);
   if (e.code === 'KeyX') setBuild(DRAWB);
   if (e.code === 'KeyC') setBuild(BEAR);
+  if (e.code === 'KeyP' && landOn && phase === 'live') setBuild(buildMode === CACTUS ? 0 : CACTUS);
   if (e.code === 'KeyV') setBuild(SPINNER);
   if (e.code === 'KeyB') setBuild(KENNEL);
   if (e.code === 'KeyN') setBuild(SCARE);
@@ -2457,7 +2509,7 @@ function newGame(opts) {
   clearTimeout(overTimer); $('over').hidden = true; raidPendT = -1;
   if (netRole === 'guest' && !(opts && opts.seed !== undefined)) leaveRoom();
   clearBoard(); resetExtras();
-  const fromSave = opts && opts.seed !== undefined; worldSeed = fromSave ? opts.seed : (Math.random() * 1e9) | 0; swaps = []; genVer = fromSave ? opts.gv || 1 : 5;
+  const fromSave = opts && opts.seed !== undefined; worldSeed = fromSave ? opts.seed : (Math.random() * 1e9) | 0; swaps = []; genVer = fromSave ? opts.gv || 1 : 6;
   const sides = seeded(worldSeed + 7, () => [0, 1, 2, 3].sort(() => Math.random() - 0.5).slice(0, 2));
   spawnTiles = [];
   for (const s of sides) {
@@ -2619,6 +2671,7 @@ function hostRecv(G, m) {
   else if (m.t === 'node' && G.hp > 0 && UPG[m.bi] && UPG[m.bi].nodes[m.ni]) asGuestFull(G, () => buyNode(m.bi, m.ni), true);
   else if (m.t === 'feed' && G.hp > 0) asGuestFull(G, () => { if (m.m === 'shed') feedStruct('w'); else if (m.m === 'comp') feedStruct('c'); else feedCrystal(); }, true);
   else if (m.t === 'tb' && G.hp > 0 && ['bLure', 'bQuake', 'bPeace', 'bShedUp'].includes(m.b)) asGuestFull(G, () => $(m.b).click(), true);
+  else if (m.t === 'mgr' && m.ok && sites[m.q]) asGuestFull(G, () => finishSite(sites[m.q]), true);
   else if (m.t === 'unride') { const v = G.ride; if (v) { v.riderG = null; v.x = m.x; v.z = m.z; v.mesh.position.set(v.x, 0, v.z); } G.ride = null; }
   else if (m.t === 'unseat') { G.seat = false; for (const v of vehicles) if (v.seats) v.seats = v.seats.map(o => o === G ? null : o); }
   else if (m.t === 'plant' && !crystal2.planted && inb(m.i, m.j + 1) && grid[idx(m.i, m.j)] === EMPTY && !spawnMask[idx(m.i, m.j)] && !built[idx(m.i, m.j + 1)] && Math.hypot(m.i - crystal.i, m.j - crystal.j) >= 8 && Math.hypot(m.i - crystal.i, m.j - crystal.j) <= 45) plantCrystal2(m.i, m.j);
@@ -2640,7 +2693,7 @@ function asGuest(G, fn) {
 }
 const NOBODY = { x: 1e6, z: 1e6, onWall: true };
 function nearestPlayer(x, z) {
-  const away = P.dead || (hostHasGuests() && (treeOpen || quitPause)); let best = away ? NOBODY : P, bd = away ? 1e9 : Math.hypot(P.x - x, P.z - z);
+  const away = P.dead || (hostHasGuests() && (treeOpen || quitPause || mg)); let best = away ? NOBODY : P, bd = away ? 1e9 : Math.hypot(P.x - x, P.z - z);
   if (netRole === 'host') for (const G of liveGuests()) { if (G.hp <= 0 || G.safe) continue; const d = Math.hypot(G.x - x, G.z - z); if (d < bd) { bd = d; best = G; } }
   return best;
 }
@@ -2680,7 +2733,7 @@ function hostTick(dt) {
     netSend({ t: 'a', npcs: npcs.filter(n => !n.dead).map(n => [n.hero ? 'hero:' + n.heroType : n.kind, +n.x.toFixed(2), +n.z.toFixed(2), +n.face.toFixed(2), n.hostile ? 1 : 0]),
       pets: pets.map(pt => [pt.kind, +pt.x.toFixed(2), +pt.z.toFixed(2), +(pt.face || 0).toFixed(2)]),
       veh: vehicles.map(v => [v.kind, +v.x.toFixed(2), +v.z.toFixed(2), +(v.face || 0).toFixed(2), v.fixed ? 1 : 0]),
-      bc: inBonus && BL && BL.chests ? BL.chests.map(c => c.open ? 1 : 0) : null, gw: gateway && !inBonus ? [+gateway.x.toFixed(2), +gateway.z.toFixed(2)] : null, nests: nests.filter(nt => !nt.dead).map(nt => [nt.tiles[0], Math.round(nt.hp), nt.max]), mys: mystery ? [mystery.x, mystery.z] : null, up: [...owned], c2: crystal2.planted ? [crystal2.i, crystal2.j, Math.round(crystal2.hp), crystal2.max] : null, c1: [crystal.i, crystal.j] });
+      bg: inBonus && BL && BL.got ? BL.got : null, bc: inBonus && BL && BL.chests ? BL.chests.map(c => c.open ? 1 : 0) : null, gw: gateway && !inBonus ? [+gateway.x.toFixed(2), +gateway.z.toFixed(2)] : null, nests: nests.filter(nt => !nt.dead).map(nt => [nt.tiles[0], Math.round(nt.hp), nt.max]), mys: mystery ? [mystery.x, mystery.z] : null, up: [...owned], c2: crystal2.planted ? [crystal2.i, crystal2.j, Math.round(crystal2.hp), crystal2.max] : null, c1: [crystal.i, crystal.j] });
   }
 }
 /* --- guest --- */
@@ -2721,6 +2774,7 @@ function guestRecv(m) {
   if (m.t === 'tradeX') { closeTrade(); return; }
   if (m.t === 'bonus') { guestBonus(m); return; }
   if (m.t === 'bonusEnd') { guestBonusEnd(m); return; }
+  if (m.t === 'mg') { openMini(m.g, ok => netSend({ t: 'mgr', q: m.q, ok: ok ? 1 : 0 })); return; }
   if (m.t === 'ride') { const v = vehicles[m.q]; if (v) { P.mount = v; P.x = v.x; P.z = v.z; P.vx = P.vz = 0; P.onWall = false; SFX.climb(); setBuild(0); } return; }
   if (m.t === 'tree') { if (m.open) openTree(true, m.mode); else if (treeOpen) openTree(false); return; }
   if (m.t === 'seat') { P.seatK = m.k; P.vx = P.vz = 0; SFX.climb(); return; }
@@ -2762,6 +2816,7 @@ function reconcile(list, data, make, kill, keyOf) {
 }
 function guestActors(m) {
   if (m.bc && inBonus && BL && BL.chests) m.bc.forEach((o, q) => { const c = BL.chests[q]; if (c && o && !c.open) { c.open = true; c.mesh.rotation.z = 0.5; c.mesh.position.y = 0.05; burst(c.mesh.position.x, 0.6, c.mesh.position.z, mat.gold, 14, 3); } });
+  if (m.bg && inBonus && BL && BL.gemM) m.bg.forEach((o, q) => { if (o && BL.gemM[q] && BL.gemM[q].visible) { BL.gemM[q].visible = false; burst(BL.gemM[q].position.x, 1, BL.gemM[q].position.z, mat.gem, 8, 2); } });
   if (m.gw && !inBonus) { if (!net.gw) { net.gw = makeGateMesh(2); scene.add(net.gw); } net.gw.position.set(m.gw[0], 0, m.gw[1]); net.gw.userData.disc.rotation.z += 0.2; } else if (net.gw) { scene.remove(net.gw); net.gw = null; }
   if (m.c1 && (m.c1[0] !== crystal.i || m.c1[1] !== crystal.j)) { if (grid[idx(crystal.i, crystal.j)] === CRYS) grid[idx(crystal.i, crystal.j)] = EMPTY; crystal.i = m.c1[0]; crystal.j = m.c1[1]; crystal.g.position.set(tc(crystal.i), 0, tc(crystal.j)); glow.position.set(tc(crystal.i), 0.01, tc(crystal.j)); }
   if (m.c2) { if (!crystal2.planted || crystal2.i !== m.c2[0] || crystal2.j !== m.c2[1]) plantCrystal2(m.c2[0], m.c2[1]); crystal2.hp = m.c2[2]; crystal2.max = m.c2[3]; } else if (crystal2.planted) loseCrystal2();
@@ -2781,6 +2836,8 @@ function guestActors(m) {
 }
 function guestPlantTile() { return null; }
 function guestStep(dt) {
+  if (inBonus) mineCart(dt);
+  if (mg) mgTick(dt);
   if (treeOpen) { if (feeding) { feedT -= dt; if (feedT <= 0) { feedT = 0.11; netSend({ t: 'feed', m: treeMode }); suckFx(); } } updateTreeLive(); }
   setHidden('bPlant', !(phase === 'live' && guestPlantTile()));
   if (phase === 'over') { updateFx(dt); updateCamera(dt); return; }
@@ -2797,7 +2854,7 @@ function guestStep(dt) {
   if (inBonus && BL && BL.chests) { for (const c of BL.chests) if (c.mesh && !c.open) c.mesh.rotation.y += dt * 0.6; if (BL.exitRing) BL.exitRing.rotation.z += dt * 2; }
   if (P.dead) { P.deadT -= dt; const el = $('respawn'); el.hidden = false; el.style.setProperty('--p', ((respawnT - P.deadT) / respawnT * 100).toFixed(1)); $('respawnN').textContent = Math.max(0, Math.ceil(P.deadT)); } else $('respawn').hidden = true;
   updateTraps(dt, true); updateComboHud(); updateSpinFx(dt); updateFx(dt); updateFog(); updateLight(dt); updateCamera(dt); updateHud(dt); updatePuffs(dt);
-  if ((net.posT -= dt) <= 0 && net.conn && net.conn.open) { net.posT = 0.05; netSend({ t: 'p', x: +P.x.toFixed(2), z: +P.z.toFixed(2), f: +P.face.toFixed(2), ax: +P.ax.toFixed(2), az: +P.az.toFixed(2), w: P.onWall ? 1 : 0, r: P.dodgeT > 0 ? 1 : 0, s: P.spin ? 1 : 0, y: +(P.y || 0).toFixed(2), sf: spinAim || quitPause || treeOpen || !$('trade').hidden ? 1 : 0 }); }
+  if ((net.posT -= dt) <= 0 && net.conn && net.conn.open) { net.posT = 0.05; netSend({ t: 'p', x: +P.x.toFixed(2), z: +P.z.toFixed(2), f: +P.face.toFixed(2), ax: +P.ax.toFixed(2), az: +P.az.toFixed(2), w: P.onWall ? 1 : 0, r: P.dodgeT > 0 ? 1 : 0, s: P.spin ? 1 : 0, y: +(P.y || 0).toFixed(2), sf: spinAim || quitPause || treeOpen || mg || !$('trade').hidden ? 1 : 0 }); }
 }
 $('bCoop').addEventListener('click', () => { $('coopBox').hidden = !$('coopBox').hidden; $('setBox').hidden = true; });
 $('bSet').addEventListener('click', () => { $('setBox').hidden = !$('setBox').hidden; $('coopBox').hidden = true; });
@@ -2838,7 +2895,7 @@ function buildSave() {
       npcs: npcs.filter(n => !n.dead && !n.wanderer && !n.raid).map(n => n.hero ? ['hero', +n.x.toFixed(2), +n.z.toFixed(2), +n.hx.toFixed(1), +n.hz.toFixed(1), 0, 0, 0, 0, null, n.heroType, n.hired ? 1 : 0, n.mode, n.free ? 1 : 0] : [n.kind, +n.x.toFixed(2), +n.z.toFixed(2), +n.hx.toFixed(1), +n.hz.toFixed(1), n.hostile ? 1 : 0, n.angry ? 1 : 0, n.camp || n.campR ? 1 : 0, n.calm ? 1 : 0, n.stock ? n.stock.map(st => [OFFERS.indexOf(st.o), st.left, st.o.get[0]]) : null]),
       junks: junks.map(jk => [+jk.x.toFixed(2), +jk.z.toFixed(2), jk.hp]),
       pick: pickups.filter(pk => !pk.dead).map(pk => [pk.kind, +pk.x.toFixed(2), +pk.z.toFixed(2)]),
-      mys: mystery ? [mystery.x, mystery.z] : null, wg: wendyGrave ? [+wendyGrave.x.toFixed(2), +wendyGrave.z.toFixed(2)] : null, mysteryT, radio: radio ? [radio.fixed ? 1 : 0, Math.round(radio.cd)] : null,
+      mys: mystery ? [mystery.x, mystery.z] : null, wg: wendyGrave ? [+wendyGrave.x.toFixed(2), +wendyGrave.z.toFixed(2)] : null, mysteryT, radio: radio ? [radio.fixed ? 1 : 0, Math.round(radio.cd), radio.used ? 1 : 0] : null, ms: sites.filter(o => o.done.size || o.fueled || o.blown).map(o => [o.kind, Math.round(o.x * 10), Math.round(o.z * 10), [...o.done], o.fueled ? 1 : 0, o.blown ? 1 : 0]), lt: lights.map(l => [+l.x.toFixed(2), +l.z.toFixed(2)]), ls: lightStock, mo: millOn ? 1 : 0, mt: Math.round(millT), rb: rocketBoost, fs: farmSpeed,
       nests: nests.filter(nt => !nt.dead).map(nt => [nt.tiles[0], Math.round(nt.hp), nt.max])
     };
     if (mv && mv.kind !== 'wolf') { const v = d.veh[vehicles.indexOf(mv)]; if (v) { v[1] = +P.x.toFixed(2); v[2] = +P.z.toFixed(2); } }
@@ -2896,7 +2953,9 @@ function loadGame(given) {
     levelCd = d.levelCd; hoardeT = d.hoardeT; hoardes = d.hoardes; liveTime = d.liveTime; kills = d.kills || 0; nights = d.nights || 0; peaceCd = d.peaceCd || 0; tradeTax = d.tt || 0; padDir = new Map(d.pd || []); rode = new Set(d.rd || []); quakeCd = d.qc || 0; setTimeout(refreshPads, 0); structHp = new Map((d.sh || []).map(([n, hp, off]) => [n, { hp, max: 220, off: !!off }])); scyRare = d.sr || 0; setBladeLook(); if (d.pb !== undefined && d.pb >= 0 && grid[d.pb] === BELL) bellAt = d.pb; if (d.cp !== undefined && d.cp >= 0 && grid[d.cp] === COMPILER) compAt = d.cp; if (d.sw) { [SL.w.lv, SL.w.ch, SL.w.pts, SL.w.cd] = d.sw; SL.w.cd = SL.w.cd || 0; } else { SL.w.lv = d.sl || 1; SL.w.ch = 0; SL.w.pts = 0; } if (d.sc) { [SL.c.lv, SL.c.ch, SL.c.pts, SL.c.cd] = d.sc; SL.c.cd = SL.c.cd || 0; } else { SL.c.lv = 1; SL.c.ch = 0; SL.c.pts = 1; } shedLv = Math.min(6, SL.w.lv); jetOn = !!d.jp; setJetLook(); refreshShed(); if (d.cc) placeCosmic(d.cc[0], d.cc[1], Math.max(0.01, d.cc[2])); for (const [n, hp] of d.scares || []) { const sc = scares.get(n); if (sc) sc.hp = hp; } gear = d.gear || { head: 0, chest: 0, legs: 0, feet: 0 }; applyGear(); fish = d.fish || 0; bones = d.bones || 0; wheat = d.wheat || 0; bread = d.bread || 0; repu = d.repu || 0; spinCharges = d.spinCharges || 0; gunAmmo = d.gunAmmo || 0; bowOwned = !!d.bowOwned; fuel = d.fuel || 0; molotovs = d.molotovs || 0; nestNextLv = d.nestNextLv || 3;
     if (d.mys) { const { g, q } = makePresent(); g.position.set(d.mys[0], 0, d.mys[1]); scene.add(g); mystery = { x: d.mys[0], z: d.mys[1], mesh: g, q, sp: 0 }; } mysteryT = d.mysteryT || 0;
     if (d.wg) placeWendyGrave(d.wg[0], d.wg[1]); cactusBag = d.cb || 0;
-    if (radio && d.radio) { radio.fixed = !!d.radio[0]; radio.cd = d.radio[1]; }
+    if (radio && d.radio) { radio.fixed = !!d.radio[0]; radio.cd = d.radio[1]; radio.used = !!d.radio[2] || radio.fixed; }
+    for (const [k, x, z, dn, fu, bl] of d.ms || []) { const st = sites.find(o => o.kind === k && Math.abs(o.x * 10 - x) < 2 && Math.abs(o.z * 10 - z) < 2); if (st) { st.done = new Set(dn); st.fueled = !!fu; st.blown = !!bl; } }
+    for (const [x, z] of d.lt || []) placeLight(x, z, false); lightStock = d.ls || 0; millOn = !!d.mo; millT = d.mt || 0; rocketBoost = d.rb || 0; if (d.fs) farmSpeed = d.fs;
     graceT = 8; stage = 600 - hoardeT < 240 ? 'day' : 600 - hoardeT < 420 ? 'dusk' : 'night';
     if (netRole === 'host' && !given) setTimeout(sendWorld, 300);
     version++; computeFlow(); recount(); updateBuildButtons(); camTarget.set(P.x, 0, P.z); $('bPlant').hidden = true;
@@ -2958,7 +3017,7 @@ function updateNests(dt) {
 
 /* ---------- v0.38 gateways + bonus levels ---------- */
 let gateway = null, inBonus = false, BL = null, savedZombies = null, safGate = null, safCd = 0, safLight = null;
-const BX = 300, BJ = 20, BONUS_NAME = { dungeon: 'Dungeon', city: 'Abandoned city', canyon: 'Raiders canyon', swamp: 'Swamp crawl', ice: 'Ice cave', grave: 'Graveyard', train: 'Train yard', stealth: 'Stealth', safari: 'Safari' };
+const BX = 300, BJ = 20, BONUS_NAME = { mine: 'Old mine shaft', dungeon: 'Dungeon', city: 'Abandoned city', canyon: 'Raiders canyon', swamp: 'Swamp crawl', ice: 'Ice cave', grave: 'Graveyard', train: 'Train yard', stealth: 'Stealth', safari: 'Safari' };
 const GOLD_M = new THREE.MeshLambertMaterial({ color: 0xe2b13a, emissive: 0x5a3a00, flatShading: true });
 const bwx = li => tc(BX + li), bwz = lj => tc(BJ + lj);
 function bSolid(i, j) { if (!BL) return true; const li = i - BX, lj = j - BJ; if (li < 0 || lj < 0 || li >= BL.w || lj >= BL.h) return true; return BL.G[lj * BL.w + li] === 1; }
@@ -3044,6 +3103,13 @@ function genBonus(type) {
     BLx.graves = graves.filter(([i, j]) => at(i, j) === 4 && Math.hypot(i - start[0], j - start[1]) > 5);
     const o = far(open(), 7); for (let q = 0; q < 8 + L; q++) if (o.length) en.push(['walker', ...pick(o)]); if (o.length) en.push(['golden', ...pick(o)]);
     if (Math.random() < 0.5) pets.push(['cat', mx + 2, my + 2]);
+  } else if (type === 'mine') {
+    w = 9; h = 96; G = new Uint8Array(w * h).fill(1); for (let j = 1; j < h - 1; j++) for (let i = 2; i <= 6; i++) set(i, j, 0);
+    const gems = []; for (let j = 8; j < h - 6; j += 3 + ((Math.random() * 3) | 0)) gems.push([Math.random() < 0.5 ? 1 : 7, j]);
+    for (let q = 0; q < 6; q++) { const j = 14 + ((Math.random() * (h - 24)) | 0); set(Math.random() < 0.5 ? 2 : 6, j, 1); }
+    start = [4, 2]; exit = [4, h - 3]; chests.push([5, h - 4, 2]);
+    for (let q = 0; q < 18 + L; q++) en.push([Math.random() < 0.3 ? 'runner' : 'walker', 2 + ((Math.random() * 5) | 0), 10 + ((Math.random() * (h - 18)) | 0)]);
+    BLx.mine = true; BLx.gems = gems;
   } else if (type === 'train') {
     w = 44; h = 26; G = new Uint8Array(w * h); for (let i = 0; i < w; i++) { set(i, 0, 1); set(i, h - 1, 1); } for (let j = 0; j < h; j++) { set(0, j, 1); set(w - 1, j, 1); }
     const lanes = []; for (let k = 0; k < 6; k++) { const li = 6 + k * 6; lanes.push(li); for (let j = 1; j < h - 1; j++) set(li, j, 5); }
@@ -3073,13 +3139,18 @@ function genBonus(type) {
   return Object.assign({ type, w, h, G, start, exit, en, chests, shooters, heroes, pets }, BLx);
 }
 function buildBonusGeo(type) {
-  const g = new THREE.Group(), cfg = { dungeon: [0x3a3440, 0x5a5262, 1.7], city: [0x55555a, 0x8a8478, 1.5], canyon: [0xc9a06a, 0xa6744a, 3.0], swamp: [0x4f5a34, 0x3d4a2a, 0.9], stealth: [0x5d6b3e, 0x6b5a48, 1.6], ice: [0x9fc8e0, 0x6f8fb0, 1.8], grave: [0x4a5240, 0x7d7f88, 0.9], train: [0x6a6258, 0x8a5a3a, 1.2], safari: [0x2f3a26, 0x3d4a32, 1.1] }[type];
+  const g = new THREE.Group(), cfg = { dungeon: [0x3a3440, 0x5a5262, 1.7], city: [0x55555a, 0x8a8478, 1.5], canyon: [0xc9a06a, 0xa6744a, 3.0], swamp: [0x4f5a34, 0x3d4a2a, 0.9], stealth: [0x5d6b3e, 0x6b5a48, 1.6], ice: [0x9fc8e0, 0x6f8fb0, 1.8], grave: [0x4a5240, 0x7d7f88, 0.9], train: [0x6a6258, 0x8a5a3a, 1.2], safari: [0x2f3a26, 0x3d4a32, 1.1], mine: [0x2a2220, 0x4a3a30, 2.2] }[type];
   const floor = new THREE.Mesh(new THREE.PlaneGeometry(BL.w, BL.h).rotateX(-Math.PI / 2), new THREE.MeshLambertMaterial({ color: cfg[0] })); floor.position.set(bwx(0) - 0.5 + BL.w / 2, -0.01, bwz(0) - 0.5 + BL.h / 2); floor.receiveShadow = true; g.add(floor);
   let walls = 0, water = 0; for (let q = 0; q < BL.G.length; q++) { if (BL.G[q] === 1) walls++; else if (BL.G[q] >= 2) water++; }
   const wm = new THREE.InstancedMesh(type === 'safari' ? new THREE.DodecahedronGeometry(0.62, 0) : new THREE.BoxGeometry(1, cfg[2], 1), new THREE.MeshLambertMaterial({ color: cfg[1], flatShading: true }), Math.max(1, walls)), wtr = new THREE.InstancedMesh(new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2), new THREE.MeshLambertMaterial({ color: { swamp: 0x3e5a3a, ice: 0xdff3ff, grave: 0x3a2a22, train: 0x2e2a28, stealth: 0x3d6b2a, safari: 0x1d3550 }[type] || 0x3e5a3a, transparent: true, opacity: 0.9 }), Math.max(1, water));
   const m4 = new THREE.Matrix4(); let a = 0, b = 0;
   for (let j = 0; j < BL.h; j++) for (let i = 0; i < BL.w; i++) { const v = BL.G[j * BL.w + i]; if (v === 1) { m4.makeTranslation(bwx(i), cfg[2] / 2, bwz(j)); wm.setMatrixAt(a++, m4); } else if (v >= 2) { m4.makeTranslation(bwx(i), 0.03, bwz(j)); wtr.setMatrixAt(b++, m4); } }
   if (type === 'train') for (const li of BL.lanes) { for (const sx of [-0.32, 0.32]) { const rail = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.08, BL.h - 2), mat.metalDark); rail.position.set(bwx(li) + sx, 0.06, bwz(0) - 0.5 + BL.h / 2); g.add(rail); } for (let j = 1; j < BL.h - 1; j++) { const tie = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.04, 0.18), mat.trunk); tie.position.set(bwx(li), 0.04, bwz(j)); g.add(tie); } }
+  if (type === 'mine') { for (const sx of [-0.32, 0.32]) { const rail = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.08, BL.h - 2), mat.metalDark); rail.position.set(bwx(4) + sx, 0.06, bwz(0) - 0.5 + BL.h / 2); g.add(rail); }
+    for (let j = 1; j < BL.h - 1; j += 2) { const tie = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.05, 0.16), mat.trunk); tie.position.set(bwx(4), 0.03, bwz(j)); g.add(tie); }
+    for (let j = 6; j < BL.h; j += 8) { const lamp = new THREE.Mesh(new THREE.SphereGeometry(0.1, 6, 5), B(0xffb347)); lamp.position.set(bwx(j % 16 ? 1 : 7) + (j % 16 ? 0.52 : -0.52), 1.5, bwz(j)); g.add(lamp); }
+    const gm = new THREE.MeshLambertMaterial({ color: 0x5fe0ff, emissive: 0x1f7aa0, flatShading: true }); BL.gemM = BL.gems.map(([i, j]) => { const c = new THREE.Group(); for (let q = 0; q < 3; q++) { const o = new THREE.Mesh(new THREE.OctahedronGeometry(0.16 + q * 0.04, 0), gm); o.position.set(0, 0.7 + q * 0.28, (q - 1) * 0.22); o.rotation.z = q; c.add(o); } c.position.set(bwx(i) + (i === 1 ? 0.5 : -0.5), 0, bwz(j)); g.add(c); return c; });
+    const lan = new THREE.PointLight(0xffd59a, 3.2, 9, 1.3); lan.position.y = 2; g.add(lan); BL.lantern = lan; BL.got = BL.gems.map(() => 0); }
   if (type === 'grave') for (let j = 0; j < BL.h; j++) for (let i = 0; i < BL.w; i++) if (BL.G[j * BL.w + i] === 1 && BL.G[(j + 1) * BL.w + i] === 4) { const cr = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.5, 0.12), M(0x9a9ca4)); cr.position.set(bwx(i), 1.15, bwz(j)); g.add(cr); }
   wm.castShadow = type !== 'safari'; wm.receiveShadow = true; g.add(wm, wtr);
   const ex = new THREE.Mesh(new THREE.TorusGeometry(0.6, 0.08, 8, 24), new THREE.MeshBasicMaterial({ color: 0xc86bff })); ex.rotation.x = -Math.PI / 2; ex.position.set(bwx(BL.exit[0]), 0.1, bwz(BL.exit[1])); g.add(ex); BL.exitRing = ex;
@@ -3087,7 +3158,7 @@ function buildBonusGeo(type) {
   scene.add(g); BL.group = g;
 }
 function startBonus() {
-  if (!gateway || inBonus) return; const type = gateway.type, ret = { x: gateway.x, z: gateway.z }; scene.remove(gateway.mesh); gateway = null;
+  if (!gateway || inBonus) return; const type = gateway.type, ret = { x: gateway.x, z: gateway.z }; if (gateway.site) { gateway.site.done.add(0); for (const G of liveGuests()) gateway.site.done.add(G.slot); } scene.remove(gateway.mesh); gateway = null;
   setBuild(0); closeTrade(); cancelFishing(); if (spinAim) setSpinAim(false); if (treeOpen) openTree(false);
   const bkey = (Math.random() * 1e9) | 0; BL = seeded(bkey, () => genBonus(type)); BL.ret = ret; BL.t = 210; BL.zf = 0; BL.made = [];
   if (hostHasGuests()) { let q = 0; for (const G of liveGuests()) { q++; try { G.conn.send({ t: 'bonus', type, key: bkey, lv: level, ret, q }); } catch (e) { } } }
@@ -3338,7 +3409,7 @@ function updateShip(dt) {
       for (const z of zombies) { const d = Math.hypot(z.x - ship.x, z.z - ship.z); if (!z.dead && d < 3.5) hitZombie(z, 400, (z.x - ship.x) / (d || 1), (z.z - ship.z) / (d || 1), 'boom'); }
       const n = idx(ship.i, ship.j); grid[n] = LMK; const o = ship.rocket; scene.remove(o); addObj(n, o); o.position.y = 0.6; animLm.push({ kind: 'smoke', obj: o, x: ship.x, z: ship.z, y: 1.2, t: 0, col: 0x5a5560 }); version++; flowDirty = true;
       banner('Crash landing'); tempMark(ship.x, ship.z, '#5fe0ff', 'star', 25);
-      if (Math.random() < 0.25) { const h = addHero('aaron', ship.x + 1.4, ship.z + 0.6); h.hx = h.x; h.hz = h.z; }
+      if (Math.random() < (rocketBoost ? 0.75 : 0.25)) { const h = addHero('aaron', ship.x + 1.4, ship.z + 0.6); h.hx = h.x; h.hz = h.z; rocketBoost = 0; } else addSite('rocket', ship.x + 1.3, ship.z + 0.3, { n });
       if (Math.random() < 0.1) spawnGearItem('jetpack', 1, ship.x - 1.3, ship.z + 0.8); else { const v = 60 + ((Math.random() * 60) | 0); setTimeout(() => { scrap += v; floater(ship ? ship.x : P.x, ship ? ship.z : P.z, '+' + v); }, 0); }
       setTimeout(() => { ship = null; }, 100); } }
 }
@@ -3788,7 +3859,7 @@ function updateGun(dt) {
   gunMesh.visible = weapon === 'minigun' && !P.mount; bowMesh.visible = weapon === 'bow' && !gunTier && !P.mount; pewMesh.visible = weapon === 'bow' && gunTier > 0 && !P.mount; if (pewMesh.visible) pewMesh.userData.body.scale.z = GUNS[gunTier].len * 2;
   molMesh.visible = weapon === 'molotov' && !P.mount; molMesh.userData.fl.scale.setScalar(0.8 + Math.random() * 0.5); molRet.visible = weapon === 'molotov' && !P.mount && phase === 'live' && !P.dead; if (molRet.visible) { molRet.position.set(P.x + P.ax * 4.5, 0.06, P.z + P.az * 4.5); molRet.material.opacity = 0.45 + Math.sin(time * 8) * 0.25; } flamerMesh.visible = weapon === 'flamer' && !P.mount;
   if (weapon !== 'scythe' && !P.mount) player.scythe.visible = false; else if (!P.mount) player.scythe.visible = true;
-  { const L = aimRange(); aimBeam.visible = L > 0 && !P.mount && !P.dead && phase === 'live' && !buildMode; if (aimBeam.visible) { aimBeam.position.set(P.x + P.ax * 0.45, P.y + 0.52, P.z + P.az * 0.45); aimBeam.rotation.y = Math.atan2(P.ax, P.az); aimBeam.scale.set(1, 1, L); aimBeam.userData.dot.scale.set(1, 1, 1 / L); aimBeam.material.opacity = 0.75 + Math.sin(time * 6) * 0.15; } }
+  { const vg = P.mount && mountGun(P.mount), L = vg ? (P.mount.kind === 'tank' ? 12 : 10) : aimRange(); aimBeam.visible = L > 0 && (!P.mount || vg) && !P.dead && phase === 'live' && !buildMode; if (aimBeam.visible) { aimBeam.position.set(P.x + P.ax * (vg ? 1 : 0.45), vg ? (P.mount.seat || 0.5) + 0.35 : P.y + 0.52, P.z + P.az * (vg ? 1 : 0.45)); aimBeam.rotation.y = Math.atan2(P.ax, P.az); aimBeam.scale.set(1, 1, L); aimBeam.userData.dot.scale.set(1, 1, 1 / L); aimBeam.material.opacity = 0.75 + Math.sin(time * 6) * 0.15; } }
   const cnt = weapon === 'minigun' ? gunAmmo : weapon === 'flamer' ? Math.ceil(fuel) : weapon === 'molotov' ? molotovs : weapon === 'bow' ? '∞' : '';
   { const ap = $('ammoPill'); const mol = weapon === 'molotov'; if (ap.classList.contains('mol') !== mol) ap.classList.toggle('mol', mol); }
   setHidden('ammoPill', weapon === 'scythe' || phase !== 'live'); setText('ammoN', String(cnt));
@@ -3817,7 +3888,7 @@ function zap(x0, y0, z0, x1, z1, col, life, y1) {
 
 /* ---------- v0.20 world events ---------- */
 let sabCamps = [], decoy = null, decoyCd = 0, tradeTax = 0;
-let tempMarks = [], radio = null, radioRegion = -1, campRegion = -1, wandT = 160, markEls = new Map();
+let subRegion = -1, waterRegion = -1, tempMarks = [], radio = null, radioRegion = -1, campRegion = -1, wandT = 160, markEls = new Map();
 const _mv = new THREE.Vector3();
 function tempMark(x, z, col, ic, sec) { tempMarks.push({ id: 't' + Math.random(), x, z, col, ic, until: time + sec }); }
 function updateMarkers() {
@@ -3855,6 +3926,170 @@ const heliMesh = new THREE.Group();
   const skid = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.06, 1.6), mat.black); skid.position.set(0.4, -0.65, 0); const skid2 = skid.clone(); skid2.position.x = -0.4;
   heliMesh.add(body, boom, fin, glass, rotor, skid, skid2); heliMesh.userData.rotor = rotor; heliMesh.visible = false; scene.add(heliMesh);
 }
+/* landmark mini-games */
+function makeBank() { const g = new THREE.Group(), st = M(0xcfc6b4), dk = M(0x8a8272), gd = M(0xd4a017); const b = new THREE.Mesh(new THREE.BoxGeometry(3.8, 1.8, 2.8), st); b.position.y = 0.9; b.castShadow = true; g.add(b);
+  const roof = new THREE.Mesh(new THREE.BoxGeometry(4.1, 0.3, 3.1), dk); roof.position.y = 1.95; g.add(roof); const ped = new THREE.Mesh(new THREE.ConeGeometry(2.2, 0.6, 4).rotateY(Math.PI / 4), dk); ped.scale.z = 0.6; ped.position.y = 2.4; g.add(ped);
+  for (let q = 0; q < 4; q++) { const c = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.16, 1.8, 8), M(0xf1ead8)); c.position.set(-1.35 + q * 0.9, 0.9, 1.5); g.add(c); }
+  const door = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.1, 16).rotateX(Math.PI / 2), M(0x8a8f96)); door.position.set(0, 0.7, 1.42); g.add(door); const sign = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.3, 0.05), gd); sign.position.set(0, 1.6, 1.45); g.add(sign); return g; }
+function makeSub() { const g = new THREE.Group(), pad = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.1, 2.8), M(0x6b6470)); pad.position.y = 0.05; g.add(pad);
+  for (const [x, z] of [[-0.7, -0.6], [0.7, -0.6], [0, 0.5]]) { const t = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.0, 0.7), M(0x7f8a8c)); t.position.set(x, 0.6, z); t.castShadow = true; g.add(t); for (let q = 0; q < 3; q++) { const ins = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.08, 0.4, 6), M(0xc96b4a)); ins.position.set(x - 0.25 + q * 0.25, 1.3, z); g.add(ins); } }
+  for (const sx of [-1, 1]) { const pole = new THREE.Mesh(new THREE.BoxGeometry(0.12, 2.6, 0.12), M(0x5a5560)); pole.position.set(sx * 1.25, 1.3, 1.2); g.add(pole); } const bar = new THREE.Mesh(new THREE.BoxGeometry(2.6, 0.1, 0.1), M(0x5a5560)); bar.position.set(0, 2.5, 1.2); g.add(bar);
+  const sp = new THREE.Mesh(new THREE.OctahedronGeometry(0.12, 0), B(0xffe066)); sp.position.set(0.7, 1.5, -0.6); g.add(sp); return g; }
+function makeWaterTower() { const g = new THREE.Group(), lg = M(0x7a5a3a); for (const [x, z] of [[-0.6, -0.6], [0.6, -0.6], [-0.6, 0.6], [0.6, 0.6]]) { const l = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.09, 2.6, 6), lg); l.position.set(x, 1.3, z); g.add(l); }
+  const tank = new THREE.Mesh(new THREE.CylinderGeometry(1.0, 1.0, 1.3, 14), M(0x8fb3c4)); tank.position.y = 3.2; tank.castShadow = true; g.add(tank); const cap = new THREE.Mesh(new THREE.ConeGeometry(1.1, 0.6, 14), M(0x5a7a8a)); cap.position.y = 4.15; g.add(cap);
+  const pipe = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 2.6, 6), M(0x8a8f96)); pipe.position.set(0, 1.3, 0); g.add(pipe); return g; }
+let sites = [], mg = null, lights = [], lightStock = 0, millOn = false, millT = 0, rocketBoost = 0, flyUps = [];
+const SITE_INFO = {
+  plane: { label: 'Pick the lock', game: 'lock', team: false },
+  bank: { label: 'Crack the vault', game: 'vault', team: false },
+  petrol: { label: 'Fill fuel cans', game: 'pump', team: false },
+  mill: { label: 'Fix the windmill', game: 'gears', team: true },
+  sub: { label: 'Fix the substation', game: 'wires', team: true },
+  water: { label: 'Fix the water tower', game: 'valves', team: true },
+  rocket: { label: 'Repair the rocket', game: 'rocket', team: true },
+  mine: { label: 'Ride the mine cart', game: 'mine', team: false } };
+const MG_TXT = { lock: ['Pick the lock', 'Tap when the pin is in the green. 3 times.'], vault: ['Crack the vault', 'Hold to turn the dial. Let go when it clicks. 3 clicks.'], pump: ['Fill the cans', 'Hold to pump. Let go between the two lines. Overfill and it catches fire!'],
+  gears: ['Sync the gears', 'Tap a gear to turn it. The gear to its right turns too. Point every arrow up.'], wires: ['Fix the wires', 'Tap a wire, then the socket of the same colour. Beat the clock!'], valves: ['Open the valves', 'Watch the valves light up, then tap them in the same order.'], rocket: ['Repair the rocket', 'Put out the fires, tighten the bolts, then hold to launch.'] };
+const playerKey = () => guestCtx ? guestCtx.slot : (netRole === 'guest' ? net.slot : 0);
+const coopK = () => { const n = 1 + (netRole === 'host' ? coopCount() : 0); return 1 / (1 + 0.4 * (n - 1)); };
+function addSite(kind, x, z, extra) { const st = Object.assign({ kind, x, z, done: new Set() }, extra || {}); sites.push(st); return st; }
+function siteDone(st) { const inf = SITE_INFO[st.kind]; return inf.team ? st.done.size > 0 : st.done.has(playerKey()); }
+function siteInteract(consider) {
+  for (const st of sites) { if (Math.abs(st.x - P.x) + Math.abs(st.z - P.z) > 3) continue;
+    if (st.kind === 'petrol' && st.fueled && !st.blown && !decoy) consider(st.x, st.z + 0.3, { label: 'Rig to blow', act: () => rigStation(st) });
+    if (!siteDone(st) && !(st.kind === 'mine' && inBonus)) consider(st.x, st.z, { label: SITE_INFO[st.kind].label, act: () => startSite(st) }); }
+  if (lightStock > 0 && crystal.planted && !inBonus && Math.hypot(P.x - tc(crystal.i), P.z - tc(crystal.j)) < 22 && !lights.some(l => Math.hypot(l.x - P.x, l.z - P.z) < 4)) consider(P.x, P.z + 1.4, { label: 'Place light tower (' + lightStock + ')', act: () => placeLight(P.x, P.z, true) });
+}
+function startSite(st) {
+  const inf = SITE_INFO[st.kind], q = sites.indexOf(st);
+  if (inf.game === 'mine') { if (typeof startMine === 'function') startMine(st); return; }
+  if (guestCtx) { try { guestCtx.conn.send({ t: 'mg', q, g: inf.game }); } catch (e) { } return; }
+  openMini(inf.game, ok => { if (ok) finishSite(st); });
+}
+function finishSite(st) {
+  if (siteDone(st)) return; const inf = SITE_INFO[st.kind], k = coopK(); st.done.add(inf.team ? 'all' : playerKey()); SFX.levelUp(); burst(st.x, 1, st.z, mat.gold, 18, 4);
+  if (st.kind === 'plane') { if (Math.random() < 0.7 * k) { const sl = ['head', 'chest', 'legs', 'feet'][(Math.random() * 4) | 0]; spawnGearItem(sl, 3, P.x + 0.8, P.z); showLoot('chest', 'Rare ' + SLOT_NAME[sl], 'Lock picked!', '#d4a017'); } else { const v = Math.round(150 * k); scrap += v; showLoot('scrap', '+' + v + ' scrap', 'Lock picked', '#f2b632'); } }
+  else if (st.kind === 'bank') { const v = Math.round(500 * k); scrap += v; showLoot('scrap', '+' + v + ' scrap', 'Vault cracked!', '#f2b632'); }
+  else if (st.kind === 'petrol') { fuel = Math.max(fuel, 300); st.fueled = true; showLoot('scrap', 'Flamer fuel full', 'Cans filled', '#ff9f43'); }
+  else if (st.kind === 'mill') { millOn = true; millT = 0; let made = 0; const ci = tt(st.x), cj = tt(st.z); loadingSave = true; for (let r = 1; r <= 3 && made < 3; r++) for (let dj = -r; dj <= r && made < 3; dj++) for (let di = -r; di <= r && made < 3; di++) { const i = ci + di, j = cj + dj; if (!inb(i, j) || grid[idx(i, j)] !== EMPTY || spawnMask[idx(i, j)]) continue; place(i, j, FARM); made++; } loadingSave = false; computeFlow(); showLoot('bread', 'Windmill fixed', 'Free bread every 5 min', '#f1c27d'); }
+  else if (st.kind === 'sub') { lightStock += 2; showLoot('star', '2 light towers', 'Place them near your base', '#ffe066'); }
+  else if (st.kind === 'water') { crystal.hp = crystal.max; farmSpeed *= 1.5; showLoot('heart', 'Crystal fully healed', 'Farms grow faster', '#43c6ea'); }
+  else if (st.kind === 'rocket') { relaunchRocket(st); }
+  if (netRole === 'host') netActNow();
+}
+function rigStation(st) {
+  if (decoy || st.blown) return; st.blown = true; const g = new THREE.Group(), gem = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.5, 8), M(0xc0392b)); gem.position.y = 0.4; g.add(gem); g.position.set(st.x, 0, st.z); scene.add(g);
+  decoy = { i: tt(st.x), j: tt(st.z), hp: 99999, max: 99999, planted: true, decoy: true, mesh: g, gem, t: 25, hitT: 0, boom: st }; computeFlow(); banner('Station rigged!', 'The hoarde is drawn in. Get clear!', 2.6); SFX.surge();
+}
+function stationBoom(st) {
+  shake = 1.3; SFX.boom(); setTimeout(() => SFX.boom(), 200); burst(st.x, 1, st.z, mat.barrel, 40, 9); burst(st.x, 1.5, st.z, mat.hat, 30, 8); let n = 0;
+  for (const z of zombies) { const d = Math.hypot(z.x - st.x, z.z - st.z); if (!z.dead && d < 7.5) { hitZombie(z, z.boss ? 900 : 9999, (z.x - st.x) / (d || 1) * 2, (z.z - st.z) / (d || 1) * 2, 'boom'); n++; } }
+  if (!P.dead && Math.hypot(P.x - st.x, P.z - st.z) < 3) hurtPlayer(35); banner('BOOM', n + ' zombies caught in the blast', 2.4);
+}
+function placeLight(x, z, use) {
+  const g = new THREE.Group(), pole = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.12, 3.2, 6), M(0x5a5560)); pole.position.y = 1.6; g.add(pole);
+  const head = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.3, 0.5), M(0x3a3640)); head.position.y = 3.25; g.add(head); const lamp = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.08, 0.38), B(0xfff2b0)); lamp.position.y = 3.08; g.add(lamp);
+  const L = new THREE.PointLight(0xffe7a8, 0, 16, 1.4); L.position.y = 3; g.add(L); g.position.set(x, 0, z); scene.add(g); lights.push({ x, z, mesh: g, L }); reveal(x, z, 16);
+  if (use) { lightStock--; SFX.repair(); burst(x, 3, z, mat.gold, 12, 3); }
+}
+function relaunchRocket(st) {
+  const n = st.n; if (n >= 0 && tileObj[n]) removeTile(n); version++; flowDirty = true; const r = makeRocket(); r.position.set(st.x, 1.3, st.z); scene.add(r); flyUps.push({ m: r, t: 0 });
+  rocketBoost = 1; const v = Math.round(120 * coopK()); scrap += v; banner('Lift off!', 'If another rocket falls, a hero is more likely aboard', 3); showLoot('scrap', '+' + v + ' scrap', 'Rocket relaunched', '#5fe0ff'); SFX.surge();
+  sites = sites.filter(o => o !== st);
+}
+function updateSites(dt) {
+  for (let q = flyUps.length - 1; q >= 0; q--) { const f = flyUps[q]; f.t += dt; f.m.position.y += dt * (2 + f.t * 8); f.m.userData.fire.visible = true; f.m.userData.fire.scale.y = 1 + Math.sin(time * 30) * 0.3; if (Math.random() < 0.7) puff(f.m.position.x, f.m.position.y - 1.6, f.m.position.z, 0xb0aaa4); if (f.t > 5) { scene.remove(f.m); flyUps.splice(q, 1); } }
+  const night = stage === 'night' ? 1 : stage === 'dusk' ? 0.5 : 0; for (const l of lights) l.L.intensity = 0.3 + night * 2.6;
+  if (millOn && netRole !== 'guest' && phase === 'live' && !inBonus) { millT += dt; if (millT >= 300) { millT = 0; bread++; showLoot('bread', '+1 bread', 'From the windmill', '#f1c27d'); for (const G of liveGuests()) asGuestFull(G, () => { bread++; showLoot('bread', '+1 bread', 'From the windmill', '#f1c27d'); }, true); } }
+  if (mg) mgTick(dt);
+}
+/* kennel pet list */
+const PET_NAME = { dog: 'Dog', cat: 'Cat', wolf: 'Wolf', zombie: 'Leashed zombie' };
+function openPets() { renderPets(); $('petBox').hidden = false; SFX.click(); clearInput(); }
+function renderPets() {
+  const L = $('petList'); L.innerHTML = ''; const tm = pets.filter(pt => pt.tamed); $('petSub').textContent = tm.length + ' of ' + petCap + ' spaces used';
+  tm.forEach(pt => { const row = document.createElement('div'); row.style.cssText = 'display:flex;align-items:center;gap:8px;background:#32223e;border-radius:12px;padding:6px 8px;text-align:left';
+    const hp = pt.mhp ? Math.max(0, Math.round((pt.hp ?? pt.mhp) / pt.mhp * 100)) : 100, st = pt.down > 0 ? 'Resting at kennel' : pt.follow ? 'Following you' : pt.ridden ? 'Being ridden' : 'Guarding';
+    row.innerHTML = '<div style="flex:1"><b>' + (pt.rare ? 'Rare ' : '') + (pt.mech ? 'Mech ' : '') + (PET_NAME[pt.kind] || pt.kind) + '</b><br><small style="opacity:.8">' + st + ' · ' + hp + '% health</small></div>';
+    const b = document.createElement('button'); b.className = 'btn'; b.textContent = 'Release'; b.style.cssText = 'padding:6px 12px;margin:0'; b.onclick = e => { e.stopPropagation(); releasePet(pt); }; row.appendChild(b); L.appendChild(row); });
+  if (!tm.length) L.innerHTML = '<p>No pets yet.</p>';
+}
+function releasePet(pt) { if (P.mount === pt) dismount(); scene.remove(pt.mesh); if (pt.aura) scene.remove(pt.aura); pets = pets.filter(q => q !== pt); puff(pt.x, 0.4, pt.z, 0xe0d8c8); SFX.click(); if (netRole === 'host') netActNow(); renderPets(); }
+$('petX').addEventListener('click', e => { e.stopPropagation(); $('petBox').hidden = true; });
+/* mini-game overlay */
+function openMini(game, done) {
+  if (mg) return; const cv = $('mgC'), [t, h] = MG_TXT[game]; $('mgT').textContent = t; $('mgH').textContent = h; $('mg').hidden = false; clearInput(); if (buildMode) setBuild(0);
+  mg = { game, done, t: 0, st: 0, hold: false, cv, x: cv.getContext('2d') }; mgInit(mg); SFX.click(); audioInit();
+}
+function closeMini(ok) { if (!mg) return; const m = mg; mg = null; $('mg').hidden = true; if (ok) { SFX.levelUp(); } m.done(!!ok); }
+const mgRnd = (a, b) => a + Math.random() * (b - a);
+function mgInit(m) {
+  const g = m.game;
+  if (g === 'lock') Object.assign(m, { pos: 0, dir: 1, sp: 0.7, hits: 0, zone: mgRnd(0.15, 0.7), w: 0.2 });
+  if (g === 'vault') Object.assign(m, { ang: 0, hits: 0, tgt: mgRnd(60, 300), clickT: 0, last: 0 });
+  if (g === 'pump') Object.assign(m, { lvl: 0, cans: 0, fire: 0, line: mgRnd(0.72, 0.84) });
+  if (g === 'gears') { m.rot = [0, 0, 0, 0]; for (let k = 0; k < 5; k++) mgGear(m, (Math.random() * 4) | 0); if (m.rot.every(r => r === 0)) mgGear(m, 1); }
+  if (g === 'wires') { const C = ['#e2483d', '#43c6ea', '#f2b632', '#5fe08a', '#c86bff']; m.L = C.slice().sort(() => Math.random() - 0.5); m.Rr = C.slice().sort(() => Math.random() - 0.5); m.con = []; m.sel = -1; m.time = 18; m.spark = 0; }
+  if (g === 'valves') { m.seq = Array.from({ length: 5 }, () => (Math.random() * 4) | 0); m.show = 0; m.inp = 0; m.lit = -1; m.phase = 'show'; m.st = 0.6; }
+  if (g === 'rocket') { m.flames = Array.from({ length: 6 }, () => [mgRnd(0.25, 0.75), mgRnd(0.22, 0.78)]); m.bolts = [[0.33, 0.3], [0.5, 0.62], [0.67, 0.3]]; m.bolt = [0, 0, 0]; m.stage = 0; m.spread = 0; m.launch = 0; }
+}
+function mgGear(m, k) { for (const q of [k, k + 1]) if (q >= 0 && q < 4) m.rot[q] = (m.rot[q] + 1) % 4; }
+function mgTone(f, t) { tone({ type: SQ, f, t: t || 0.07, v: 0.07 }); }
+function mgTick(dt) {
+  const m = mg, g = m.game; m.t += dt;
+  if (g === 'lock') { m.pos += m.dir * m.sp * dt; if (m.pos > 1) { m.pos = 1; m.dir = -1; } if (m.pos < 0) { m.pos = 0; m.dir = 1; } }
+  if (g === 'vault') { if (m.hold) { m.ang = (m.ang + dt * 70) % 360; const near = Math.abs(((m.ang - m.tgt + 540) % 360) - 180) < 7; if (near && m.last === 0) { mgTone(2400, 0.03); m.clickT = 0.25; } m.last = near ? 1 : 0; } m.clickT = Math.max(0, m.clickT - dt); }
+  if (g === 'pump') { if (m.fire > 0) m.fire -= dt; else if (m.hold) { m.lvl += dt * 0.42; if (m.lvl > 1) { m.fire = 1.2; m.lvl = 0; m.hold = false; SFX.boom(); if (!guestCtx && netRole !== 'guest') hurtPlayer(8); } } }
+  if (g === 'wires') { m.time -= dt; m.spark = Math.max(0, m.spark - dt); if (m.time <= 0) { SFX.bonk(); mgInit(m); } }
+  if (g === 'valves' && m.phase === 'show') { m.st -= dt; if (m.st <= 0) { if (m.lit >= 0) { m.lit = -1; m.st = 0.2; } else if (m.show < m.seq.length) { m.lit = m.seq[m.show++]; mgTone(400 + m.lit * 150, 0.2); m.st = 0.5; } else { m.phase = 'input'; m.lit = -1; } } }
+  if (g === 'valves' && m.phase === 'input' && m.lit >= 0) { m.st -= dt; if (m.st <= 0) m.lit = -1; }
+  if (g === 'rocket') { if (m.stage === 0) { m.spread += dt; if (m.spread > 2.2 && m.flames.length < 8 && m.flames.length > 0) { m.spread = 0; const f = m.flames[(Math.random() * m.flames.length) | 0]; m.flames.push([Math.min(0.8, Math.max(0.2, f[0] + mgRnd(-0.12, 0.12))), Math.min(0.8, Math.max(0.2, f[1] + mgRnd(-0.12, 0.12)))]); } }
+    if (m.stage === 2 && m.hold) { m.launch += dt / 1.8; if (m.launch >= 1) return closeMini(true); } else if (m.stage === 2) m.launch = Math.max(0, m.launch - dt); }
+  mgDraw(m);
+}
+function mgDraw(m) {
+  const x = m.x, W = 480, H = 300, g = m.game; x.clearRect(0, 0, W, H); x.lineWidth = 4; x.textAlign = 'center'; x.font = 'bold 18px sans-serif';
+  const dots = (n, of) => { for (let q = 0; q < of; q++) { x.fillStyle = q < n ? '#5fe08a' : '#3a2a46'; x.beginPath(); x.arc(W / 2 - (of - 1) * 14 + q * 28, H - 22, 9, 0, 7); x.fill(); } };
+  if (g === 'lock') { x.fillStyle = '#3a2a46'; x.fillRect(40, 120, 400, 50); x.fillStyle = '#5fe08a'; x.fillRect(40 + m.zone * 400, 120, m.w * 400, 50); x.fillStyle = '#fff'; x.fillRect(40 + m.pos * 400 - 4, 105, 8, 80); dots(m.hits, 3); x.fillText('TAP', W / 2, 80); }
+  if (g === 'vault') { const cx = W / 2, cy = 135, r = 90; x.fillStyle = '#4a4552'; x.beginPath(); x.arc(cx, cy, r + 14, 0, 7); x.fill(); x.fillStyle = m.clickT > 0 ? '#8a7a3a' : '#2e2a36'; x.beginPath(); x.arc(cx, cy, r, 0, 7); x.fill();
+    for (let q = 0; q < 12; q++) { const a = (q * 30 + m.ang) * Math.PI / 180; x.strokeStyle = '#bbb'; x.beginPath(); x.moveTo(cx + Math.cos(a) * (r - 6), cy + Math.sin(a) * (r - 6)); x.lineTo(cx + Math.cos(a) * (r - 20), cy + Math.sin(a) * (r - 20)); x.stroke(); }
+    const a = (m.ang - 90) * Math.PI / 180; x.strokeStyle = '#f2b632'; x.lineWidth = 8; x.beginPath(); x.moveTo(cx, cy); x.lineTo(cx + Math.cos(a) * (r - 24), cy + Math.sin(a) * (r - 24)); x.stroke();
+    x.fillStyle = '#fff'; if (m.clickT > 0) x.fillText('click', cx, 30); x.fillText(m.hold ? 'turning...' : 'HOLD', cx, cy + 6); dots(m.hits, 3); }
+  if (g === 'pump') { const bx = W / 2 - 60, by = 50, bw = 120, bh = 200; x.fillStyle = '#3a2a46'; x.fillRect(bx, by, bw, bh); x.fillStyle = m.fire > 0 ? '#ff6b3d' : '#c0392b'; x.fillRect(bx, by + bh * (1 - m.lvl), bw, bh * m.lvl);
+    x.strokeStyle = '#fff'; x.beginPath(); x.moveTo(bx - 14, by + bh * (1 - m.line)); x.lineTo(bx + bw + 14, by + bh * (1 - m.line)); x.stroke(); x.strokeStyle = '#5fe08a'; x.beginPath(); x.moveTo(bx - 14, by + bh * (1 - m.line - 0.08)); x.lineTo(bx + bw + 14, by + bh * (1 - m.line - 0.08)); x.stroke();
+    x.fillStyle = '#fff'; x.fillText(m.fire > 0 ? 'FIRE! Wait...' : m.hold ? 'pumping...' : 'HOLD', W / 2, 36); dots(m.cans, 3); }
+  if (g === 'gears') { for (let q = 0; q < 4; q++) { const cx = 75 + q * 110, cy = 135, r = 46; x.fillStyle = m.rot[q] === 0 ? '#5fe08a' : '#8a8f96'; x.beginPath(); for (let t = 0; t < 16; t++) { const a = t * Math.PI / 8, rr = t % 2 ? r : r + 9; x.lineTo(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr); } x.fill();
+      x.fillStyle = '#24162e'; x.beginPath(); x.arc(cx, cy, 16, 0, 7); x.fill(); const a = m.rot[q] * Math.PI / 2 - Math.PI / 2; x.strokeStyle = '#fff'; x.lineWidth = 6; x.beginPath(); x.moveTo(cx, cy); x.lineTo(cx + Math.cos(a) * 34, cy + Math.sin(a) * 34); x.stroke(); } x.fillStyle = '#fff'; x.fillText('Point every arrow up', W / 2, 260); }
+  if (g === 'wires') { for (let q = 0; q < 5; q++) { const y = 40 + q * 50; x.fillStyle = m.L[q]; x.fillRect(30, y - 12, 60, 24); x.fillStyle = m.Rr[q]; x.fillRect(W - 90, y - 12, 60, 24); if (m.sel === q) { x.strokeStyle = '#fff'; x.strokeRect(26, y - 16, 68, 32); } }
+    for (const [a, b] of m.con) { x.strokeStyle = m.L[a]; x.lineWidth = 6; x.beginPath(); x.moveTo(90, 40 + a * 50); x.bezierCurveTo(240, 40 + a * 50, 240, 40 + b * 50, W - 90, 40 + b * 50); x.stroke(); }
+    x.fillStyle = m.time < 5 ? '#e2483d' : '#fff'; x.fillText(Math.ceil(m.time) + 's', W / 2, 20); if (m.spark > 0) { x.fillStyle = '#ffe066'; x.fillText('ZAP!', W / 2, 150); } }
+  if (g === 'valves') { for (let q = 0; q < 4; q++) { const cx = 80 + q * 107, cy = 140; x.fillStyle = m.lit === q ? '#43c6ea' : '#3a4a5a'; x.beginPath(); x.arc(cx, cy, 42, 0, 7); x.fill(); x.strokeStyle = '#d8dce2'; x.lineWidth = 6; x.beginPath(); x.moveTo(cx - 28, cy); x.lineTo(cx + 28, cy); x.moveTo(cx, cy - 28); x.lineTo(cx, cy + 28); x.stroke(); }
+    x.fillStyle = '#fff'; x.fillText(m.phase === 'show' ? 'Watch...' : 'Your turn', W / 2, 50); dots(m.inp, m.seq.length); }
+  if (g === 'rocket') { x.fillStyle = '#d8dce2'; x.beginPath(); x.ellipse(W / 2, 150, 170, 60, 0, 0, 7); x.fill(); x.fillStyle = '#c0392b'; x.beginPath(); x.moveTo(W / 2 + 170, 150); x.lineTo(W / 2 + 110, 100); x.lineTo(W / 2 + 110, 200); x.fill();
+    if (m.stage === 0) for (const [fx, fy] of m.flames) { const px = fx * W, py = fy * H; x.fillStyle = '#ff9f43'; x.beginPath(); x.moveTo(px, py - 26 - Math.sin(m.t * 12 + fx * 9) * 5); x.quadraticCurveTo(px + 18, py, px, py + 10); x.quadraticCurveTo(px - 18, py, px, py - 26); x.fill(); }
+    if (m.stage === 1) m.bolts.forEach(([bx, by], q) => { x.fillStyle = m.bolt[q] >= 3 ? '#5fe08a' : '#8a8f96'; x.beginPath(); x.arc(bx * W, by * H, 18, 0, 7); x.fill(); x.fillStyle = '#24162e'; x.fillText(String(3 - m.bolt[q]), bx * W, by * H + 6); });
+    if (m.stage === 2) { x.fillStyle = '#3a2a46'; x.fillRect(90, 250, 300, 22); x.fillStyle = '#5fe0ff'; x.fillRect(90, 250, 300 * m.launch, 22); }
+    x.fillStyle = '#fff'; x.fillText(m.stage === 0 ? 'Tap the fires out' : m.stage === 1 ? 'Tap each bolt 3 times' : 'HOLD to launch', W / 2, 30); }
+}
+function mgDown(px, py) {
+  const m = mg; if (!m) return; const g = m.game; m.hold = true; audioInit();
+  if (g === 'lock') { m.hold = false; if (m.pos >= m.zone && m.pos <= m.zone + m.w) { m.hits++; mgTone(500 + m.hits * 250, 0.1); m.sp *= 1.3; m.w *= 0.85; m.zone = mgRnd(0.05, 0.92 - m.w); if (m.hits >= 3) return closeMini(true); } else { m.hits = 0; m.sp = 0.7; m.w = 0.2; SFX.bonk(); } }
+  if (g === 'gears') { m.hold = false; const q = Math.max(0, Math.min(3, Math.floor((px - 20) / 110))); mgGear(m, q); mgTone(300 + q * 60, 0.05); if (m.rot.every(r => r === 0)) return closeMini(true); }
+  if (g === 'wires') { m.hold = false; const q = Math.max(0, Math.min(4, Math.round((py - 40) / 50)));
+    if (px < 160) { if (!m.con.some(c => c[0] === q)) m.sel = q; } else if (px > 320 && m.sel >= 0 && !m.con.some(c => c[1] === q)) { if (m.L[m.sel] === m.Rr[q]) { m.con.push([m.sel, q]); m.sel = -1; mgTone(700 + m.con.length * 100, 0.08); if (m.con.length === 5) return closeMini(true); } else { m.con = []; m.sel = -1; m.spark = 0.6; SFX.bonk(); } } }
+  if (g === 'valves') { m.hold = false; if (m.phase !== 'input') return; const q = Math.max(0, Math.min(3, Math.floor((px - 26) / 107))); m.lit = q; m.st = 0.2; mgTone(400 + q * 150, 0.15);
+    if (m.seq[m.inp] === q) { m.inp++; if (m.inp >= m.seq.length) return closeMini(true); } else { SFX.bonk(); mgInit(m); } }
+  if (g === 'rocket') { if (m.stage === 0) { m.hold = false; const i = m.flames.findIndex(([fx, fy]) => Math.hypot(fx * 480 - px, fy * 300 - py) < 34); if (i >= 0) { m.flames.splice(i, 1); mgTone(200, 0.08); if (!m.flames.length) m.stage = 1; } }
+    else if (m.stage === 1) { m.hold = false; m.bolts.forEach(([bx, by], q) => { if (Math.hypot(bx * 480 - px, by * 300 - py) < 34 && m.bolt[q] < 3) { m.bolt[q]++; mgTone(900, 0.04); } }); if (m.bolt.every(b => b >= 3)) m.stage = 2; } }
+}
+function mgUp() {
+  const m = mg; if (!m) return; const g = m.game, was = m.hold; m.hold = false; if (!was) return;
+  if (g === 'vault') { const near = Math.abs(((m.ang - m.tgt + 540) % 360) - 180) < 7; if (near) { m.hits++; mgTone(800 + m.hits * 200, 0.12); m.tgt = (m.tgt + mgRnd(80, 280)) % 360; if (m.hits >= 3) return closeMini(true); } else if (m.hits) { m.hits = 0; SFX.bonk(); } }
+  if (g === 'pump' && m.fire <= 0) { if (m.lvl >= m.line && m.lvl <= m.line + 0.08) { m.cans++; mgTone(600 + m.cans * 200, 0.12); m.lvl = 0; m.line = mgRnd(0.68, 0.86); if (m.cans >= 3) return closeMini(true); } else if (m.lvl > 0.05) { SFX.bonk(); m.lvl = 0; } }
+}
+{ const cv = $('mgC'), pos = e => { const r = cv.getBoundingClientRect(); return [(e.clientX - r.left) / r.width * 480, (e.clientY - r.top) / r.height * 300]; };
+  cv.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); mgDown(...pos(e)); }); window.addEventListener('pointerup', () => mgUp()); cv.addEventListener('pointercancel', () => mgUp());
+  $('mgX').addEventListener('click', e => { e.stopPropagation(); closeMini(false); }); window.addEventListener('keydown', e => { if (!mg) return; if (e.code === 'Escape') closeMini(false); else if (e.code === 'Space' || e.code === 'KeyE') { e.preventDefault(); if (!e.repeat) mgDown(240, 150); } }, true); window.addEventListener('keyup', e => { if (mg && (e.code === 'Space' || e.code === 'KeyE')) mgUp(); }, true); }
 /* radio tower */
 function makeRadio() {
   const g = new THREE.Group(), legM = M(0x9a3b2e), barM = M(0xd8d2c4);
@@ -3873,7 +4108,7 @@ function drawTune() { if (!tuning) return; $('tuneZone').style.left = (tuning.zo
 function tuneTap() {
   if (!tuning) return; const t = tuning, inZone = t.pos >= t.zone && t.pos <= t.zone + t.w;
   if (inZone) { t.hits++; tone({ type: SQ, f: 600 + t.hits * 300, t: 0.1, v: 0.09 }); t.speed *= 1.35; t.w *= 0.85; t.zone = 0.05 + Math.random() * (0.9 - t.w);
-    if (t.hits >= 3) { tuning = null; $('tune').hidden = true; scrap -= 60; radio.fixed = true; SFX.repair(); SFX.levelUp(); reveal(radio.x, radio.z, 46); banner('Signal locked'); if (Math.random() < 0.5 && typeof openGateway === 'function') setTimeout(openGateway, 1500); return; } }
+    if (t.hits >= 3) { tuning = null; $('tune').hidden = true; scrap -= 60; radio.fixed = true; radio.used = true; { const a = Math.random() * 6.28; setTimeout(() => { if (heli.t < 0) startHeli(tc(crystal.i) + Math.cos(a) * 5, tc(crystal.j) + Math.sin(a) * 5); banner('Airdrop incoming', 'The radio burns out after one call', 2.6); }, 1200); } SFX.repair(); SFX.levelUp(); reveal(radio.x, radio.z, 46); banner('Signal locked'); if (Math.random() < 0.5 && typeof openGateway === 'function') setTimeout(openGateway, 1500); return; } }
   else { t.hits = 0; t.speed = 0.9; t.w = 0.18; SFX.bonk(); const el = $('tune'); el.classList.remove('miss'); void el.offsetWidth; el.classList.add('miss'); }
   drawTune();
 }
@@ -3892,7 +4127,7 @@ function useRadio() {
 }
 function updateRadio(dt) {
   if (!radio || !radio.mesh.parent) return; radio.cd = Math.max(0, radio.cd - dt);
-  radio.mesh.userData.lamp.material.color.setHex(!radio.fixed ? 0x552222 : Math.sin(time * 5) > 0 ? (radio.cd > 0 ? 0xff6b3d : 0x5fd4ff) : 0x223344);
+  radio.mesh.userData.lamp.material.color.setHex(radio.used ? 0x221a1a : !radio.fixed ? 0x552222 : Math.sin(time * 5) > 0 ? (radio.cd > 0 ? 0xff6b3d : 0x5fd4ff) : 0x223344);
 }
 /* trader camp */
 function makeTent(col) {
@@ -4138,7 +4373,7 @@ function endDecoy() {
   if (!decoy) return; scene.remove(decoy.mesh); burst(tc(decoy.i), 1.2, tc(decoy.j), mat.gem, 20, 5); decoy = null; decoyCd = 240; computeFlow(); SFX.dusk();
 }
 function updateDecoy(dt) {
-  if (decoy) { decoy.t -= dt; decoy.gem.rotation.y += dt * 2; decoy.gem.position.y = 1.3 + Math.sin(time * 3) * 0.1; if (decoy.hitT > 0) decoy.hitT -= dt; decoy.gem.scale.x = decoy.gem.scale.z = decoy.hitT > 0 ? 1.15 : 1; if (decoy.t <= 0) endDecoy(); }
+  if (decoy) { decoy.t -= dt; decoy.gem.rotation.y += dt * 2; decoy.gem.position.y = 1.3 + Math.sin(time * 3) * 0.1; if (decoy.hitT > 0) decoy.hitT -= dt; decoy.gem.scale.x = decoy.gem.scale.z = decoy.hitT > 0 ? 1.15 : 1; if (decoy.t <= 0) { if (decoy.boom) stationBoom(decoy.boom); endDecoy(); } }
   else if (decoyCd > 0) decoyCd = Math.max(0, decoyCd - dt);
   setHidden('decoyPill', !decoy || phase !== 'live'); if (decoy) { setText('decoyN', fmtT(Math.ceil(decoy.t))); const dp = $('decoyPill'), hurt = decoy.hitT > 0; if (dp.classList.contains('hurt') !== hurt) dp.classList.toggle('hurt', hurt); dp.style.setProperty('--hp', Math.max(0, decoy.hp / decoy.max).toFixed(2)); }
 }
@@ -4744,7 +4979,9 @@ function getInteract() {
     else if (pt.tamed && pt.kind === 'zombie') consider(pt.x, pt.z, { label: pt.follow ? 'Zombie: guard base' : 'Zombie: follow me', act: () => { pt.follow = !pt.follow; hearts(pt.x, pt.z); SFX.click(); } });
   }
   if (mystery) consider(mystery.x, mystery.z, { label: 'Open 20', act: openMystery });
-  if (radio && radio.mesh.parent) consider(radio.x, radio.z + 0.75, { label: tuning ? 'Tune!' : !radio.fixed ? 'Fix radio 60' : radio.cd > 0 ? 'Radio ' + fmtT(Math.ceil(radio.cd)) : 'Call drop', act: useRadio });
+  if (radio && radio.mesh.parent && !radio.used) consider(radio.x, radio.z + 0.75, { label: tuning ? 'Tune!' : 'Fix radio 60', act: useRadio });
+  siteInteract(consider);
+  if (kennelAt >= 0 && !guestCtx && pets.some(pt => pt.tamed)) consider(tc(kennelAt % N), tc((kennelAt / N) | 0) + 0.9, { label: 'Pets (' + tamedCount() + ')', act: openPets });
   if (siloAt >= 0 && bakeOn) consider(tc(siloAt % N), tc((siloAt / N) | 0), { label: 'Bake', act: bake });
   for (const n of npcs) if (n.hero && !n.dead && !(n.down > 0)) { const H = HEROES[n.heroType]; consider(n.x, n.z, n.free ? { label: 'Rejoin ' + H.name, act: () => { n.free = false; n.fishing = false; n.hired = true; n.mode = 'guard'; if (n.rod) n.rod.visible = false; hearts(n.x, n.z); SFX.levelUp(); showLoot('heart', H.full + ' is heading home', '', '#ffd166'); } } : !n.hired ? { label: 'Hire ' + H.name + ' ' + Math.round(H.cost * priceK()), act: () => hireHero(n) } : n.mode === 'follow' && (n.owner || null) !== guestCtx ? { label: H.name + ': follow me', act: () => { n.owner = guestCtx; SFX.click(); hearts(n.x, n.z); } } : { label: n.mode === 'follow' ? H.name + ': guard base' : H.name + ': follow me', act: () => { n.mode = n.mode === 'follow' ? 'guard' : 'follow'; n.owner = guestCtx; SFX.click(); hearts(n.x, n.z); } }); }
   { const bd0 = bd; bd = Math.max(bd, 2.3); let tb = null; for (const n of npcs) if (!n.hostile && !n.dead && (n.kind === 'trader' || (n.sling && n.stock))) { const d = Math.hypot(n.x - P.x, n.z - P.z); if (d < bd) { bd = d; tb = n; } } if (tb) best = { label: 'Trade', act: () => tradeWith === tb ? closeTrade() : openTrade(tb) }; else bd = bd0; }
@@ -4917,7 +5154,7 @@ function updateExtras(dt) {
   updateHeli(dt);
   if ((dogT -= dt) <= 0) { dogT = 1; if (phase === 'live' && !inBonus && Math.random() < 0.01) { const rb = regionBiome[regionAt(tt(P.x), tt(P.z))]; if (rb === 'forest' && pets.filter(q => q.kind === 'dog' && !q.tamed && !q.dead).length < 2) { for (let q = 0; q < 12; q++) { const a = Math.random() * 6.28, d = 10 + Math.random() * 8, x = P.x + Math.cos(a) * d, z = P.z + Math.sin(a) * d; if (inb(tt(x), tt(z)) && !blocked(x, z, 0.3, true) && grid[idx(tt(x), tt(z))] === EMPTY) { addPet('dog', x, z); break; } } } } }
   if (stage === 'night' && !hoardeOn) { roamT -= dt; if (roamT <= 0) { roamT = 35; if (regionAt(tt(P.x), tt(P.z)) !== 4) { const cnt = 3 + (Math.random() * 3 | 0), a = Math.random() * 6.28, d = 14 + Math.random() * 8; for (let q = 0; q < cnt; q++) { const x = P.x + Math.cos(a) * d + (Math.random() - 0.5) * 3, z = P.z + Math.sin(a) * d + (Math.random() - 0.5) * 3; if (inb(tt(x), tt(z)) && !SOLID_Z[grid[idx(tt(x), tt(z))]] && grid[idx(tt(x), tt(z))] !== WATER) spawnZombie(undefined, x, z); } tip('Something stirs in the dark...', 'roam'); } } }
-  updatePets(dt); updateNpcs(dt); updateAllies(dt); updateGraveyard(dt); updateStragglers(dt); updateFarms(dt); updateBreads(dt); updateRadio(dt);
+  updateSites(dt); updatePets(dt); updateNpcs(dt); updateAllies(dt); updateGraveyard(dt); updateStragglers(dt); updateFarms(dt); updateBreads(dt); updateRadio(dt);
   if (stage === 'day' && !hoardeOn && (wandT -= dt) <= 0) { wandT = 420 + Math.random() * 300; spawnWanderer(); }
   if (!hoardeOn && (slingT -= dt) <= 0) { slingT = 600 + Math.random() * 400; if (Math.random() < 0.3) spawnGunslinger(); }
   updateGun(dt);
@@ -4979,7 +5216,7 @@ function wander(pt, dt) { pt.wanderT -= dt; if (pt.wanderT <= 0) { pt.wanderT = 
 function animPet(pt, spd, dt) { const u = pt.mesh.userData, w = Math.min(1, spd / 3); (u.legs || []).forEach((l, q) => { l.rotation.x = Math.sin(time * 14 + q * Math.PI) * 0.6 * w; }); if (u.tail) u.tail.rotation.y = Math.sin(time * (pt.tamed ? 12 : 4)) * 0.5; else pt.mesh.rotation.z = Math.sin(time * 6) * 0.08 * w; }
 function resetExtras() {
   goldenT = 0; if (cosmic) scene.remove(cosmic.mesh); cosmic = null; lastPK = -1;
-  for (const d of gearDrops) scene.remove(d.mesh); gearDrops = []; if (decoy) scene.remove(decoy.mesh); decoy = null; decoyCd = 0; tradeTax = 0; sabCamps = []; hoardeStall = 0; if (wendyGrave) scene.remove(wendyGrave.mesh); wendyGrave = null; for (const a of allies) scene.remove(a.pm.g); allies = []; graveT = 2;
+  for (const d of gearDrops) scene.remove(d.mesh); gearDrops = []; for (const l of lights) scene.remove(l.mesh); lights = []; lightStock = 0; millOn = false; millT = 0; rocketBoost = 0; for (const f of flyUps) scene.remove(f.m); flyUps = []; if (mg) closeMini(false); if (decoy) scene.remove(decoy.mesh); decoy = null; decoyCd = 0; tradeTax = 0; sabCamps = []; hoardeStall = 0; if (wendyGrave) scene.remove(wendyGrave.mesh); wendyGrave = null; for (const a of allies) scene.remove(a.pm.g); allies = []; graveT = 2;
   for (const g of globs) scene.remove(g.m); globs = []; boss = null; pathShowT = 0; if (pathMesh) pathMesh.visible = false;
   if (inBonus) endBonus(false); if (gateway) { scene.remove(gateway.mesh); gateway = null; } if (safGate) { scene.remove(safGate.mesh); safGate = null; }
   if (crystal2.planted) loseCrystal2(); crystal2.planted = false; crystal2.g.visible = false;
@@ -5287,10 +5524,11 @@ const LIGHT = {
   day: { bg: new THREE.Color(0x6e5f86), sun: new THREE.Color(0xfff0c8), si: 2.7, hi: 2.4, gem: 6 },
   dusk: { bg: new THREE.Color(0x3f3552), sun: new THREE.Color(0xffb070), si: 2.1, hi: 1.8, gem: 9 },
   night: { bg: new THREE.Color(0x17142a), sun: new THREE.Color(0x8ea2ff), si: 0.8, hi: 0.85, gem: 16 },
+  mine: { bg: new THREE.Color(0x060508), sun: new THREE.Color(0x8a7a6a), si: 0.12, hi: 0.22, gem: 2 },
   blood: { bg: new THREE.Color(0x3a0f18), sun: new THREE.Color(0xff5a4a), si: 1.1, hi: 0.95, gem: 18 }
 };
 function updateLight(dt) {
-  const L = inBonus && BL && BL.safari ? LIGHT.night : LIGHT[phase === 'live' ? (bloodMoon && stage === 'night' ? 'blood' : stage) : phase === 'placing' ? 'day' : 'dusk'], k = 1 - Math.exp(-dt * 0.6);
+  const L = inBonus && BL && BL.mine ? LIGHT.mine : inBonus && BL && BL.safari ? LIGHT.night : LIGHT[phase === 'live' ? (bloodMoon && stage === 'night' ? 'blood' : stage) : phase === 'placing' ? 'day' : 'dusk'], k = 1 - Math.exp(-dt * 0.6);
   scene.background.lerp(L.bg, k); scene.fog.color.copy(scene.background); sun.color.lerp(L.sun, k);
   sun.intensity += (L.si - sun.intensity) * k; hemi.intensity += (L.hi - hemi.intensity) * k; gemLight.intensity += (L.gem - gemLight.intensity) * k;
 }
@@ -5341,7 +5579,16 @@ function setAct(label, glow) {
 }
 function setText(id, v) { if (hudCache[id] !== v) { hudCache[id] = v; $(id).textContent = v; } }
 function setHidden(id, v) { const k = id + ':h'; if (hudCache[k] !== v) { hudCache[k] = v; $(id).hidden = v; } }
+let hbT = 0;
+function updateLowHp(dt) {
+  const el = $('lowHp'); if (!el) return; const hp = P.hp, low = phase === 'live' && !P.dead && !attract && hp < 40;
+  if (!low) { if (el.style.opacity !== '0') el.style.opacity = '0'; return; }
+  const k = 1 - hp / 40, beat = 0.55 + 0.45 * Math.abs(Math.sin(time * (2.5 + k * 3)));
+  el.style.opacity = String((0.35 + 0.65 * k) * beat); el.firstChild.style.display = hp < 25 ? '' : 'none';
+  if ((hbT -= dt) <= 0 && hp < 25) { hbT = 0.9 - k * 0.35; tone({ type: 'sine', f: 70, f2: 45, t: 0.12, v: 0.18 }); setTimeout(() => tone({ type: 'sine', f: 60, f2: 40, t: 0.1, v: 0.12 }), 160); buzz(30); }
+}
 function updateHud(dt) {
+  updateLowHp(dt || 0.016);
   setText('scrap', String(scrap)); setText('round', 'Lv ' + level);
   $('lvBar').style.width = Math.min(100, charge / need(level) * 100) + '%';
   $('lvBar').style.background = levelCd > 0 ? '#9aa3d6' : 'var(--amber)';
@@ -5377,7 +5624,7 @@ function updateHud(dt) {
 function step(dt) {
   if (net.handing) return;
   if (attract && attPhase && phase === 'menu') { attractStep(dt); if (ac) updateMusic(dt); return; }
-  if (inBonus && BL && netRole !== 'guest') { bonusStep(dt); if (netRole === 'host' && inBonus) hostTick(dt); return; }
+  if (inBonus && BL && netRole !== 'guest') { mineCart(dt); bonusStep(dt); if (netRole === 'host' && inBonus) hostTick(dt); return; }
   if (document.body.classList.contains('inmenu') !== (phase === 'menu')) document.body.classList.toggle('inmenu', phase === 'menu');
   if (flowDirty && crystal.planted) computeFlow();
   if (netRole === 'guest' && phase !== 'menu') { guestStep(dt); return; }
@@ -5499,7 +5746,7 @@ function frame(now) {
   const raw = (now - last) / 1000, dt = Math.min(0.05, raw); last = now; time += dt; if (raw < 1) adaptQuality(raw);
   if (spinAim && (spinAimT += dt) > 4) setSpinAim(false);
   { const mh = $('menu').hidden; if (hudCache.mm !== mh) { hudCache.mm = mh; $('bMusic').hidden = mh; } }
-  if (!(quitPause && !hostHasGuests())) step(spinAim && !hostHasGuests() ? dt * 0.2 : dt); renderer.render(scene, camera); frozenDrawn = treeOpen; requestAnimationFrame(frame);
+  if (!((quitPause || mg) && !hostHasGuests() && netRole !== 'guest')) step(spinAim && !hostHasGuests() ? dt * 0.2 : dt); else if (mg) mgTick(dt); renderer.render(scene, camera); frozenDrawn = treeOpen; requestAnimationFrame(frame);
 }
 addEventListener('resize', () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
 window.__game = { GRAVPAD, JUMPPAD, setBuild, get buildModeV() { return buildMode; }, get MUS() { return [musGain && musGain.gain.value, musNext, musBar, musVar, muted]; }, get AC() { return ac; }, get MASTER() { return master; }, get rode() { return [...rode]; }, set gunTier(v) { gunTier = v; }, get gunTier() { return gunTier; }, W_ICON, get spawnOff() { return spawnOff; }, set chainOn(v) { chainOn = v; }, startSafari, get safGate() { return safGate && [safGate.i, safGate.j]; }, get BLt() { return BL && BL.t; }, hitZombie, get zl() { return zombies.map(z=>[+z.x.toFixed(1),+z.z.toFixed(1)]); }, get phase() { return phase; }, get level() { return level; }, get vehicles() { return vehicles; }, get npcs() { return npcs; }, get carried() { return !!carried; }, set gravOn(v) { gravOn = v; }, get quakeCd() { return quakeCd; }, menuDone, get frenzyT2() { return frenzyT; }, get attract() { return attract; }, set touchActV(v) { touchAct = v; }, get musMode() { return musMode; }, set musEventT(v) { musEventT = v; }, hitStruct, get structOff() { return [shedAt, compAt, siloAt].map(isOff); }, set uziOn(v) { uziOn = v; }, get SL() { return SL; }, set shedLvV(v) { shedLv = v; refreshShed(); }, get fades() { return fadeSet.size; }, COMPILER, BELL, get bellAt() { return bellAt; }, get compAt() { return compAt; }, set crysHp(v) { crystal.hp = v; }, get crysHp() { return crystal.hp; }, get navDbg() { return [awayHp, crysAlertT, regionAt(tt(P.x), tt(P.z)), Math.round(P.x), Math.round(P.z), crystal.max]; }, startShip, get ship() { return !!ship; }, startJet, set jetCharge(v) { jetCharge = v; }, get jetT() { return jetT; }, set jetOn(v) { jetOn = v; setJetLook(); }, get shedLv() { return shedLv; }, upgradeShed, get samKills() { return samKills; }, spitBlock, placeCosmic, openCosmic, get cosmic() { return cosmic && Math.round(cosmic.t); }, get BL() { return BL; }, sendFishing, spawnGearItem, get scyRare() { return scyRare; }, get sam() { return !!sam; }, set samT(v) { samT = v; }, get killTimes() { return killTimes.length; }, dodge, TITAN, set titanOn(v) { titanOn = v; updateBuildButtons(); }, set vetOn(v) { vetOn = v; }, petHurt, npcHurt, SHED, get shedAt() { return shedAt; }, get treeMode() { return treeMode; }, set mechWolf(v) { mechWolf = v; }, set heliGun(v) { heliGun = v; }, set skyOn(v) { skyOn = v; }, get regionBiome2() { return regionBiome; }, addVehicle, useVehicle, dismount, addPet, get zraw() { return zombies; }, get roadNextArr() { return roadNext; }, set roadOn(v) { roadOn = v; updateBuildButtons(); }, set reaperBlades(v) { reaperBlades = v; }, set spinnerMax(v) { spinnerMax = v; }, ROAD, SPINNER, get gearDrops() { return gearDrops.map(d => [d.sl, d.t]); }, equipFirst: () => gearDrops[0] && equipDrop(gearDrops[0]), get sabCamps() { return sabCamps; }, plantDecoy, get decoy() { return decoy && Math.round(decoy.t); }, get tradeTax() { return tradeTax; }, set hoardeLeftV(v) { hoardeLeft = v; }, get hoardeStall() { return hoardeStall; }, startHoarde, killBoss: () => boss && killZombie(boss, "scythe"), startPeace, spawnBoss, get boss() { return boss && Math.round(boss.hp); }, get pathLen() { return pathPts.length; }, set pathShowT(v) { pathShowT = v; }, get globs() { return globs.length; }, get buildMode() { return buildMode; }, hurtPlayer, set droneOn(v) { droneOn = v; }, get crystalIJ() { return [crystal.i, crystal.j]; }, startLure, startFrenzy, get lureT() { return lureT; }, get frenzyT() { return frenzyT; }, set frenzyCharge(v) { frenzyCharge = v; }, set lureOn(v) { lureOn = v; }, set frenzyOn(v) { frenzyOn = v; }, get peaceT() { return peaceT; }, endHoarde, get baseR() { return baseR; }, openGateway, startBonus, endBonus, get inBonus() { return inBonus; }, get gateway() { return gateway; }, get mazeF() { return mazeF; }, get goals() { return goals.map(g => g.t); }, addHero, get scares() { return [...scares.values()].map(s2 => Math.round(s2.hp)); }, set weapon(v) { weapon = v; }, get weapon() { return weapon; }, set bowOwned(v) { bowOwned = v; }, set fuel(v) { fuel = v; }, set molotovs(v) { molotovs = v; }, get net() { return net; }, get netRole() { return netRole; }, set netRole(v) { netRole = v; }, hostRecv, guestRecv, buildSave, sendWorld, saveGame, loadGame, readSave, get worldSeed() { return worldSeed; }, openCavern, get nests() { return nests; }, placeMystery, get mystery() { return mystery; }, compass, get radio() { return radio; }, spawnWanderer, useRadio, get heliOn() { return heli.t >= 0; }, addNpc, openTrade, maybeRaid, set repu(v) { repu = v; }, set wheat(v) { wheat = v; }, get wheat() { return wheat; }, set bread(v) { bread = v; }, get bread() { return bread; }, get farms() { return farms; }, SILO, FARM, get repu() { return repu; }, set level(v) { level = v; }, get pets() { return pets; }, get junks() { return junks.length; }, set fish(v) { fish = v; }, set bones(v) { bones = v; }, set spinCharges(v) { spinCharges = v; }, get spinCharges() { return spinCharges; }, get combo() { return combo; }, setSpinAim, spinAddPoint, spinRelease, get spinning() { return !!P.spin; }, set scy(v) { scy = v; }, get bones() { return bones; }, showLoot, toggleBag, get fish() { return fish; }, get gear() { return gear; }, get fishing() { return fishing && { t: fishing.t, wait: fishing.wait, bite: fishing.bite }; }, dropGear, getInteract, useVehicle, crystalDrop, startHeli, TAR, JUMPPAD, TOTEM, QSAND, WATER, get regionBiome() { return regionBiome; }, swapBiome, get pickups() { return pickups.length; }, WIRE, get points() { return points; }, set points(v) { points = v; }, buyNode, openTree, set levelCd(v) { levelCd = v; }, get levelCd() { return levelCd; }, SENTRY, SHIELD, get owned() { return owned; }, get charge() { return charge; }, set charge(v) { charge = v; }, set hoardeT(v) { hoardeT = v; }, get hoardeOn() { return hoardeOn; }, get hoardeLeft() { return hoardeLeft; }, set graceT(v) { graceT = v; }, levelUp, spawnZombie, feedCrystal, get wallHp() { return wallHp; }, get zombies() { return zombies.length; }, get scrap() { return scrap; }, set scrap(v) { scrap = v; },
