@@ -511,7 +511,7 @@ body.attract #menu .card{background:rgba(30,20,40,.72);border-radius:22px;paddin
       <p class="cstat" id="coopStat" hidden></p>
     </div>
     <div class="runs" id="runs"></div>
-    <div class="keys">Best: <span id="menuBest">Lv 0</span><br>v0.82</div>
+    <div class="keys">Best: <span id="menuBest">Lv 0</span><br>v0.83</div>
   </div>
 </div>
 <div class="screen" id="over" hidden>
@@ -2896,7 +2896,7 @@ function buildSave() {
       npcs: npcs.filter(n => !n.dead && !n.wanderer && !n.raid).map(n => n.hero ? ['hero', +n.x.toFixed(2), +n.z.toFixed(2), +n.hx.toFixed(1), +n.hz.toFixed(1), 0, 0, 0, 0, null, n.heroType, n.hired ? 1 : 0, n.mode, n.free ? 1 : 0] : [n.kind, +n.x.toFixed(2), +n.z.toFixed(2), +n.hx.toFixed(1), +n.hz.toFixed(1), n.hostile ? 1 : 0, n.angry ? 1 : 0, n.camp || n.campR ? 1 : 0, n.calm ? 1 : 0, n.stock ? n.stock.map(st => [OFFERS.indexOf(st.o), st.left, st.o.get[0]]) : null]),
       junks: junks.map(jk => [+jk.x.toFixed(2), +jk.z.toFixed(2), jk.hp]),
       pick: pickups.filter(pk => !pk.dead).map(pk => [pk.kind, +pk.x.toFixed(2), +pk.z.toFixed(2)]),
-      mys: mystery ? [mystery.x, mystery.z] : null, wg: wendyGrave ? [+wendyGrave.x.toFixed(2), +wendyGrave.z.toFixed(2)] : null, mysteryT, radio: radio ? [radio.fixed ? 1 : 0, Math.round(radio.cd), radio.used ? 1 : 0] : null, ms: sites.filter(o => o.done.size || o.fueled || o.blown).map(o => [o.kind, Math.round(o.x * 10), Math.round(o.z * 10), [...o.done], o.fueled ? 1 : 0, o.blown ? 1 : 0]), lt: lights.map(l => [+l.x.toFixed(2), +l.z.toFixed(2)]), ls: lightStock, jf: jetFound ? 1 : 0, mo: millOn ? 1 : 0, mt: Math.round(millT), rb: rocketBoost, fs: farmSpeed,
+      mys: mystery ? [mystery.x, mystery.z] : null, wg: wendyGrave ? [+wendyGrave.x.toFixed(2), +wendyGrave.z.toFixed(2)] : null, mysteryT, radio: radio ? [radio.fixed ? 1 : 0, Math.round(radio.cd), radio.used ? 1 : 0] : null, ms: sites.filter(o => o.done.size || o.fueled || o.blown).map(o => [o.kind, Math.round(o.x * 10), Math.round(o.z * 10), [...o.done], o.fueled ? 1 : 0, o.blown ? 1 : 0, o.bread || 0]), lt: lights.map(l => [+l.x.toFixed(2), +l.z.toFixed(2)]), ls: lightStock, jf: jetFound ? 1 : 0, mo: millOn ? 1 : 0, mt: Math.round(millT), rb: rocketBoost, fs: farmSpeed,
       nests: nests.filter(nt => !nt.dead).map(nt => [nt.tiles[0], Math.round(nt.hp), nt.max])
     };
     if (mv && mv.kind !== 'wolf') { const v = d.veh[vehicles.indexOf(mv)]; if (v) { v[1] = +P.x.toFixed(2); v[2] = +P.z.toFixed(2); } }
@@ -2956,7 +2956,7 @@ function loadGame(given) {
     if (d.mys) { const { g, q } = makePresent(); g.position.set(d.mys[0], 0, d.mys[1]); scene.add(g); mystery = { x: d.mys[0], z: d.mys[1], mesh: g, q, sp: 0 }; } mysteryT = d.mysteryT || 0;
     if (d.wg) placeWendyGrave(d.wg[0], d.wg[1]); cactusBag = d.cb || 0;
     if (radio && d.radio) { radio.fixed = !!d.radio[0]; radio.cd = d.radio[1]; radio.used = !!d.radio[2] || radio.fixed; }
-    for (const [k, x, z, dn, fu, bl] of d.ms || []) { const st = sites.find(o => o.kind === k && Math.abs(o.x * 10 - x) < 2 && Math.abs(o.z * 10 - z) < 2); if (st) { st.done = new Set(dn); st.fueled = !!fu; st.blown = !!bl; } }
+    for (const [k, x, z, dn, fu, bl, br] of d.ms || []) { const st = sites.find(o => o.kind === k && Math.abs(o.x * 10 - x) < 2 && Math.abs(o.z * 10 - z) < 2); if (st) { st.done = new Set(dn); st.fueled = !!fu; st.blown = !!bl; st.bread = br || 0; } }
     for (const [x, z] of d.lt || []) placeLight(x, z, false); lightStock = d.ls || 0; jetFound = !!d.jf; millOn = !!d.mo; millT = d.mt || 0; rocketBoost = d.rb || 0; if (d.fs) farmSpeed = d.fs;
     graceT = 8; stage = 600 - hoardeT < 240 ? 'day' : 600 - hoardeT < 420 ? 'dusk' : 'night';
     if (netRole === 'host' && !given) setTimeout(sendWorld, 300);
@@ -3960,6 +3960,7 @@ function siteDone(st) { const inf = SITE_INFO[st.kind]; return inf.team ? st.don
 function siteInteract(consider) {
   for (const st of sites) { if (Math.abs(st.x - P.x) + Math.abs(st.z - P.z) > 3) continue;
     if (st.kind === 'petrol' && st.fueled && !st.blown && !decoy) consider(st.x, st.z + 0.3, { label: 'Rig to blow', act: () => rigStation(st) });
+    if (st.kind === 'mill' && st.bread > 0) consider(st.x, st.z + 0.2, { label: 'Collect bread (' + st.bread + ')', act: () => { const n = st.bread; st.bread = 0; bread += n; SFX.coin(); showLoot('bread', '+' + n + ' bread', 'Throw it near raiders to win them over. Traders swap it for gear.', '#f1c27d'); if (netRole === 'host') netActNow(); } });
     if (!siteDone(st) && !(st.kind === 'mine' && inBonus)) consider(st.x, st.z, { label: SITE_INFO[st.kind].label, act: () => startSite(st) }); }
   if (lightStock > 0 && crystal.planted && !inBonus && Math.hypot(P.x - tc(crystal.i), P.z - tc(crystal.j)) < 22 && !lights.some(l => Math.hypot(l.x - P.x, l.z - P.z) < 4)) consider(P.x, P.z + 1.4, { label: 'Place light tower (' + lightStock + ')', act: () => placeLight(P.x, P.z, true) });
 }
@@ -3974,7 +3975,7 @@ function finishSite(st) {
   if (st.kind === 'plane') { if (Math.random() < 0.7 * k) { const sl = ['head', 'chest', 'legs', 'feet'][(Math.random() * 4) | 0]; spawnGearItem(sl, 3, P.x + 0.8, P.z); showLoot('chest', 'Rare ' + SLOT_NAME[sl], 'Lock picked!', '#d4a017'); } else { const v = Math.round(150 * k); scrap += v; showLoot('scrap', '+' + v + ' scrap', 'Lock picked', '#f2b632'); } }
   else if (st.kind === 'bank') { const v = Math.round(500 * k); scrap += v; showLoot('scrap', '+' + v + ' scrap', 'Vault cracked!', '#f2b632'); }
   else if (st.kind === 'petrol') { fuel = Math.max(fuel, 300); st.fueled = true; showLoot('scrap', 'Flamer fuel full', 'Cans filled', '#ff9f43'); }
-  else if (st.kind === 'mill') { millOn = true; millT = 0; let made = 0; const ci = tt(st.x), cj = tt(st.z); loadingSave = true; for (let r = 1; r <= 3 && made < 3; r++) for (let dj = -r; dj <= r && made < 3; dj++) for (let di = -r; di <= r && made < 3; di++) { const i = ci + di, j = cj + dj; if (!inb(i, j) || grid[idx(i, j)] !== EMPTY || spawnMask[idx(i, j)]) continue; place(i, j, FARM); made++; } loadingSave = false; computeFlow(); showLoot('bread', 'Windmill fixed', 'Free bread every 5 min', '#f1c27d'); }
+  else if (st.kind === 'mill') { millOn = true; millT = 0; let made = 0; const ci = tt(st.x), cj = tt(st.z); loadingSave = true; for (let r = 1; r <= 3 && made < 3; r++) for (let dj = -r; dj <= r && made < 3; dj++) for (let di = -r; di <= r && made < 3; di++) { const i = ci + di, j = cj + dj; if (!inb(i, j) || grid[idx(i, j)] !== EMPTY || spawnMask[idx(i, j)]) continue; place(i, j, FARM); made++; } loadingSave = false; computeFlow(); showLoot('bread', 'Windmill fixed', 'It bakes 1 bread every 5 min. Collect it here.', '#f1c27d'); }
   else if (st.kind === 'sub') { lightStock += 2; showLoot('star', '2 light towers', 'Place them near your base', '#ffe066'); }
   else if (st.kind === 'water') { crystal.hp = crystal.max; farmSpeed *= 1.5; showLoot('heart', 'Crystal fully healed', 'Farms grow faster', '#43c6ea'); }
   else if (st.kind === 'rocket') { relaunchRocket(st); }
@@ -4032,10 +4033,11 @@ function recallStrays(dt) {
 }
 function updateSites(dt) {
   recallStrays(dt);
+  if (bread > 0 && phase === 'live') tip('Bread: throw it near raiders to win them over, or swap it with traders for gear.', 'bread');
   if (airJet && !jetFound && phase === 'live' && netRole !== 'guest') { spawnGearItem('jetpack', 1, airJet[0], airJet[1]); const d = gearDrops[gearDrops.length - 1]; if (d) { d.air = true; d.life = 1e9; } airJet = null; }
   for (let q = flyUps.length - 1; q >= 0; q--) { const f = flyUps[q]; f.t += dt; f.m.position.y += dt * (2 + f.t * 8); f.m.userData.fire.visible = true; f.m.userData.fire.scale.y = 1 + Math.sin(time * 30) * 0.3; if (Math.random() < 0.7) puff(f.m.position.x, f.m.position.y - 1.6, f.m.position.z, 0xb0aaa4); if (f.t > 5) { scene.remove(f.m); flyUps.splice(q, 1); } }
   const night = stage === 'night' ? 1 : stage === 'dusk' ? 0.5 : 0; for (const l of lights) l.L.intensity = 0.3 + night * 2.6;
-  if (millOn && netRole !== 'guest' && phase === 'live' && !inBonus) { millT += dt; if (millT >= 300) { millT = 0; bread++; showLoot('bread', '+1 bread', 'From the windmill', '#f1c27d'); for (const G of liveGuests()) asGuestFull(G, () => { bread++; showLoot('bread', '+1 bread', 'From the windmill', '#f1c27d'); }, true); } }
+  if (millOn && netRole !== 'guest' && phase === 'live' && !inBonus) { millT += dt; if (millT >= 300) { millT = 0; const st = sites.find(o => o.kind === 'mill' && o.done.size); if (st && (st.bread || 0) < 5) { st.bread = (st.bread || 0) + 1; showLoot('bread', 'Bread ready at windmill', st.bread + ' waiting to collect', '#f1c27d'); tempMark(st.x, st.z, '#f1c27d', 'star', 20); if (netRole === 'host') { netActNow(); for (const G of liveGuests()) asGuestFull(G, () => showLoot('bread', 'Bread ready at windmill', '', '#f1c27d'), true); } } } }
   if (mg) mgTick(dt);
 }
 /* kennel pet list */
@@ -4218,7 +4220,7 @@ function updateFarms(dt) {
 }
 function bake() {
   if (wheat < 2) { tip('Baking needs 2 wheat.'); SFX.bonk(); return; }
-  wheat -= 2; bread++; showLoot('bread', 'Fresh bread', 'Throw it near raiders to win them over', '#c98a3e'); gotItem(); SFX.buy();
+  wheat -= 2; bread++; showLoot('bread', 'Fresh bread', 'Throw it near raiders to win them over. Traders swap it for gear.', '#c98a3e'); gotItem(); SFX.buy();
 }
 let breads = [];
 function throwBread() {
@@ -5056,7 +5058,7 @@ function vehBlocked(x, z, water, fly, kind) {
 function updateSpecialMove(dt, mx, mz, ml) {
   P.qsImmune = Math.max(0, (P.qsImmune || 0) - dt); P.jumpCd = Math.max(0, (P.jumpCd || 0) - dt);
   const tick = () => { P.swingCd -= dt; P.buffer -= dt; P.swingT -= dt; P.hurtT += dt; };
-  if (P.spin) { tick(); P.spin.age = (P.spin.age || 0) + dt; if (P.spin.age > 8) P.spin.seg = P.spin.path.length; updateSpinMove(dt); return true; }
+  if (P.spin) { tick(); const sp = P.spin; sp.age = (sp.age || 0) + dt; if ((sp.pk = (sp.pk ?? 0.5) - dt) <= 0) { const mv = Math.hypot(P.x - (sp.px ?? P.x + 9), P.z - (sp.pz ?? P.z + 9)); sp.px = P.x; sp.pz = P.z; sp.pk = 0.5; if (mv < 0.25 && sp.age > 0.4) sp.seg = sp.path.length; } if (sp.age > 6) sp.seg = sp.path.length; updateSpinMove(dt); return true; }
   if (P.air) { tick();
     const a = P.air; a.t += dt; const k = Math.min(1, a.t / a.dur);
     P.x = a.sx + (a.ex - a.sx) * k; P.z = a.sz + (a.ez - a.sz) * k; P.y = Math.sin(k * Math.PI) * 1.8;
