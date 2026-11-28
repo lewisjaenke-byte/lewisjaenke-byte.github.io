@@ -433,7 +433,7 @@ body.attract #menu .card{background:rgba(30,20,40,.72);border-radius:22px;paddin
       <button class="cbtn" id="bDrawb" hidden>Bridge<small><svg><use href="#nut"/></svg>20</small></button>
       <button class="cbtn" id="bBear" hidden>Trap<small><svg><use href="#nut"/></svg>12</small></button>
       <button class="cbtn" id="bSpinner" hidden>Blade<small><svg><use href="#nut"/></svg>45</small></button>
-      <button class="cbtn" id="bTitan" hidden>Titan<small><svg><use href="#nut"/></svg>90</small></button><button class="cbtn" id="bBell" hidden>Bell<small>free</small></button><button class="cbtn" id="bComp" hidden>Compiler<small>free</small></button><button class="cbtn" id="bShed" hidden>Shed<small>free</small></button><button class="cbtn" id="bCact" hidden>Cactus<small id="cactN">0</small></button><button class="cbtn" id="bRoad" hidden>Road<small><svg><use href="#nut"/></svg>2</small></button><button class="cbtn" id="bScare" hidden>Scare<small><svg><use href="#nut"/></svg>25</small></button>
+      <button class="cbtn" id="bTitan" hidden>Titan<small><svg><use href="#nut"/></svg>90</small></button><button class="cbtn" id="bBell" hidden>Bell<small>free</small></button><button class="cbtn" id="bComp" hidden>Compiler<small>free</small></button><button class="cbtn" id="bShed" hidden>Shed<small>free</small></button><button class="cbtn" id="bCact" hidden>Cactus<small id="cactN">0</small></button><button class="cbtn" id="bLight" hidden>Light<small id="lightN">0</small></button><button class="cbtn" id="bRoad" hidden>Road<small><svg><use href="#nut"/></svg>2</small></button><button class="cbtn" id="bScare" hidden>Scare<small><svg><use href="#nut"/></svg>25</small></button>
       <button class="cbtn" id="bKennel" hidden>Kennel<small><svg><use href="#nut"/></svg>30</small></button>
       <button class="cbtn" id="bSilo" hidden>Silo<small><svg><use href="#nut"/></svg>40</small></button>
       <button class="cbtn" id="bFarm" hidden>Farm<small><svg><use href="#nut"/></svg>5</small></button>
@@ -515,7 +515,7 @@ body.attract #menu .card{background:rgba(30,20,40,.72);border-radius:22px;paddin
       <p class="cstat" id="coopStat" hidden></p>
     </div>
     <div class="runs" id="runs"></div>
-    <div class="keys">Best: <span id="menuBest">Lv 0</span><br>v0.87</div>
+    <div class="keys">Best: <span id="menuBest">Lv 0</span><br>v0.88</div>
   </div>
 </div>
 <div class="screen" id="over" hidden>
@@ -1924,12 +1924,12 @@ function feedStruct(k) {
 const shedCost = ni => Math.round((70 + 70 * ni) * priceK()), SHED_UP = [0, 0, 150, 350, 650, 1000], shedUpCost = () => Math.round(SHED_UP[shedLv + 1] * priceK());
 function upgradeShed() { if (shedLv >= 5) return; const c = shedUpCost(); if (scrap < c) { SFX.bonk(); return; } scrap -= c; shedLv++; refreshShed(); SFX.repair(); setTimeout(() => SFX.levelUp(), 150); if (shedAt >= 0) burst(tc(shedAt % N), 1 + shedLv * 0.5, tc((shedAt / N) | 0), mat.wood, 20, 3); renderTree(); }
 let naT = 0;
-function updateNA(dt) { if ((naT -= dt) > 0) return; naT = 0.25; const live = phase === 'live'; if (landOn) { setText('cactN', String(cactusBag)); setText('cactN2', String(cactusBag)); }
+function updateNA(dt) { if ((naT -= dt) > 0) return; naT = 0.25; const live = phase === 'live'; if (landOn) { setText('cactN', String(cactusBag)); setText('cactN2', String(cactusBag)); } setText('lightN', String(lightStock));
   for (const [bb, pp, t] of PRICE_BTNS) { const na = live && (scrap < costOf(t) || (counts[t] || 0) >= limitFor(t)); for (const id of [bb, pp]) { const el = $(id); if (el && el.classList.contains('na') !== na) el.classList.toggle('na', na); } }
   const tb = $('bTree'); if (tb) { const na = live && !(nearCrystal() || onPad()) && netRole !== 'guest'; if (tb.classList.contains('na') !== na) tb.classList.toggle('na', na); } }
 function updateBuildButtons() {
   setTimeout(() => { const any = [...$('tray').children].some(b => !b.hidden); $('bBuild').hidden = !any; if (!any) $('tray').hidden = true; const anyO = [...$('onceBar').children].some(b => !b.hidden); $('onceBar').hidden = !anyO || phase !== 'live'; }, 0);
-  for (const [a, b, ok] of [['bWall', 'pWall', wallsOn], ['bPit', 'pPit', pitsOn], ['bErase', 'pErase', wallsOn || pitsOn || wireOn], ['bWire', 'pWire', wireOn], ['bTar', 'pTar', tarOn], ['bJump', 'pJump', jumpOn], ['bGrav', 'pGrav', gravOn], ['bTotem', 'pTotem', totemMax > 0], ['bSilo', 'pSilo', siloOn && siloAt < 0], ['bFarm', 'pFarm', siloOn], ['bMoat', 'pMoat', moatOn], ['bDrawb', 'pDrawb', drawOn], ['bBear', 'pBear', bearOn], ['bSpinner', 'pSpinner', spinnerMax > 0], ['bKennel', 'pKennel', kennelOn && kennelAt < 0], ['bScare', 'pScare', scareLv > 0], ['bRoad', 'pRoad', roadOn], ['bShed', 'pShed', crystal.planted && shedAt < 0 && level >= UNLOCK_LV[SHED]], ['bComp', 'pComp', crystal.planted && compAt < 0 && level >= UNLOCK_LV[COMPILER]], ['bBell', 'pBell', crystal.planted && bellAt < 0 && level >= UNLOCK_LV[BELL]], ['bTitan', 'pTitan', titanOn], ['bCact', 'pCact', landOn], ['bBarrel', 'pBarrel', barrelUnlocked], ['bSentry', 'pSentry', sentryMax > 0], ['bShield', 'pShield', shieldMax > 0]]) { $(a).hidden = !ok; $(b).hidden = !ok; }
+  for (const [a, b, ok] of [['bWall', 'pWall', wallsOn], ['bPit', 'pPit', pitsOn], ['bErase', 'pErase', wallsOn || pitsOn || wireOn], ['bWire', 'pWire', wireOn], ['bTar', 'pTar', tarOn], ['bJump', 'pJump', jumpOn], ['bGrav', 'pGrav', gravOn], ['bTotem', 'pTotem', totemMax > 0], ['bSilo', 'pSilo', siloOn && siloAt < 0], ['bFarm', 'pFarm', siloOn], ['bMoat', 'pMoat', moatOn], ['bDrawb', 'pDrawb', drawOn], ['bBear', 'pBear', bearOn], ['bSpinner', 'pSpinner', spinnerMax > 0], ['bKennel', 'pKennel', kennelOn && kennelAt < 0], ['bScare', 'pScare', scareLv > 0], ['bRoad', 'pRoad', roadOn], ['bShed', 'pShed', crystal.planted && shedAt < 0 && level >= UNLOCK_LV[SHED]], ['bComp', 'pComp', crystal.planted && compAt < 0 && level >= UNLOCK_LV[COMPILER]], ['bBell', 'pBell', crystal.planted && bellAt < 0 && level >= UNLOCK_LV[BELL]], ['bTitan', 'pTitan', titanOn], ['bCact', 'pCact', landOn], ['bLight', 'bLight', lightStock > 0], ['bBarrel', 'pBarrel', barrelUnlocked], ['bSentry', 'pSentry', sentryMax > 0], ['bShield', 'pShield', shieldMax > 0]]) { $(a).hidden = !ok; $(b).hidden = !ok; }
 }
 function setTowerLook() {
   const h = climbTime >= 6 ? 1.9 : climbTime >= 3 ? 1.1 : 0.24;
@@ -2459,7 +2459,8 @@ hold('bTar', () => { SFX.click(); setBuild(TAR); }); hold('pTar', () => setBuild
 hold('bJump', () => { SFX.click(); setBuild(JUMPPAD); }); hold('pJump', () => setBuild(JUMPPAD)); hold('bGrav', () => { SFX.click(); setBuild(GRAVPAD); }); hold('pGrav', () => setBuild(GRAVPAD));
 hold('bTotem', () => { SFX.click(); setBuild(TOTEM); }); hold('bSilo', () => { SFX.click(); setBuild(SILO); }); for (const [bt, pt, ty] of [['bCact', 'pCact', CACTUS], ['bMoat', 'pMoat', MOAT], ['bDrawb', 'pDrawb', DRAWB], ['bBear', 'pBear', BEAR], ['bSpinner', 'pSpinner', SPINNER], ['bKennel', 'pKennel', KENNEL], ['bScare', 'pScare', SCARE], ['bRoad', 'pRoad', ROAD], ['bCact', 'pCact', CACTUS], ['bShed', 'pShed', SHED], ['bTitan', 'pTitan', TITAN], ['bComp', 'pComp', COMPILER], ['bBell', 'pBell', BELL]]) { hold(bt, () => { SFX.click(); setBuild(ty); }); hold(pt, () => setBuild(ty)); } hold('pSilo', () => setBuild(SILO)); hold('bFarm', () => { SFX.click(); setBuild(FARM); }); hold('pFarm', () => setBuild(FARM)); hold('pTotem', () => setBuild(TOTEM)); hold('pShield', () => setBuild(SHIELD));
 hold('bBag', () => toggleBag());
-for (const id of ['bWall', 'bPit', 'bErase', 'bWire', 'bTar', 'bBarrel', 'bJump', 'bGrav', 'bTotem', 'bSentry', 'bShield', 'bMoat', 'bDrawb', 'bBear', 'bSpinner', 'bScare', 'bRoad', 'bTitan', 'bFarm', 'bCact']) if ($(id)) $('tray').appendChild($(id));
+$('bLight').addEventListener('click', e => { e.stopPropagation(); if (netRole === 'guest') { netSend({ t: 'light' }); SFX.click(); return; } tryPlaceLight(); });
+for (const id of ['bWall', 'bPit', 'bErase', 'bWire', 'bTar', 'bBarrel', 'bJump', 'bGrav', 'bTotem', 'bSentry', 'bShield', 'bMoat', 'bDrawb', 'bBear', 'bSpinner', 'bScare', 'bRoad', 'bTitan', 'bFarm', 'bCact', 'bLight']) if ($(id)) $('tray').appendChild($(id));
 for (const id of ['bShed', 'bComp', 'bBell', 'bKennel', 'bSilo']) if ($(id)) { $(id).classList.add('once'); $('onceBar').appendChild($(id)); }
 for (const id of ['pShed', 'pComp', 'pBell', 'pKennel', 'pSilo']) if ($(id)) $(id).classList.add('once');
 hold('bBuild', () => { SFX.click(); if (buildMode) { setBuild(0); $('tray').hidden = false; } else $('tray').hidden = !$('tray').hidden; });
@@ -2708,6 +2709,7 @@ function hostRecv(G, m) {
   else if (m.t === 'feed' && G.hp > 0) asGuestFull(G, () => { if (m.m === 'shed') feedStruct('w'); else if (m.m === 'comp') feedStruct('c'); else feedCrystal(); }, true);
   else if (m.t === 'tb' && G.hp > 0 && ['bLure', 'bQuake', 'bPeace', 'bShedUp'].includes(m.b)) asGuestFull(G, () => $(m.b).click(), true);
   else if (m.t === 'mgr' && m.ok && sites[m.q]) asGuestFull(G, () => finishSite(sites[m.q]), true);
+  else if (m.t === 'light' && G.hp > 0) asGuest(G, () => tryPlaceLight());
   else if (m.t === 'unride') { const v = G.ride; if (v) { v.riderG = null; v.x = m.x; v.z = m.z; v.mesh.position.set(v.x, 0, v.z); } G.ride = null; }
   else if (m.t === 'unseat') { G.seat = false; for (const v of vehicles) if (v.seats) v.seats = v.seats.map(o => o === G ? null : o); }
   else if (m.t === 'plant' && !crystal2.planted && inb(m.i, m.j + 1) && grid[idx(m.i, m.j)] === EMPTY && !spawnMask[idx(m.i, m.j)] && !built[idx(m.i, m.j + 1)] && Math.hypot(m.i - crystal.i, m.j - crystal.j) >= 8 && Math.hypot(m.i - crystal.i, m.j - crystal.j) <= 45) plantCrystal2(m.i, m.j);
@@ -2760,7 +2762,7 @@ function hostTick(dt) {
     const r2 = v => Math.round(v * 50) / 50, pl = [[0, r2(P.x), r2(P.z), Math.round(P.face * 20) / 20, P.swingT > 0 ? 1 : 0, P.dodgeT > 0 ? 1 : 0, P.spin ? 1 : 0, +(P.y || 0).toFixed(2), P.dead ? 0 : 1, gearCode(gear)]];
     for (const G of gs) pl.push([G.slot, r2(G.x), r2(G.z), Math.round(G.face * 20) / 20, G.swingT > 0 ? 1 : 0, G.rolling ? 1 : 0, G.spin ? 1 : 0, +(G.y || 0).toFixed(2), G.hp > 0 ? 1 : 0, gearCode(G.inv && G.inv.gear)]);
     for (const G of gs) if (G.swingT > 0) G.swingT -= 0.066;
-    const hud = [scrap, level, +charge.toFixed(1), Math.ceil(levelCd), Math.round(crystal.hp), crystal.max, +hoardeT.toFixed(1), hoardeOn ? 1 : 0, hoardeLeft, stage, spinCharges, nests.length, 100, scy, combo, points, SL.c.pts, SL.c.lv, +SL.c.ch.toFixed(1), Math.ceil(SL.c.cd), SL.w.pts, SL.w.lv, +SL.w.ch.toFixed(1), Math.ceil(SL.w.cd), shedLv, shedAt, compAt, Math.ceil(quakeCd), Math.ceil(lureT), Math.ceil(lureCd), [...rode].join(',')];
+    const hud = [scrap, level, +charge.toFixed(1), Math.ceil(levelCd), Math.round(crystal.hp), crystal.max, +hoardeT.toFixed(1), hoardeOn ? 1 : 0, hoardeLeft, stage, spinCharges, nests.length, 100, scy, combo, points, SL.c.pts, SL.c.lv, +SL.c.ch.toFixed(1), Math.ceil(SL.c.cd), SL.w.pts, SL.w.lv, +SL.w.ch.toFixed(1), Math.ceil(SL.w.cd), shedLv, shedAt, compAt, Math.ceil(quakeCd), Math.ceil(lureT), Math.ceil(lureCd), [...rode].join(','), lightStock];
     for (const G of gs) { hud[12] = Math.round(G.hp); try { G.conn.send({ t: 's', zs, pl, hud }); } catch (e) { } }
   }
   if ((net.gridT -= dt) <= 0) { net.gridT = 0.25; flushGrid(); }
@@ -2830,7 +2832,7 @@ function guestRecv(m) {
       if (!o) { o = { av: makeAvatar(...SLOT_COL[s]) }; scene.add(o.av.g); o.av.g.position.set(r[1], 0, r[2]); net.others.set(s, o); }
       if (r[4] && !(o.st && o.st[4])) avSwing(o.av); noteVel(o, r[1], r[2]); o.st = r; }
     for (const [s, o] of net.others) if (!seenP.has(s)) { scene.remove(o.av.g); net.others.delete(s); }
-    const u = m.hud; const oldScrap = scrap; scrap = u[0]; level = u[1]; charge = u[2]; levelCd = u[3]; crystal.hp = crystal2.planted ? crystal2.hp : u[4]; crystal.max = crystal2.planted ? crystal2.max : u[5]; hoardeT = u[6]; hoardeOn = !!u[7]; hoardeLeft = u[8]; stage = u[9]; spinCharges = u[10]; scy = u[13]; combo = u[14]; if (u.length > 15) { const tp = [points, SL.c.pts, SL.w.pts].join(); points = u[15]; SL.c.pts = u[16]; SL.c.lv = u[17]; SL.c.ch = u[18]; SL.c.cd = u[19]; SL.w.pts = u[20]; SL.w.lv = u[21]; SL.w.ch = u[22]; SL.w.cd = u[23]; shedLv = u[24]; shedAt = u[25]; compAt = u[26]; quakeCd = u[27]; lureT = u[28]; lureCd = u[29]; rode = new Set(u[30] ? u[30].split(',') : []); if (treeOpen && tp !== [points, SL.c.pts, SL.w.pts].join()) renderTree(); }
+    const u = m.hud; const oldScrap = scrap; scrap = u[0]; level = u[1]; charge = u[2]; levelCd = u[3]; crystal.hp = crystal2.planted ? crystal2.hp : u[4]; crystal.max = crystal2.planted ? crystal2.max : u[5]; hoardeT = u[6]; hoardeOn = !!u[7]; hoardeLeft = u[8]; stage = u[9]; spinCharges = u[10]; scy = u[13]; combo = u[14]; if (u.length > 15) { const tp = [points, SL.c.pts, SL.w.pts].join(); points = u[15]; SL.c.pts = u[16]; SL.c.lv = u[17]; SL.c.ch = u[18]; SL.c.cd = u[19]; SL.w.pts = u[20]; SL.w.lv = u[21]; SL.w.ch = u[22]; SL.w.cd = u[23]; shedLv = u[24]; shedAt = u[25]; compAt = u[26]; quakeCd = u[27]; lureT = u[28]; lureCd = u[29]; rode = new Set(u[30] ? u[30].split(',') : []); if (u[31] !== undefined && u[31] !== lightStock) { lightStock = u[31]; updateBuildButtons(); } if (treeOpen && tp !== [points, SL.c.pts, SL.w.pts].join()) renderTree(); }
     const hp = u[12]; if (hp < P.hp - 0.5) { shake = Math.max(shake, 0.25); SFX.hurt(); const hd = $('hurt'); hd.classList.add('show'); setTimeout(() => hd.classList.remove('show'), 120); } P.hp = hp;
     if (scrap > oldScrap) SFX.coin();
   } else if (m.t === 'g') {
@@ -4001,7 +4003,7 @@ function siteInteract(consider) {
     if (st.kind === 'petrol' && st.fueled && !st.blown && !decoy) consider(st.x, st.z + 0.3, { label: 'Rig to blow', act: () => rigStation(st) });
     if (st.kind === 'mill' && st.bread > 0) consider(st.x, st.z + 0.2, { label: 'Collect bread (' + st.bread + ')', act: () => { const n = st.bread; st.bread = 0; bread += n; SFX.coin(); showLoot('bread', '+' + n + ' bread', 'Throw it near raiders to win them over. Traders swap it for gear.', '#f1c27d'); if (netRole === 'host') netActNow(); } });
     if (!siteDone(st) && !(st.kind === 'mine' && inBonus)) consider(st.x, st.z, { label: SITE_INFO[st.kind].label, act: () => startSite(st) }); }
-  if (lightStock > 0 && crystal.planted && !inBonus && Math.hypot(P.x - tc(crystal.i), P.z - tc(crystal.j)) < 22 && !lights.some(l => Math.hypot(l.x - P.x, l.z - P.z) < 4)) consider(P.x, P.z + 1.4, { label: 'Place light tower (' + lightStock + ')', act: () => placeLight(P.x, P.z, true) });
+  if (!inBonus && !guestCtx) for (const l of lights) consider(l.x, l.z, { label: 'Pick up light tower', act: () => pickLight(l) });
 }
 function startSite(st) {
   const inf = SITE_INFO[st.kind], q = sites.indexOf(st);
@@ -4015,7 +4017,7 @@ function finishSite(st) {
   else if (st.kind === 'bank') { const v = Math.round(500 * k); scrap += v; showLoot('scrap', '+' + v + ' scrap', 'Vault cracked!', '#f2b632'); }
   else if (st.kind === 'petrol') { fuel = Math.max(fuel, 300); st.fueled = true; showLoot('scrap', 'Flamer fuel full', 'Cans filled', '#ff9f43'); }
   else if (st.kind === 'mill') { millOn = true; millT = 0; let made = 0; const ci = tt(st.x), cj = tt(st.z); loadingSave = true; for (let r = 1; r <= 3 && made < 3; r++) for (let dj = -r; dj <= r && made < 3; dj++) for (let di = -r; di <= r && made < 3; di++) { const i = ci + di, j = cj + dj; if (!inb(i, j) || grid[idx(i, j)] !== EMPTY || spawnMask[idx(i, j)]) continue; place(i, j, FARM); made++; } loadingSave = false; computeFlow(); showLoot('bread', 'Windmill fixed', 'It bakes 1 bread every 5 min. Collect it here.', '#f1c27d'); }
-  else if (st.kind === 'sub') { lightStock += 2; showLoot('star', '2 light towers', 'Place them near your base', '#ffe066'); }
+  else if (st.kind === 'sub') { lightStock += 2; showLoot('star', '2 light towers', 'Place them from the build menu, near your base', '#ffe066'); updateBuildButtons(); }
   else if (st.kind === 'water') { crystal.hp = crystal.max; farmSpeed *= 1.5; showLoot('heart', 'Crystal fully healed', 'Farms grow faster', '#43c6ea'); }
   else if (st.kind === 'rocket') { relaunchRocket(st); }
   if (netRole === 'host') netActNow();
@@ -4028,6 +4030,13 @@ function stationBoom(st) {
   shake = 1.3; SFX.boom(); setTimeout(() => SFX.boom(), 200); burst(st.x, 1, st.z, mat.barrel, 40, 9); burst(st.x, 1.5, st.z, mat.hat, 30, 8); let n = 0;
   for (const z of zombies) { const d = Math.hypot(z.x - st.x, z.z - st.z); if (!z.dead && d < 7.5) { hitZombie(z, z.boss ? 900 : 9999, (z.x - st.x) / (d || 1) * 2, (z.z - st.z) / (d || 1) * 2, 'boom'); n++; } }
   if (!P.dead && Math.hypot(P.x - st.x, P.z - st.z) < 3) hurtPlayer(35); banner('BOOM', n + ' zombies caught in the blast', 2.4);
+}
+function pickLight(l) { scene.remove(l.mesh); lights = lights.filter(o => o !== l); lightStock++; puff(l.x, 1, l.z, 0xfff2b0); SFX.click(); showLoot('star', 'Light tower picked up', 'Place it again from the build menu', '#ffe066'); updateBuildButtons(); }
+function tryPlaceLight() {
+  if (lightStock <= 0 || !crystal.planted || inBonus) { SFX.bonk(); return; }
+  if (Math.hypot(P.x - tc(crystal.i), P.z - tc(crystal.j)) > 22) { tip('Light towers go near your base.'); SFX.bonk(); return; }
+  if (lights.some(l => Math.hypot(l.x - P.x, l.z - P.z) < 4)) { tip('Too close to another light tower.'); SFX.bonk(); return; }
+  const x = tc(tt(P.x)), z = tc(tt(P.z)); placeLight(x, z, true); updateBuildButtons(); if (netRole === 'host') netActNow();
 }
 function placeLight(x, z, use) {
   const g = new THREE.Group(), pole = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.12, 3.2, 6), M(0x5a5560)); pole.position.y = 1.6; g.add(pole);
