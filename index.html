@@ -162,6 +162,7 @@ body:not(.is-touch) .pcspin:not([hidden]){display:block;position:absolute;right:
 .slot svg{width:28px;height:28px;opacity:var(--o,1)}
 .slot b{position:absolute;right:3px;bottom:1px;font:800 12px/1 Nunito,sans-serif;color:#fff8ec;text-shadow:0 1px 2px #000}
 @media(max-width:480px){.bar{width:62px}}
+@media(max-width:400px){#bMute{top:calc(env(safe-area-inset-top) + 104px)}.bagbtn{top:calc(env(safe-area-inset-top) + 152px) !important}}
 .dot{width:11px;height:11px;border-radius:3px;flex:none}
 .bar{width:92px;height:8px;border-radius:9px;background:rgba(0,0,0,.4);overflow:hidden}
 .bar i{display:block;height:100%;width:100%;border-radius:9px;transition:width .15s}
@@ -295,6 +296,7 @@ body.attract .hud,body.attract #onceBar,body.attract #floaters,body.attract #mar
 #tray .cbtn{position:relative;right:auto;bottom:auto;width:58px;height:58px;font-size:12px}
 .lefty .tray{right:auto;left:calc(env(safe-area-inset-left) + 16px)}
 @media (orientation:landscape) and (max-height:520px){
+#onceBar{flex-direction:row;bottom:calc(env(safe-area-inset-bottom) + 12px);left:calc(env(safe-area-inset-left) + 12px)}#onceBar .cbtn{width:54px;height:54px}
   .tray{bottom:calc(env(safe-area-inset-bottom) + 12px);right:calc(env(safe-area-inset-right) + 250px);grid-template-columns:repeat(4,56px);max-height:calc(100dvh - 150px)}
   .lefty .tray{right:auto;left:calc(env(safe-area-inset-left) + 250px)}
   #tray .cbtn{width:56px;height:56px}
@@ -505,7 +507,7 @@ body.attract #menu .card{background:rgba(30,20,40,.72);border-radius:22px;paddin
       <p class="cstat" id="coopStat" hidden></p>
     </div>
     <div class="runs" id="runs"></div>
-    <div class="keys">Best: <span id="menuBest">Lv 0</span><br>v0.74</div>
+    <div class="keys">Best: <span id="menuBest">Lv 0</span><br>v0.75</div>
   </div>
 </div>
 <div class="screen" id="over" hidden>
@@ -1905,7 +1907,6 @@ function feedStruct(k) {
   const amt = Math.min(scrap, Math.ceil((2 + Math.floor(S.lv / 2)) * feedK())); scrap -= amt; S.ch += amt / feedK(); SFX.feed(Math.floor(S.ch / needS(S.lv, k) * 20)); suckFx();
   if (S.ch >= needS(S.lv, k)) { S.ch = 0; S.lv++; S.pts++; S.cd = levelCdFor(S.lv); SFX.levelUp(); burst(tc(at % N), 1.4, tc((at / N) | 0), k === 'w' ? mat.wood : mat.gold, 22, 4); if (k === 'w') { shedLv = Math.min(6, S.lv); refreshShed(); } renderTree(); }
 }
-function feedShed() { if (shedLv >= 5 || scrap <= 0) { SFX.bonk(); feeding = false; return; } const cost = shedUpCost(), amt = Math.min(scrap, Math.max(1, Math.ceil(cost / 45)), cost - shedPay); scrap -= amt; shedPay += amt; SFX.feed(Math.floor(shedPay / cost * 20)); if (shedPay >= cost) { shedPay = 0; shedLv++; refreshShed(); SFX.repair(); setTimeout(() => SFX.levelUp(), 150); if (shedAt >= 0) burst(tc(shedAt % N), 1 + shedLv * 0.5, tc((shedAt / N) | 0), mat.wood, 20, 3); feeding = false; renderTree(); } }
 const shedCost = ni => Math.round((70 + 70 * ni) * priceK()), SHED_UP = [0, 0, 150, 350, 650, 1000], shedUpCost = () => Math.round(SHED_UP[shedLv + 1] * priceK());
 function upgradeShed() { if (shedLv >= 5) return; const c = shedUpCost(); if (scrap < c) { SFX.bonk(); return; } scrap -= c; shedLv++; refreshShed(); SFX.repair(); setTimeout(() => SFX.levelUp(), 150); if (shedAt >= 0) burst(tc(shedAt % N), 1 + shedLv * 0.5, tc((shedAt / N) | 0), mat.wood, 20, 3); renderTree(); }
 let naT = 0;
@@ -2224,12 +2225,6 @@ function doSwing() {
 function fireBullet(x, y, z, dx, dz, dmg, quiet) {
   const m = new THREE.Mesh(geo.bullet, mat.bullet); m.position.set(x, y, z); scene.add(m);
   bullets.push({ m, x, z, vx: dx * 20, vz: dz * 20, t: 0, dmg }); if (quiet) { if (gate('spew', 90)) tone({ type: SQ, f: 1900, f2: 600, t: 0.05, v: 0.035, a: 0.001 }); } else SFX.pew();
-}
-function shoot() {
-  P.swingCd = 0.28; P.buffer = 0;
-  const m = new THREE.Mesh(geo.bullet, mat.bullet); m.position.set(P.x + P.ax * 0.4, P.y + 0.6, P.z + P.az * 0.4); scene.add(m);
-  bullets.push({ m, x: m.position.x, z: m.position.z, vx: P.ax * 20, vz: P.az * 20, t: 0 }); SFX.pew();
-  shake = Math.max(shake, 0.06);
 }
 const mountGun = v => !!v && ((v.kind === 'bike' && uziOn) || (v.kind === 'buggy' && buggyGun) || v.kind === 'tank');
 function dodge() {
@@ -2754,7 +2749,6 @@ function guestActors(m) {
   else if (m.mys && (!mystery || mystery.x !== m.mys[0] || mystery.z !== m.mys[1])) { if (mystery) scene.remove(mystery.mesh); const { g, q } = makePresent(); g.position.set(m.mys[0], 0, m.mys[1]); scene.add(g); mystery = { x: m.mys[0], z: m.mys[1], mesh: g, q, sp: 0 }; }
 }
 function guestPlantTile() { return null; }
-function guestPlantTile_old() { const i = tt(P.x), j = tt(P.z); const dd = Math.hypot(i - crystal.i, j - crystal.j); return !crystal2.planted && !P.onWall && inb(i, j + 1) && grid[idx(i, j)] === EMPTY && !spawnMask[idx(i, j)] && !built[idx(i, j + 1)] && dd >= 8 && dd <= 45 ? [i, j] : null; }
 function guestStep(dt) {
   setHidden('bPlant', !(phase === 'live' && guestPlantTile()));
   if (phase === 'over') { updateFx(dt); updateCamera(dt); return; }
@@ -3093,17 +3087,6 @@ function startBonus() {
   P.x = bwx(BL.start[0]); P.z = bwz(BL.start[1]); P.vx = P.vz = 0; P.onWall = false; camTarget.set(P.x, 0, P.z);
   if (BL.safari) { BL.t = 0; BL.sp = 0.5; BL.kills0 = kills; if (!safLight) safLight = new THREE.PointLight(0xffd9a0, 14, 13, 1.6); scene.add(safLight); }
   banner(BONUS_NAME[type]); SFX.levelUp(); setHidden('bonusPill', false);
-}
-function makeSafGate() {
-  let bi = -1, bd = 1e9; for (let j = N - 9; j <= N - 4; j++) for (let i = HALF - 12; i <= HALF + 12; i++) { const n = idx(i, j); if (grid[n] !== EMPTY || grid[idx(i, j - 1)] !== EMPTY) continue; const d = Math.abs(i - HALF) * 2 + Math.abs(j - (N - 5)); if (d < bd) { bd = d; bi = n; } }
-  if (bi < 0) bi = idx(HALF, N - 5); const i = bi % N, j = (bi / N) | 0; if (grid[bi] !== EMPTY) { grid[bi] = EMPTY; if (tileObj[bi]) { scene.remove(tileObj[bi]); tileObj[bi] = null; } }
-  const g = new THREE.Group(), wood = M(0x7a5232), stripeW = M(0xf1ead8), stripeB = M(0x2a2326), thatch = M(0xc9a24a);
-  for (const sx of [-1, 1]) { for (let q = 0; q < 6; q++) { const seg = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.18, 0.45, 8), q % 2 ? stripeB : stripeW); seg.position.set(1.05 * sx, 0.225 + q * 0.45, 0); seg.castShadow = true; g.add(seg); } const sk = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.4, 4), mat.rock); sk.position.set(1.05 * sx, 2.95, 0); g.add(sk); }
-  const roof = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 2.7, 6).rotateZ(Math.PI / 2), wood); roof.position.y = 2.75; g.add(roof); const th = new THREE.Mesh(new THREE.ConeGeometry(1.7, 0.7, 4), thatch); th.rotation.y = Math.PI / 4; th.scale.z = 0.4; th.position.y = 3.2; g.add(th);
-  const disc = new THREE.Mesh(new THREE.CircleGeometry(0.85, 24), new THREE.MeshBasicMaterial({ color: 0x3fd27a, transparent: true, opacity: 0.75, side: THREE.DoubleSide, depthWrite: false })); disc.position.y = 1.2; g.add(disc); g.userData.disc = disc;
-  const c = document.createElement('canvas'); c.width = 512; c.height = 160; const x = c.getContext('2d'); x.fillStyle = 'rgba(28,20,36,.85)'; x.beginPath(); x.roundRect(6, 6, 500, 148, 22); x.fill(); x.lineWidth = 6; x.strokeStyle = '#3fd27a'; x.stroke(); x.textAlign = 'center'; x.fillStyle = '#8fd35a'; x.font = '700 44px system-ui,sans-serif'; x.fillText('ZOMBIE SAFARI', 256, 62); x.fillStyle = '#fff8ec'; x.font = '600 26px system-ui,sans-serif'; x.fillText('Training area', 256, 98); x.fillStyle = '#ffd166'; x.fillText('Night only  ·  50 scrap', 256, 134);
-  const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; const sign = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, depthWrite: false })); sign.scale.set(3.6, 1.12, 1); sign.position.y = 4.4; g.add(sign); g.userData.sign = sign;
-  g.position.set(tc(i), 0, tc(j)); scene.add(g); safGate = { i, j, x: tc(i), z: tc(j), mesh: g };
 }
 function startSafari() {
   if (!safGate || inBonus || hoardeOn || (boss && !boss.dead) || netRole || phase !== 'live' || P.dead || P.mount) return; const keep = gateway;
@@ -3865,6 +3848,7 @@ function tuneTap() {
 function updateTune(dt) { if (!tuning) return; const t = tuning; t.pos += t.dir * t.speed * dt; if (t.pos > 1) { t.pos = 1; t.dir = -1; } if (t.pos < 0) { t.pos = 0; t.dir = 1; } drawTune(); if (P.dead || Math.hypot(P.x - radio.x, P.z - radio.z) > 3.5) { tuning = null; $('tune').hidden = true; } }
 $('tune').addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); tuneTap(); });
 function useRadio() {
+  if (!radio) return;
   if (tuning) { tuneTap(); return; }
   if (!radio.fixed) {
     if (scrap < 60) { tip('scrap'); SFX.bonk(); return; }
@@ -4166,8 +4150,6 @@ const TT_ROOT = [50, 46, 53, 48], TT_A = [[74, 0, 74, 77, 81, 0, 79, 77], [79, 0
 const TITLE_A = [[74,0,74,0,77,0,81,0],[79,0,77,0,76,0,74,0],[72,0,72,0,76,0,79,0],[77,0,76,0,74,0,0,0],[81,0,81,0,82,0,81,0],[79,0,77,0,79,0,81,0],[77,0,76,0,74,0,73,0],[74,0,0,0,0,0,0,0]];
 const TITLE_B = [[77,0,77,79,81,0,77,0],[84,0,81,0,77,0,0,0],[79,0,79,81,82,0,79,0],[81,0,79,0,77,0,0,0],[77,0,77,79,81,0,84,0],[86,0,84,0,81,0,79,0],[77,0,79,0,81,0,76,0],[77,0,0,0,0,0,0,0]];
 const TITLE_RA = [50, 43, 48, 50, 53, 48, 45, 50], TITLE_RB = [53, 48, 55, 53, 53, 58, 48, 53];
-function mrec(at, f, t, v, whistle) { const o = ac.createOscillator(), l = ac.createOscillator(), lg = ac.createGain(), g = ac.createGain(); o.type = whistle ? 'sine' : 'triangle'; o.frequency.setValueAtTime(f, at); l.frequency.value = whistle ? 6 : 5; lg.gain.value = f * (whistle ? 0.012 : 0.008); l.connect(lg); lg.connect(o.frequency);
-  g.gain.setValueAtTime(0.0001, at); g.gain.linearRampToValueAtTime(v, at + 0.035); g.gain.setValueAtTime(v * 0.85, at + t * 0.7); g.gain.exponentialRampToValueAtTime(0.0001, at + t); o.connect(g); g.connect(musGain); o.start(at); l.start(at); o.stop(at + t + 0.02); l.stop(at + t + 0.02); }
 const TRACKS = {
   hoarde: [ { bpm: 140, prog: [57, 53, 55, 52], lead: [0, 3, 7, 10, 7, 3, 12, 7] }, { bpm: 146, prog: [50, 46, 48, 45], lead: [0, 7, 3, 7, 10, 7, 5, 3] }, { bpm: 138, prog: [52, 48, 50, 47], lead: [12, 10, 7, 3, 7, 10, 7, 0] } ],
   boss: [ { bpm: 96, prog: [40, 41, 40, 43], lead: [0, 1, 0, 7, 6, 0, 1, 3] }, { bpm: 104, prog: [45, 46, 45, 41], lead: [0, 6, 0, 1, 0, 6, 7, 1] } ],
