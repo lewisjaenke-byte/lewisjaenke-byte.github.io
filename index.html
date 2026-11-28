@@ -511,7 +511,7 @@ body.attract #menu .card{background:rgba(30,20,40,.72);border-radius:22px;paddin
       <p class="cstat" id="coopStat" hidden></p>
     </div>
     <div class="runs" id="runs"></div>
-    <div class="keys">Best: <span id="menuBest">Lv 0</span><br>v0.78</div>
+    <div class="keys">Best: <span id="menuBest">Lv 0</span><br>v0.79</div>
   </div>
 </div>
 <div class="screen" id="over" hidden>
@@ -3997,7 +3997,19 @@ function relaunchRocket(st) {
   rocketBoost = 1; const v = Math.round(120 * coopK()); scrap += v; banner('Lift off!', 'If another rocket falls, a hero is more likely aboard', 3); showLoot('scrap', '+' + v + ' scrap', 'Rocket relaunched', '#5fe0ff'); SFX.surge();
   sites = sites.filter(o => o !== st);
 }
+function homeSpot() { const cx = tc(crystal.i), cz = tc(crystal.j); for (let t = 0; t < 40; t++) { const a = Math.random() * 6.28, r = 3.6 + Math.random() * 2.5, x = cx + Math.cos(a) * r, z = cz + Math.sin(a) * r; if (!blocked(x, z, 0.3)) return [x, z]; } return [cx + 3.6, cz]; }
+function sendHome(o, quiet) {
+  if (!crystal.planted || inBonus) return; const [x, z] = homeSpot(); puff(o.x, 0.5, o.z, 0xd8d0f0); burst(o.x, 0.6, o.z, mat.gem, 8, 2); o.x = x; o.z = z; o.hx = x; o.hz = z; o.vx = o.vz = 0; o.path = null;
+  const m = o.pm ? o.pm.g : o.mesh; if (m) m.position.set(x, m.position.y || 0, z); puff(x, 0.5, z, 0xd8d0f0); if (!quiet) SFX.surge();
+}
+let recallT = 0;
+function recallStrays(dt) {
+  if ((recallT -= dt) > 0 || !crystal.planted || inBonus || netRole === 'guest') return; recallT = 5; const cx = tc(crystal.i), cz = tc(crystal.j), players = [P, ...(netRole === 'host' ? liveGuests() : [])];
+  for (const n of npcs) if (n.hero && n.hired && !n.dead && !(n.down > 0) && n.mode === 'guard' && !n.seat && Math.hypot(n.x - cx, n.z - cz) > 25) sendHome(n, true);
+  for (const pt of pets) if (pt.tamed && !pt.dead && !(pt.down > 0) && pt !== P.mount && !pt.ridden && !pt.follow && Math.hypot(pt.x - cx, pt.z - cz) > 25 && !players.some(q => Math.hypot(q.x - pt.x, q.z - pt.z) < 12)) sendHome(pt, true);
+}
 function updateSites(dt) {
+  recallStrays(dt);
   for (let q = flyUps.length - 1; q >= 0; q--) { const f = flyUps[q]; f.t += dt; f.m.position.y += dt * (2 + f.t * 8); f.m.userData.fire.visible = true; f.m.userData.fire.scale.y = 1 + Math.sin(time * 30) * 0.3; if (Math.random() < 0.7) puff(f.m.position.x, f.m.position.y - 1.6, f.m.position.z, 0xb0aaa4); if (f.t > 5) { scene.remove(f.m); flyUps.splice(q, 1); } }
   const night = stage === 'night' ? 1 : stage === 'dusk' ? 0.5 : 0; for (const l of lights) l.L.intensity = 0.3 + night * 2.6;
   if (millOn && netRole !== 'guest' && phase === 'live' && !inBonus) { millT += dt; if (millT >= 300) { millT = 0; bread++; showLoot('bread', '+1 bread', 'From the windmill', '#f1c27d'); for (const G of liveGuests()) asGuestFull(G, () => { bread++; showLoot('bread', '+1 bread', 'From the windmill', '#f1c27d'); }, true); } }
@@ -4929,7 +4941,7 @@ function dismount() {
   if (v.water || (v.kind === 'hover' && (() => { const g = grid[idx(tt(P.x), tt(P.z))]; return g === WATER || g === MOAT || g === PIT; })())) { const l = landNear(P.x, P.z); if (!l) { SFX.bonk(); return; } v.x = P.x; v.z = P.z; P.x = l[0]; P.z = l[1]; }
   else if (v.fly) { let l = null; for (let r2 = 0; r2 <= 3 && !l; r2++) for (let a = 0; a < 12 && !l; a++) { const x = P.x + Math.cos(a * 0.52) * r2, z = P.z + Math.sin(a * 0.52) * r2; if (!blocked(x, z, 0.3, true) && !vehBlocked(x, z, false)) l = [x, z]; } if (!l) { SFX.bonk(); return; } v.x = l[0]; v.z = l[1]; P.x = l[0] + 0.7; P.z = l[1]; if (blocked(P.x, P.z, 0.3, true)) P.x = l[0]; if (v.mesh) v.mesh.position.set(v.x, 0, v.z); }
   else { v.x = P.x; v.z = P.z; P.x += Math.cos(P.face) * 0.6; P.z -= Math.sin(P.face) * 0.6; }
-  if (v.kind === 'wolf') { v.ridden = false; v.mode = 'guard'; tip('The wolf heads back to guard the crystal.'); }
+  if (v.kind === 'wolf') { v.ridden = false; v.mode = 'guard'; sendHome(v); tip('The wolf is back guarding the crystal.'); }
   if (v.kind === 'truck') { unboardTruck(v); if (v.mesh) v.mesh.position.set(v.x, 0, v.z); }
   P.mount = null; P.y = 0; SFX.drop();
 }
@@ -4976,14 +4988,14 @@ function getInteract() {
   for (const pt of pets) {
     if (!pt.tamed) consider(pt.x, pt.z, { label: pt.kind === 'dog' ? 'Give bone' : 'Give fish', act: () => feedPet(pt) });
     else if (pt.tamed && pt.kind === 'wolf' && !pt.ridden && !guestCtx) consider(pt.x, pt.z, { label: 'Ride wolf', act: () => mountWolf(pt) });
-    else if (pt.tamed && pt.kind === 'zombie') consider(pt.x, pt.z, { label: pt.follow ? 'Zombie: guard base' : 'Zombie: follow me', act: () => { pt.follow = !pt.follow; hearts(pt.x, pt.z); SFX.click(); } });
+    else if (pt.tamed && pt.kind === 'zombie') consider(pt.x, pt.z, { label: pt.follow ? 'Zombie: send to base' : 'Zombie: follow me', act: () => { pt.follow = !pt.follow; hearts(pt.x, pt.z); SFX.click(); if (!pt.follow) sendHome(pt); } });
   }
   if (mystery) consider(mystery.x, mystery.z, { label: 'Open 20', act: openMystery });
   if (radio && radio.mesh.parent && !radio.used) consider(radio.x, radio.z + 0.75, { label: tuning ? 'Tune!' : 'Fix radio 60', act: useRadio });
   siteInteract(consider);
   if (kennelAt >= 0 && !guestCtx && pets.some(pt => pt.tamed)) consider(tc(kennelAt % N), tc((kennelAt / N) | 0) + 0.9, { label: 'Pets (' + tamedCount() + ')', act: openPets });
   if (siloAt >= 0 && bakeOn) consider(tc(siloAt % N), tc((siloAt / N) | 0), { label: 'Bake', act: bake });
-  for (const n of npcs) if (n.hero && !n.dead && !(n.down > 0)) { const H = HEROES[n.heroType]; consider(n.x, n.z, n.free ? { label: 'Rejoin ' + H.name, act: () => { n.free = false; n.fishing = false; n.hired = true; n.mode = 'guard'; if (n.rod) n.rod.visible = false; hearts(n.x, n.z); SFX.levelUp(); showLoot('heart', H.full + ' is heading home', '', '#ffd166'); } } : !n.hired ? { label: 'Hire ' + H.name + ' ' + Math.round(H.cost * priceK()), act: () => hireHero(n) } : n.mode === 'follow' && (n.owner || null) !== guestCtx ? { label: H.name + ': follow me', act: () => { n.owner = guestCtx; SFX.click(); hearts(n.x, n.z); } } : { label: n.mode === 'follow' ? H.name + ': guard base' : H.name + ': follow me', act: () => { n.mode = n.mode === 'follow' ? 'guard' : 'follow'; n.owner = guestCtx; SFX.click(); hearts(n.x, n.z); } }); }
+  for (const n of npcs) if (n.hero && !n.dead && !(n.down > 0)) { const H = HEROES[n.heroType]; consider(n.x, n.z, n.free ? { label: 'Rejoin ' + H.name, act: () => { n.free = false; n.fishing = false; n.hired = true; n.mode = 'guard'; if (n.rod) n.rod.visible = false; hearts(n.x, n.z); sendHome(n); SFX.levelUp(); showLoot('heart', H.full + ' is back at base', '', '#ffd166'); } } : !n.hired ? { label: 'Hire ' + H.name + ' ' + Math.round(H.cost * priceK()), act: () => hireHero(n) } : n.mode === 'follow' && (n.owner || null) !== guestCtx ? { label: H.name + ': follow me', act: () => { n.owner = guestCtx; SFX.click(); hearts(n.x, n.z); } } : { label: n.mode === 'follow' ? H.name + ': send to base' : H.name + ': follow me', act: () => { n.mode = n.mode === 'follow' ? 'guard' : 'follow'; n.owner = guestCtx; SFX.click(); hearts(n.x, n.z); if (n.mode === 'guard') sendHome(n); } }); }
   { const bd0 = bd; bd = Math.max(bd, 2.3); let tb = null; for (const n of npcs) if (!n.hostile && !n.dead && (n.kind === 'trader' || (n.sling && n.stock))) { const d = Math.hypot(n.x - P.x, n.z - P.z); if (d < bd) { bd = d; tb = n; } } if (tb) best = { label: 'Trade', act: () => tradeWith === tb ? closeTrade() : openTrade(tb) }; else bd = bd0; }
   if (!best && nearWater(2.2)) best = { label: 'Fish', act: startFishing };
   return best;
