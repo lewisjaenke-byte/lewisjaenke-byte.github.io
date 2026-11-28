@@ -221,6 +221,7 @@ body:not(.is-touch) .pcspin:not([hidden]){display:block;position:absolute;right:
 #bDodge.mash{background:var(--amber);color:#2a1d10;animation:glow .5s ease-in-out infinite}
 .hurt{position:absolute;inset:0;box-shadow:inset 0 0 90px 20px rgba(226,72,61,.55);opacity:0;transition:opacity .25s}
 .hurt.show{opacity:1;transition:none}
+.cbtn.newb{animation:newb .8s ease-in-out infinite}@keyframes newb{0%,100%{box-shadow:0 0 0 0 rgba(242,182,50,.0)}50%{box-shadow:0 0 0 8px rgba(242,182,50,.55)}}
 .lowhp{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 45%,rgba(200,20,20,.55) 100%);opacity:0}.lowhp b{position:absolute;left:50%;top:22%;transform:translateX(-50%);font:22px/1 'Lilita One',sans-serif;color:#ff5a4a;text-shadow:0 2px 0 #000;letter-spacing:1px}
 .floater{position:absolute;font:20px/1 'Lilita One',sans-serif;color:var(--gold);text-shadow:0 2px 0 rgba(0,0,0,.35);transform:translate(-50%,-50%);white-space:nowrap}
 .touch{display:none}
@@ -514,7 +515,7 @@ body.attract #menu .card{background:rgba(30,20,40,.72);border-radius:22px;paddin
       <p class="cstat" id="coopStat" hidden></p>
     </div>
     <div class="runs" id="runs"></div>
-    <div class="keys">Best: <span id="menuBest">Lv 0</span><br>v0.85</div>
+    <div class="keys">Best: <span id="menuBest">Lv 0</span><br>v0.86</div>
   </div>
 </div>
 <div class="screen" id="over" hidden>
@@ -1928,17 +1929,20 @@ function updateNA(dt) { if ((naT -= dt) > 0) return; naT = 0.25; const live = ph
   const tb = $('bTree'); if (tb) { const na = live && !(nearCrystal() || onPad()) && netRole !== 'guest'; if (tb.classList.contains('na') !== na) tb.classList.toggle('na', na); } }
 function updateBuildButtons() {
   setTimeout(() => { const any = [...$('tray').children].some(b => !b.hidden); $('bBuild').hidden = !any; if (!any) $('tray').hidden = true; const anyO = [...$('onceBar').children].some(b => !b.hidden); $('onceBar').hidden = !anyO || phase !== 'live'; }, 0);
-  for (const [a, b, ok] of [['bWall', 'pWall', wallsOn], ['bPit', 'pPit', pitsOn], ['bErase', 'pErase', wallsOn || pitsOn || wireOn], ['bWire', 'pWire', wireOn], ['bTar', 'pTar', tarOn], ['bJump', 'pJump', jumpOn], ['bGrav', 'pGrav', gravOn], ['bTotem', 'pTotem', totemMax > 0], ['bSilo', 'pSilo', siloOn && siloAt < 0], ['bFarm', 'pFarm', siloOn], ['bMoat', 'pMoat', moatOn], ['bDrawb', 'pDrawb', drawOn], ['bBear', 'pBear', bearOn], ['bSpinner', 'pSpinner', spinnerMax > 0], ['bKennel', 'pKennel', kennelOn && kennelAt < 0], ['bScare', 'pScare', scareLv > 0], ['bRoad', 'pRoad', roadOn], ['bShed', 'pShed', crystal.planted && shedAt < 0], ['bComp', 'pComp', crystal.planted && compAt < 0], ['bBell', 'pBell', crystal.planted && bellAt < 0], ['bTitan', 'pTitan', titanOn], ['bCact', 'pCact', landOn], ['bBarrel', 'pBarrel', barrelUnlocked], ['bSentry', 'pSentry', sentryMax > 0], ['bShield', 'pShield', shieldMax > 0]]) { $(a).hidden = !ok; $(b).hidden = !ok; }
+  for (const [a, b, ok] of [['bWall', 'pWall', wallsOn], ['bPit', 'pPit', pitsOn], ['bErase', 'pErase', wallsOn || pitsOn || wireOn], ['bWire', 'pWire', wireOn], ['bTar', 'pTar', tarOn], ['bJump', 'pJump', jumpOn], ['bGrav', 'pGrav', gravOn], ['bTotem', 'pTotem', totemMax > 0], ['bSilo', 'pSilo', siloOn && siloAt < 0], ['bFarm', 'pFarm', siloOn], ['bMoat', 'pMoat', moatOn], ['bDrawb', 'pDrawb', drawOn], ['bBear', 'pBear', bearOn], ['bSpinner', 'pSpinner', spinnerMax > 0], ['bKennel', 'pKennel', kennelOn && kennelAt < 0], ['bScare', 'pScare', scareLv > 0], ['bRoad', 'pRoad', roadOn], ['bShed', 'pShed', crystal.planted && shedAt < 0 && level >= UNLOCK_LV[SHED]], ['bComp', 'pComp', crystal.planted && compAt < 0 && level >= UNLOCK_LV[COMPILER]], ['bBell', 'pBell', crystal.planted && bellAt < 0 && level >= UNLOCK_LV[BELL]], ['bTitan', 'pTitan', titanOn], ['bCact', 'pCact', landOn], ['bBarrel', 'pBarrel', barrelUnlocked], ['bSentry', 'pSentry', sentryMax > 0], ['bShield', 'pShield', shieldMax > 0]]) { $(a).hidden = !ok; $(b).hidden = !ok; }
 }
 function setTowerLook() {
   const h = climbTime >= 6 ? 1.9 : climbTime >= 3 ? 1.1 : 0.24;
   plinth.scale.y = h / 0.24; plinth.position.y = h / 2; crystal.towerH = h - 0.24;
 }
 function refreshPits() { for (let n = 0; n < N * N; n++) if (grid[n] === PIT) setPitVisual(n); version++; computeFlow(); }
+const UNLOCK_LV = { [COMPILER]: 3, [SHED]: 4, [BELL]: 5 };
+const UNLOCK_TXT = { [COMPILER]: ['Compiler unlocked', 'Place it free. Feed it scrap for power upgrades', 'bComp'], [SHED]: ['Workshop unlocked', 'Place it free. Feed it scrap for vehicles, pets & gear', 'bShed'], [BELL]: ['Peace bell unlocked', 'Place it free. Ring it to hold off the Hoarde', 'bBell'] };
+function announceUnlock() { for (const t of [COMPILER, SHED, BELL]) if (level === UNLOCK_LV[t] && (t === COMPILER ? compAt : t === SHED ? shedAt : bellAt) < 0) { const [h, sub, id] = UNLOCK_TXT[t]; setTimeout(() => { banner(h, sub, 3.4); SFX.surge(); const b = $(id); if (b) { b.classList.add('newb'); setTimeout(() => b.classList.remove('newb'), 9000); } }, 3600); } }
 function levelUp() {
   charge -= need(level); level++;
   crystal.max += 60; crystal.hp = Math.min(crystal.max, crystal.hp + crystal.max * 0.27);
-  points++; levelCd = levelCdFor(level); recount();
+  points++; levelCd = levelCdFor(level); recount(); updateBuildButtons(); announceUnlock();
 
   banner('Level ' + level, '+1 upgrade point · more walls and pits allowed', 3.2); if (level % 7 === 0 && netRole !== 'guest') setTimeout(swapBiome, 4000);
   if (level === 3) setTimeout(() => tip('Runners now join the horde.'), 3400);
@@ -2380,9 +2384,9 @@ addEventListener('keydown', e => {
   if (e.code === 'KeyB') setBuild(KENNEL);
   if (e.code === 'KeyN') setBuild(SCARE);
   if (e.code === 'KeyH') setBuild(ROAD);
-  if (e.code === 'KeyG') setBuild(SHED);
-  if (e.code === 'KeyK') setBuild(COMPILER);
-  if (e.code === 'KeyL') setBuild(BELL);
+  if (e.code === 'KeyG' && level >= UNLOCK_LV[SHED]) setBuild(SHED);
+  if (e.code === 'KeyK' && level >= UNLOCK_LV[COMPILER]) setBuild(COMPILER);
+  if (e.code === 'KeyL' && level >= UNLOCK_LV[BELL]) setBuild(BELL);
   if (e.code === 'KeyJ' && phase === 'live' && !treeOpen) startJet();
   if (e.code === 'KeyT') setBuild(TITAN);
   if (e.code === 'Equal') setBuild(FARM);
