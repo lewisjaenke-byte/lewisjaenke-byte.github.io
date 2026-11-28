@@ -41,7 +41,7 @@ canvas{display:block;position:fixed;inset:0;width:100%;height:100%}
 .tree{position:fixed;inset:0;background:rgba(24,14,32,.97);display:grid;grid-template-rows:auto minmax(0,1fr) auto;justify-items:center;padding:calc(env(safe-area-inset-top) + 12px) 12px calc(env(safe-area-inset-bottom) + 12px);z-index:5;height:100dvh}
 .tclose{position:absolute;right:calc(env(safe-area-inset-right) + 12px);top:calc(env(safe-area-inset-top) + 12px);width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.1);display:grid;place-items:center;cursor:pointer;z-index:2}
 .tclose svg{width:20px;height:20px}
-.thead{text-align:center}.nestp.hurt{animation:dpp .5s ease-in-out infinite}@keyframes dpp{50%{transform:scale(1.12);box-shadow:0 0 12px #b36bff}}.lowscrap{display:inline-block;margin:2px auto 0;padding:3px 10px;border-radius:10px;background:rgba(192,57,43,.85);color:#fff8ec;font-weight:800;font-size:13px;animation:lsp 1.2s ease-in-out infinite}.lowscrap[hidden]{display:none}@keyframes lsp{50%{opacity:.6}}
+.thead{text-align:center}.nestp.hurt{animation:dpp .5s ease-in-out infinite}@keyframes dpp{50%{transform:scale(1.12);box-shadow:0 0 12px #b36bff}}.nd .req{position:absolute;right:-4px;top:-4px;width:18px;height:18px;border-radius:50%;background:#ffd166;color:#2a1d3a;font:900 13px/18px system-ui;text-align:center;font-style:normal;box-shadow:0 0 0 2px #2a1d3a}.lowscrap{display:inline-block;margin:2px auto 0;padding:3px 10px;border-radius:10px;background:rgba(192,57,43,.85);color:#fff8ec;font-weight:800;font-size:13px;animation:lsp 1.2s ease-in-out infinite}.lowscrap[hidden]{display:none}@keyframes lsp{50%{opacity:.6}}
 .ttabs{display:flex;gap:6px;justify-content:center;margin:2px 0 4px;min-height:36px;width:max-content}
 .ttabs button{position:relative;flex:0 0 auto;min-width:88px;height:34px;display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:999px;padding:0 14px;background:rgba(255,255,255,.1);color:#fff8ec;font:800 14px/1 Nunito,sans-serif;cursor:pointer}
 .ttabs button.on{background:var(--amber);color:#2a1d10}
@@ -381,7 +381,7 @@ body.attract #menu .card{background:rgba(30,20,40,.72);border-radius:22px;paddin
       <div id="onceBar" hidden></div><div id="lowhp"></div><div id="crysAlert" hidden><div class="glow"></div><svg viewBox="0 0 48 48" width="64" height="64"><path d="M6 24 H34 M24 10 L40 24 L24 38" stroke="#fff" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 24 H34 M24 10 L40 24 L24 38" stroke="#ff4a4a" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div id="reveal" hidden><div class="rays"></div><div class="rcard"><div id="revIcon"></div><b id="revName"></b><span id="revRar"></span></div></div><div class="pill phase nestp" id="bonusPill" hidden style="color:#e2b8ff"><svg viewBox="0 0 24 24" width="15" height="15"><path d="M5 21 V9 A7 7 0 0 1 19 9 V21" stroke="#e2b8ff" stroke-width="3" fill="none"/></svg><span id="bonusN"></span></div><div class="pill phase nestp" id="mazePill" hidden style="color:#ffe9a8"><span id="mazeN"></span><svg viewBox="0 0 24 24" width="14" height="14" style="margin-left:3px"><path d="M12 2 L20.5 7 V17 L12 22 L3.5 17 V7 Z" fill="#c9ccd2"/><circle cx="12" cy="12" r="3.6" fill="#7b818a"/></svg></div><div id="mazeTip" hidden>Longer zombie path = more scrap per kill<br><span style="color:#fff8ec;font-weight:600">Green arrows show their route</span></div><div id="bossBar" hidden style="position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 178px);transform:translateX(-50%);width:min(70vw,320px);height:14px;border-radius:8px;background:rgba(0,0,0,.55);border:2px solid #ffd166;overflow:hidden;z-index:6;pointer-events:none"><div id="bossFill" style="height:100%;width:100%;background:linear-gradient(90deg,#c0392b,#ff6b3d)"></div><svg viewBox="0 0 24 24" width="22" height="22" style="position:absolute;left:-2px;top:-5px"><path d="M3 18 L5 7 L9 12 L12 5 L15 12 L19 7 L21 18 Z" fill="#ffd166"/></svg></div><div class="pill phase nestp" id="goldPill" hidden style="color:#ffd166"><b>×3</b><span id="goldN"></span></div><div class="pill phase nestp" id="decoyPill" hidden style="color:#d9b3ff"><svg viewBox="0 0 24 24" width="15" height="15"><path d="M12 2 L18 12 L12 22 L6 12 Z" fill="#d9b3ff"/></svg><span id="decoyN"></span></div><div class="pill phase nestp" id="lurePill" hidden style="color:#ffb0a0"><svg viewBox="0 0 24 24" width="15" height="15"><path d="M3 10 H7 L15 4 V20 L7 14 H3 Z" fill="#ffb0a0"/></svg><span id="lureN"></span></div><div class="pill phase nestp" id="peacePill" hidden style="color:#bdf5c8"><svg viewBox="0 0 24 24" width="15" height="15"><path d="M12 3 Q18 4 18 12 V16 L20 18 H4 L6 16 V12 Q6 4 12 3 Z" fill="#bdf5c8"/></svg><span id="peaceN"></span></div><div class="pill phase nestp" id="ammoPill" hidden style="color:#ffd166"><span id="ammoN">0</span></div><div class="pill phase nestp" id="nestPill" hidden><svg viewBox="0 0 24 24" width="18" height="18"><path d="M2 20 Q12 2 22 20 Z" fill="#6b5240"/><ellipse cx="12" cy="17" rx="4" ry="3" fill="#120a08"/><circle cx="10.5" cy="16.5" r=".9" fill="#9bff5a"/><circle cx="13.5" cy="16.5" r=".9" fill="#9bff5a"/></svg><span id="nestN">1</span></div><div class="pill phase hoarde" id="hoarde" hidden><svg class="sky" viewBox="0 0 48 27"><path id="skyArc" d="M4 24 A20 20 0 0 1 44 24" fill="none" stroke="rgba(255,255,255,.25)" stroke-width="2" stroke-dasharray="2 3"/><line x1="1" y1="24.5" x2="47" y2="24.5" stroke="rgba(255,255,255,.3)" stroke-width="1"/><g id="skyBody"><circle id="skySun" r="4.6" fill="#ffd166"/><g id="skyMoon" style="display:none"><circle r="4.6" id="moonLit" fill="#e9eeff"/><circle r="4.6" id="moonDark" fill="#2a1d3a"/></g></g></svg><span id="hoardeT"></span></div>
     </div>
   </div>
-  <button class="btn dark mute" id="bHome" aria-label="Main menu" style="top:auto;bottom:calc(env(safe-area-inset-bottom) + 200px);width:34px;height:34px;opacity:.75"><svg viewBox="0 0 24 24"><path d="M3 11 L12 3 L21 11 V21 H14 V15 H10 V21 H3 Z" fill="#fff8ec"/></svg></button><button class="btn dark mute" id="bMute" aria-label="Sound"></button><div class="screen" id="quitBox" hidden><div class="card"><h2>Return to main menu?</h2><p>Your game is saved and you can Continue later.</p><button class="btn" id="bQuitYes">Main menu</button><button class="btn dark" id="bQuitNo">Keep playing</button></div></div>
+  <button class="btn dark mute" id="bHome" aria-label="Main menu" style="right:auto;left:calc(env(safe-area-inset-left) + 4px);top:calc(env(safe-area-inset-top) + 8px);width:31px;height:31px"><svg viewBox="0 0 24 24"><path d="M3 11 L12 3 L21 11 V21 H14 V15 H10 V21 H3 Z" fill="#fff8ec"/></svg></button><button class="btn dark mute" id="bMute" aria-label="Sound"></button><div class="screen" id="quitBox" hidden><div class="card"><h2>Return to main menu?</h2><p>Your game is saved and you can Continue later.</p><button class="btn" id="bQuitYes">Main menu</button><button class="btn dark" id="bQuitNo">Keep playing</button></div></div>
   <button class="btn dark mute bagbtn" id="bBag" aria-label="Inventory"><svg viewBox="0 0 24 24"><path d="M6 8 H18 L19 21 H5 Z" fill="#c99a5b"/><path d="M9 8 V6 a3 3 0 0 1 6 0 V8" fill="none" stroke="#e8c48a" stroke-width="2"/><rect x="10" y="11" width="4" height="3" rx="1" fill="#6b4a2b"/></svg><i class="bagdot" id="bagDot" hidden></i></button>
   <div class="bag" id="bag" hidden>
     <div class="bagrow" id="bagGear"></div>
@@ -467,7 +467,7 @@ body.attract #menu .card{background:rgba(30,20,40,.72);border-radius:22px;paddin
   <div class="tfoot">
     <button class="peacebtn" id="bPeace"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M12 3 Q18 4 18 12 V16 L20 18 H4 L6 16 V12 Q6 4 12 3 Z" fill="#fff8ec"/><circle cx="12" cy="20.5" r="1.8" fill="#fff8ec"/></svg><span id="peaceTxt">Peace</span></button>
     <button class="peacebtn" id="bLure" hidden style="background:#b0412e"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M3 10 H7 L15 4 V20 L7 14 H3 Z" fill="#fff8ec"/><path d="M18 8 Q21 12 18 16" stroke="#fff8ec" stroke-width="2" fill="none"/></svg><span id="lureTxt">Lure</span></button>
-    <button class="peacebtn" id="bQuake" style="display:none;background:#8a5a3a"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M2 14 L6 10 L9 15 L13 8 L16 13 L19 11 L22 14" stroke="#fff8ec" stroke-width="2.4" fill="none" stroke-linejoin="round"/><path d="M3 19 H21" stroke="#fff8ec" stroke-width="2" stroke-dasharray="3 2"/></svg><span id="quakeTxt">Earthquake 750</span></button>
+    <button class="peacebtn" id="bQuake" style="display:none;background:#8a5a3a"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M2 14 L6 10 L9 15 L13 8 L16 13 L19 11 L22 14" stroke="#fff8ec" stroke-width="2.4" fill="none" stroke-linejoin="round"/><path d="M3 19 H21" stroke="#fff8ec" stroke-width="2" stroke-dasharray="3 2"/></svg><span id="quakeTxt">Earthquake 500</span></button>
     <button class="feedbtn" id="bFeedHold"><span class="ring"><i id="feedFill"></i></span><span class="ftxt"><b id="feedTitle">Hold to feed</b><small id="treeStatus"></small></span></button>
     <button class="peacebtn" id="bShedUp" hidden style="background:#a8703f"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M12 3 L20 11 H15 V21 H9 V11 H4 Z" fill="#fff8ec"/></svg><span>Build</span></button>
     <div class="detail" id="treeDetail"></div>
@@ -505,7 +505,7 @@ body.attract #menu .card{background:rgba(30,20,40,.72);border-radius:22px;paddin
       <p class="cstat" id="coopStat" hidden></p>
     </div>
     <div class="runs" id="runs"></div>
-    <div class="keys">Best: <span id="menuBest">Lv 0</span><br>v0.72</div>
+    <div class="keys">Best: <span id="menuBest">Lv 0</span><br>v0.73</div>
   </div>
 </div>
 <div class="screen" id="over" hidden>
@@ -799,7 +799,7 @@ function tip(text, key) {
   if (/scrap/i.test(text) && !key) { const sp = $('scrap').closest('.pill'); if (sp) { sp.classList.remove('nope'); void sp.offsetWidth; sp.classList.add('nope'); } }
 }
 let bannerTimer = 0;
-const BANNER_OK = /^(THE HOARDE|Level \d|Surge|Raiders|Cavern|Hoarde survived|Blood moon|Crystal lost|The land shifts|Signal locked|A gateway opened|Dungeon|Abandoned city|Raiders canyon|Swamp crawl|Safari|Escaped|BOSS|Lure|Ice cave|Graveyard|Train yard|Decoy planted|Golden hour|Tesla pulse|Sniper Sam arrived|Cosmic chest|Stealth|Alarm|Bruce freed|Crash landing|Earthquake|Workshop knocked out|Compiler knocked out|Silo knocked out|Building knocked out)/;
+const BANNER_OK = /^(Tank disabled|Sentry knocked out|THE HOARDE|Level \d|Surge|Raiders|Cavern|Hoarde survived|Blood moon|Crystal lost|The land shifts|Signal locked|A gateway opened|Dungeon|Abandoned city|Raiders canyon|Swamp crawl|Safari|Escaped|BOSS|Lure|Ice cave|Graveyard|Train yard|Decoy planted|Golden hour|Tesla pulse|Sniper Sam arrived|Cosmic chest|Stealth|Alarm|Bruce freed|Crash landing|Earthquake|Workshop knocked out|Compiler knocked out|Silo knocked out|Building knocked out)/;
 function banner(text, sub, len) { if (/^(A gateway opened|Crash landing|Golden hour|Signal locked|Cosmic chest|Sniper Sam arrived|Tesla pulse)/.test(text)) musEventT = 22; if (!BANNER_OK.test(text)) return; $('bannerT').textContent = text; $('bannerS').textContent = ''; $('banner').classList.add('show'); bannerTimer = Math.min(2.2, len || 1.4); }
 function floater(x, z, text, color) {
   const el = document.createElement('div'); el.className = 'floater'; el.textContent = text;
@@ -1334,7 +1334,7 @@ function genRegion(r) {
         for (const ex of [-13.6, 13.6]) for (let q = 0; q < 5; q++) { const st2 = new THREE.Mesh(new THREE.PlaneGeometry(0.18, 0.5).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: 0xf2efe6 })); st2.position.set(ex, 0.03, -1.4 + q * 0.7); rw.add(st2); }
         addObj(cn, rw); rw.position.x += 0.5; rw.position.z -= 0.5;
         put([[i + 2, j - 2], [i + 3, j - 2], [i + 4, j - 2], [i + 5, j - 2], [i + 2, j - 3], [i + 5, j - 3]], RUIN);
-        addVehicle('heli', tc(i + 4), tc(j - 3) + 1.2); put([[i + 24, j - 2]], CRATE); put([[i + 26, j + 6]], CRATE); } }
+        addVehicle('heli', tc(i + 4), tc(j - 3) + 1.2); if (genVer >= 5 && Math.random() < 0.008 && !vehicles.some(v => v.kind === 'tank')) addVehicle('tank', tc(i + 20), tc(j - 3) + 1); put([[i + 24, j - 2]], CRATE); put([[i + 26, j + 6]], CRATE); } }
     if ((bm === 'town' || bm === 'desert') && !vehicles.some(v => v.kind === 'buggy') && Math.random() < 0.55) { const f = freeSpot(); if (f) addVehicle('buggy', tc(f[0]), tc(f[1])); }
   }
   if (bm === 'tundra') { grove(10, ROCK, 9); grove(8, ROCK, 7); for (let q = 0; q < 4; q++) { const [i, j] = rp(); put([[i, j]], ORE); } for (let q = 0; q < 3; q++) { const [i, j] = rp(); put([[i, j]], CRATE); } }
@@ -1426,7 +1426,7 @@ function genRegion(r) {
       for (let k = 0; k < len; k++) { const i = si + a * k, j = sj + b * k, n = idx(i, j); grid[n] = BRIDGE; deep[n] = 0; addObj(n, makeBridge(n, a ? 'x' : 'z', true)); }
       const bi = si - a * 4 - (b ? 1 : 0), bj = sj - b * 4 - (a ? 1 : 0); let good = true; for (let y = 0; y < 3; y++) for (let x = 0; x < 3; x++) if (!ok(bi + x, bj + y)) good = false;
       if (good) { room(bi, bj, 3, 3, a === 1 ? 'e' : a === -1 ? 'w' : b === 1 ? 's' : 'n', LM.plank, 0.85); richCrate(bi + 1, bj + 1); }
-      addVehicle('dinghy', tc(si + a * len), tc(sj + b * len)); break;
+      addVehicle('dinghy', tc(si + a * len), tc(sj + b * len)); if (genVer >= 5 && Math.random() < 0.18 && !vehicles.some(v => v.kind === 'hover')) addVehicle('hover', tc(si - a * 2), tc(sj - b * 2)); break;
     }
     scatter(10, () => grove(4, TREE)); scatter(10, () => put([rp()], ROCK)); scatter(6, () => put([rp()], SCRAPPILE));
   } else if (bm === 'army') {
@@ -1439,7 +1439,9 @@ function genRegion(r) {
         { const tw = new THREE.Group(); for (const [a, b] of [[-0.4, -0.4], [0.4, -0.4], [-0.4, 0.4], [0.4, 0.4]]) box(tw, LM.timber, 0.12, 2.4, 0.12, a, 1.2, b); box(tw, OL, 1.2, 0.5, 1.2, 0, 2.6, 0); box(tw, CON, 1.3, 0.1, 1.3, 0, 2.9, 0); lmk(i + 15, j + 10, tw); }
         for (let x = 2; x < 7; x++) lmk(i + x, j + 9, (() => { const sb = new THREE.Group(); for (let q = 0; q < 3; q++) box(sb, SAND, 0.32, 0.22, 0.9, -0.33 + q * 0.33, 0.11, 0); for (let q = 0; q < 2; q++) box(sb, SAND, 0.32, 0.22, 0.9, -0.16 + q * 0.33, 0.33, 0); return sb; })());
         put([[i + 12, j + 8]], CRATE); put([[i + 13, j + 8]], CRATE); put([[i + 12, j + 9]], BARREL); put([[i + 2, j + 11]], BARREL); richCrate(i + 14, j + 6);
-        if (!vehicles.some(v => v.kind === 'truck')) addVehicle('truck', tc(i + 9), tc(j + 6) + 0.5); } }
+        if (!vehicles.some(v => v.kind === 'truck')) addVehicle('truck', tc(i + 9), tc(j + 6) + 0.5);
+        if (genVer >= 5 && Math.random() < 0.008 && !vehicles.some(v => v.kind === 'tank')) addVehicle('tank', tc(i + 4), tc(j + 7) + 0.5);
+        if (genVer >= 5 && Math.random() < 0.25 && !vehicles.some(v => v.kind === 'hover')) addVehicle('hover', tc(i + 13), tc(j + 10)); } }
     scatter(12, () => put([rp()], CRATE)); scatter(10, () => put([rp()], BARREL)); scatter(12, () => put([rp()], SCRAPPILE)); scatter(6, () => line(2 + (Math.random() * 4 | 0), RUIN)); scatter(18, () => put([rp()], ROCK)); scatter(4, () => grove(3, TREE));
   } else if (bm === 'groundzero') {
     const keepT = MAKERS[TREE]; MAKERS[TREE] = () => { const t = makePine(); t.userData.hp = 2; return t; };
@@ -1481,7 +1483,7 @@ function pickBiome(avoid) {
     if (b === 'mountain' && hasMtn) continue; if (b === 'airstrip' && avoid === 'airstrip') continue; if (b !== avoid) return b;
   }
 }
-let genVer = 4, worldSeed = 1, swaps = [], genGrid = new Uint8Array(N * N), loadingSave = false;
+let genVer = 5, worldSeed = 1, swaps = [], genGrid = new Uint8Array(N * N), loadingSave = false;
 function seeded(seed, fn) { let a = seed >>> 0; const orig = Math.random; Math.random = () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; try { return fn(); } finally { Math.random = orig; } }
 function snapGen() { for (let n = 0; n < N * N; n++) genGrid[n] = built[n] ? 0 : grid[n]; }
 function generateWorld() {
@@ -1657,6 +1659,7 @@ function tryPlant() { if (netRole !== 'guest' && !plantTile()) { SFX.bonk(); ret
 
 /* ---------- crystal levels ---------- */
 const BR_ICON = {
+  Hover: '<ellipse cx="12" cy="16" rx="10" ry="3.5" fill="#fff"/><rect x="6" y="9" width="12" height="5" rx="2" fill="#fff"/><circle cx="12" cy="6" r="3" fill="none" stroke="#fff" stroke-width="1.8"/>',
   Spin: '<path d="M12 3 A9 9 0 1 1 3.5 9" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M1 6 L4 10.5 L7.5 6.5 Z" fill="#fff"/><path d="M9 13 L12 9 L15 13 L12 17 Z" fill="#fff"/>',
   Respawn: '<path d="M12 4 A8 8 0 1 0 20 12" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M16 2 L21 6 L15 8 Z" fill="#fff"/><path d="M12 8 V12 L15 14" stroke="#fff" stroke-width="2.2" stroke-linecap="round" fill="none"/>',
   Bell: '<path d="M12 3 Q18 4 18 12 V16 L20 18 H4 L6 16 V12 Q6 4 12 3 Z" fill="#fff"/><circle cx="12" cy="20.5" r="1.8" fill="#fff"/>',
@@ -1684,7 +1687,7 @@ const BR_ICON = {
   Farm: '<path d="M12 21 V8" stroke="#fff" stroke-width="2"/><ellipse cx="12" cy="6" rx="2.2" ry="3.4" fill="#fff"/><ellipse cx="8.5" cy="11" rx="1.8" ry="3" fill="#fff" transform="rotate(-30 8.5 11)"/><ellipse cx="15.5" cy="11" rx="1.8" ry="3" fill="#fff" transform="rotate(30 15.5 11)"/><ellipse cx="8.5" cy="16" rx="1.8" ry="3" fill="#fff" transform="rotate(-30 8.5 16)"/><ellipse cx="15.5" cy="16" rx="1.8" ry="3" fill="#fff" transform="rotate(30 15.5 16)"/>',
   Garage: '<rect x="3" y="11" width="18" height="6" rx="2" fill="#fff"/><circle cx="7" cy="18" r="2.6" fill="#fff"/><circle cx="17" cy="18" r="2.6" fill="#fff"/><rect x="9" y="6" width="6" height="5" rx="1" fill="#fff"/><path d="M15 8 H21" stroke="#fff" stroke-width="2"/>'
 };
-const BR_COL = { Spin: '#e0507a', Respawn: '#5fd4a0', Bell: '#e9b949', Lure: '#b0412e', Truck: '#6b7a44', Bike: '#5a8fc0', Armory: '#c0563a', Hangar: '#7a9a5a', Launch: '#b06bd0', Speed: '#43c6ea', Workshop: '#a8703f', Traps: '#8a6fd0', Offence: '#d8643c', Walls: '#b8ab95', Pits: '#8a5a3a', Mobility: '#5fa04a', Base: '#d4a017', Crystal: '#2fa9d6', Garage: '#e07b39', Farm: '#c9a227', Roll: '#e0507a', Moat: '#3f86b8', Gadgets: '#9aa1a8', Kennel: '#b5763a', Powers: '#c86bff', Scarecrow: '#e9c35a' };
+const BR_COL = { Hover: '#3f86b8', Spin: '#e0507a', Respawn: '#5fd4a0', Bell: '#e9b949', Lure: '#b0412e', Truck: '#6b7a44', Bike: '#5a8fc0', Armory: '#c0563a', Hangar: '#7a9a5a', Launch: '#b06bd0', Speed: '#43c6ea', Workshop: '#a8703f', Traps: '#8a6fd0', Offence: '#d8643c', Walls: '#b8ab95', Pits: '#8a5a3a', Mobility: '#5fa04a', Base: '#d4a017', Crystal: '#2fa9d6', Garage: '#e07b39', Farm: '#c9a227', Roll: '#e0507a', Moat: '#3f86b8', Gadgets: '#9aa1a8', Kennel: '#b5763a', Powers: '#c86bff', Scarecrow: '#e9c35a' };
 let selNode = null;
 const UPG = [
   { name: 'Offence', nodes: [
@@ -1761,8 +1764,6 @@ const UPG = [
     ['bell1', 'Long peace', 'The peace bell lasts 2:20', () => { peaceLen = 140; }],
     ['bell2', 'Longer peace', 'The peace bell lasts 2:40', () => { peaceLen = 160; }],
     ['bell3', 'Long lull', 'The peace bell lasts 3:00', () => { peaceLen = 180; }]] },
-  { name: 'Lure', nodes: [
-    ['lure', 'Lure Hoard', 'Light a beacon on the workshop: for 90s every zombie comes from the side you stand on. Costs 300 scrap, 5 minute cooldown', () => { lureOn = true; }]] },
   { name: 'Roll', nodes: [
     ['shoulder', 'Shoulder roll', 'Rolling into zombies knocks them back, and you can roll across moats', () => { rollHit = Math.max(rollHit, 1); }],
     ['bowl', 'Bowling roll', 'Rolls send zombies flying and hurt them', () => { rollHit = Math.max(rollHit, 2); }],
@@ -1795,6 +1796,8 @@ const UPG = [
     ['gshot', 'Shotgun', 'Six-pellet blast for close range', () => { gunTier = Math.max(gunTier, 2); bowOwned = true; }],
     ['gsmg', 'Sub machine gun', 'Hold to spray', () => { gunTier = Math.max(gunTier, 3); bowOwned = true; }],
     ['grifle', 'Assault rifle', 'Hard-hitting rounds that pierce, unlimited ammo', () => { gunTier = 4; bowOwned = true; }]] },
+  { name: 'Hover', nodes: [
+    ['hdrone', 'Hover drone', 'Park the hovercraft near your base and it patrols over moats and pits, shooting zombies', () => { hoverDrone = true; }]] },
   { name: 'Truck', nodes: [
     ['tgun', 'Truck turrets', 'Every filled seat in the back of the army truck gets an auto-turret', () => { truckGun = true; refreshTrucks(); }],
     ['tram', 'Cow catcher', 'The truck ploughs through small zombies (and slows a little each time). Brutes get knocked back', () => { truckRam = true; refreshTrucks(); }]] },
@@ -1802,14 +1805,14 @@ const UPG = [
     ['heligun', 'Attack helicopter', 'Fix the helicopter at an airstrip. It flies over everything and fires a chain gun', () => { heliGun = true; }],
     ['sky', 'Sky guardian', 'Leave the helicopter near base and it circles overhead shooting, out of reach of zombies', () => { skyOn = true; }]] }
 ];
-const NEED_RIDE = { gpistol: 'bow', tgun: 'truck', tram: 'truck', uzi: 'bike', uziauto: 'bike', gunner: 'buggy', drone: 'buggy', heligun: 'heli', sky: 'heli' }, RIDE_TXT = { bow: 'Find or buy a bow first', truck: 'Drive the army truck first', bike: 'Ride a bike first', buggy: 'Drive a buggy first', heli: 'Fix the helicopter first' };
+const NEED_RIDE = { hdrone: 'hover', gpistol: 'bow', tgun: 'truck', tram: 'truck', uzi: 'bike', uziauto: 'bike', gunner: 'buggy', drone: 'buggy', heligun: 'heli', sky: 'heli' }, RIDE_TXT = { hover: 'Ride the hovercraft first', bow: 'Find or buy a bow first', truck: 'Drive the army truck first', bike: 'Ride a bike first', buggy: 'Drive a buggy first', heli: 'Fix the helicopter first' };
 let rode = new Set();
 function nodeState(bi, ni) {
   const id = UPG[bi].nodes[ni][0]; if (owned.has(id)) return 'own';
   if (NEED_RIDE[id] && !(NEED_RIDE[id] === 'bow' ? bowOwned : rode.has(NEED_RIDE[id])) && (ni === 0 || owned.has(UPG[bi].nodes[ni - 1][0]))) return 'ride';
   return ni === 0 || owned.has(UPG[bi].nodes[ni - 1][0]) ? 'can' : 'lock';
 }
-const TAB_OF = { Spin: 0, Respawn: 0, Bell: 0, Lure: 2, Truck: 2, Bike: 2, Armory: 2, Hangar: 2, Launch: 1, Speed: 0, Workshop: 2, Powers: 0, Scarecrow: 1, Offence: 2, Roll: 0, Mobility: 0, Walls: 1, Pits: 1, Traps: 1, Moat: 1, Gadgets: 1, Base: 1, Crystal: 1, Farm: 2, Garage: 2, Kennel: 2 };
+const TAB_OF = { Hover: 2, Spin: 0, Respawn: 0, Bell: 0, Lure: 2, Truck: 2, Bike: 2, Armory: 2, Hangar: 2, Launch: 1, Speed: 0, Workshop: 2, Powers: 0, Scarecrow: 1, Offence: 2, Roll: 0, Mobility: 0, Walls: 1, Pits: 1, Traps: 1, Moat: 1, Gadgets: 1, Base: 1, Crystal: 1, Farm: 2, Garage: 2, Kennel: 2 };
 let treeTab = 0;
 const tabBranches = t => UPG.map((b, q) => q).filter(q => TAB_OF[UPG[q].name] === t);
 function nodePos(bi, ni) {
@@ -1831,7 +1834,7 @@ function renderTree() {
       links += '<line x1="' + prev[0] + '%" y1="' + prev[1] + '%" x2="' + x + '%" y2="' + y + '%" stroke="' + (st === 'own' ? BR_COL[br.name] : 'rgba(255,255,255,.18)') + '" stroke-width="' + (st === 'own' ? 4 : 2) + '" stroke-dasharray="' + (st === 'own' ? '0' : '5 5') + '"/>';
       const sel = selNode && selNode[0] === bi && selNode[1] === ni ? ' sel' : '';
       if (teaser) nodes += '<div class="nd tease" style="left:' + x + '%;top:' + y + '%">?</div>';
-      else nodes += '<button class="nd ' + st + (st === 'can' && nodePoor(bi, ni) ? ' poor' : '') + sel + '" style="--c:' + BR_COL[br.name] + ';left:' + x + '%;top:' + y + '%" data-b="' + bi + '" data-n="' + ni + '"><svg viewBox="0 0 24 24">' + BR_ICON[br.name] + '</svg>' + (sel ? '<span class="lbl">' + br.nodes[ni][1] + '</span>' : '') + '</button>';
+      else nodes += '<button class="nd ' + st + (st === 'can' && nodePoor(bi, ni) ? ' poor' : '') + sel + '" style="--c:' + BR_COL[br.name] + ';left:' + x + '%;top:' + y + '%" data-b="' + bi + '" data-n="' + ni + '"><svg viewBox="0 0 24 24">' + BR_ICON[br.name] + '</svg>' + (st === 'ride' ? '<i class="req">!</i>' : '') + (sel ? '<span class="lbl">' + br.nodes[ni][1] + '</span>' : '') + '</button>';
       prev = [x, y];
     }
   });
@@ -1893,7 +1896,8 @@ function openTree(open, mode) {
     selNode = null; renderTree(); SFX.click(); updatePeaceUI(); } }
 let shedPay = 0; const SL = { w: { lv: 1, ch: 0, pts: 0, cd: 0 }, c: { lv: 1, ch: 0, pts: 0, cd: 0 } };
 function menuDone(tab) { return UPG.every(b => TAB_OF[b.name] !== tab || b.nodes.every(nd => owned.has(nd[0]))); }
-const needS = (L, k) => Math.round((30 + 25 * (L - 1) + 2 * (L - 1) ** 2) * (k === 'c' ? 2.4 : 1.2) * 1.25);
+const coopCount = () => netRole === 'host' ? [...net.guests.values()].filter(G => G.inGame).length : 0;
+const needS = (L, k) => Math.round((30 + 25 * (L - 1) + 2 * (L - 1) ** 2) * (k === 'c' ? 1.75 * (1 + 0.2 * coopCount()) : 1.2) * 1.25);
 const menuKey = () => treeMode === 'shed' ? 'w' : treeMode === 'comp' ? 'c' : null;
 const menuPts = () => { const k = menuKey(); return k ? SL[k].pts : points; };
 function feedStruct(k) {
@@ -2086,7 +2090,7 @@ function spawnZombie(kind, px, pz) {
   else if (kind === 'spitter') { z.hp *= 0.7; z.g.scale.setScalar(0.92); p.inner.rotation.x = -0.15; z.spitCd = 1.5; const jaw = new THREE.Mesh(new THREE.SphereGeometry(0.09, 6, 5), SPIT_M2); jaw.position.set(0, 0.08, 0.27); p.roll.add(jaw); }
   else if (kind === 'jumper') { z.speed *= 1.2; z.g.scale.setScalar(0.9); p.inner.rotation.x = 0.3; tip('Jumpers leap over pits and wire!', 'jumper'); }
   else { p.inner.rotation.x = 0.16; p.g.scale.setScalar(0.94 + Math.random() * 0.14); }
-  z.g.position.set(z.x, 0, z.z); zombies.push(z);
+  z.g.position.set(z.x, 0, z.z); zombies.push(z); if (Math.random() < 0.1) z.sentryHunt = true;
   if (kind === 'runner') tip('Runners! Fast but fragile.', 'runner');
   if (kind === 'brute') tip('Brute! It smashes walls.', 'brute');
   return z;
@@ -2227,7 +2231,7 @@ function shoot() {
   bullets.push({ m, x: m.position.x, z: m.position.z, vx: P.ax * 20, vz: P.az * 20, t: 0 }); SFX.pew();
   shake = Math.max(shake, 0.06);
 }
-const mountGun = v => !!v && ((v.kind === 'bike' && uziOn) || (v.kind === 'buggy' && buggyGun));
+const mountGun = v => !!v && ((v.kind === 'bike' && uziOn) || (v.kind === 'buggy' && buggyGun) || v.kind === 'tank');
 function dodge() {
   if (P.seatK !== undefined) { const v = vehicles.find(q => q.kind === 'truck'); P.seatK = undefined; P.y = 0; if (v) { P.x = v.x + Math.cos(v.face) * 1.6; P.z = v.z - Math.sin(v.face) * 1.6; } netSend({ t: 'unseat' }); SFX.drop(); return; }
   if (P.mount && mountGun(P.mount)) { dismount(); return; }
@@ -2409,7 +2413,7 @@ $('bFeedHold').addEventListener('pointerdown', e => { e.preventDefault(); feedin
 $('treeBody').addEventListener('pointerdown', e => { if (e.target.closest('#treeCore')) { e.preventDefault(); feeding = true; feedT = 0; feedFrom = 'core'; audioInit(); } });
 $('bFeedHold').addEventListener('pointerdown', () => { feedFrom = 'btn'; });
 addEventListener('pointerup', () => { if (treeOpen) feeding = false; }); addEventListener('pointercancel', () => { if (treeOpen) feeding = false; });
-$('bPeace').addEventListener('click', startPeace); $('bShedUp').addEventListener('click', upgradeShed); $('bQuake').addEventListener('click', () => { if (quakeCd > 0 || scrap < 750) { SFX.bonk(); return; } scrap -= 750; quakeCd = 600; openTree(false); shake = 1.2; SFX.boom(); setTimeout(() => SFX.boom(), 300); banner('Earthquake'); swapBiome(); }); $('mazePill').style.pointerEvents = 'auto'; $('mazePill').style.cursor = 'pointer'; $('mazePill').addEventListener('click', () => { pathShowT = pathShowT > 0 ? 0 : 8; SFX.click(); $('mazeTip').hidden = pathShowT <= 0; clearTimeout(window.__mzT); window.__mzT = setTimeout(() => { $('mazeTip').hidden = true; }, 4000); }); $('bLure').addEventListener('click', startLure);
+$('bPeace').addEventListener('click', startPeace); $('bShedUp').addEventListener('click', upgradeShed); $('bQuake').addEventListener('click', () => { if (quakeCd > 0 || scrap < 500) { SFX.bonk(); return; } scrap -= 500; quakeCd = 600; openTree(false); shake = 1.2; SFX.boom(); setTimeout(() => SFX.boom(), 300); banner('Earthquake'); swapBiome(); }); $('mazePill').style.pointerEvents = 'auto'; $('mazePill').style.cursor = 'pointer'; $('mazePill').addEventListener('click', () => { pathShowT = pathShowT > 0 ? 0 : 8; SFX.click(); $('mazeTip').hidden = pathShowT <= 0; clearTimeout(window.__mzT); window.__mzT = setTimeout(() => { $('mazeTip').hidden = true; }, 4000); }); $('bLure').addEventListener('click', startLure);
 $('tTabs').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; treeTab = +b.dataset.t; selNode = null; SFX.click(); renderTree(); });
 $('treeBody').addEventListener('click', e => { const b = e.target.closest('.nd[data-b]'); if (b) { selNode = [+b.dataset.b, +b.dataset.n]; SFX.click(); renderTree(); } });
 addEventListener('pointerdown', audioInit, true); addEventListener('keydown', audioInit, true);
@@ -2452,7 +2456,7 @@ function newGame(opts) {
   clearTimeout(overTimer); $('over').hidden = true; raidPendT = -1;
   if (netRole === 'guest' && !(opts && opts.seed !== undefined)) leaveRoom();
   clearBoard(); resetExtras();
-  const fromSave = opts && opts.seed !== undefined; worldSeed = fromSave ? opts.seed : (Math.random() * 1e9) | 0; swaps = []; genVer = fromSave ? opts.gv || 1 : 4;
+  const fromSave = opts && opts.seed !== undefined; worldSeed = fromSave ? opts.seed : (Math.random() * 1e9) | 0; swaps = []; genVer = fromSave ? opts.gv || 1 : 5;
   const sides = seeded(worldSeed + 7, () => [0, 1, 2, 3].sort(() => Math.random() - 0.5).slice(0, 2));
   spawnTiles = [];
   for (const s of sides) {
@@ -2725,7 +2729,8 @@ function guestActors(m) {
   if (!m.mys && mystery) { scene.remove(mystery.mesh); mystery = null; }
   else if (m.mys && (!mystery || mystery.x !== m.mys[0] || mystery.z !== m.mys[1])) { if (mystery) scene.remove(mystery.mesh); const { g, q } = makePresent(); g.position.set(m.mys[0], 0, m.mys[1]); scene.add(g); mystery = { x: m.mys[0], z: m.mys[1], mesh: g, q, sp: 0 }; }
 }
-function guestPlantTile() { const i = tt(P.x), j = tt(P.z); const dd = Math.hypot(i - crystal.i, j - crystal.j); return !crystal2.planted && !P.onWall && inb(i, j + 1) && grid[idx(i, j)] === EMPTY && !spawnMask[idx(i, j)] && !built[idx(i, j + 1)] && dd >= 8 && dd <= 45 ? [i, j] : null; }
+function guestPlantTile() { return null; }
+function guestPlantTile_old() { const i = tt(P.x), j = tt(P.z); const dd = Math.hypot(i - crystal.i, j - crystal.j); return !crystal2.planted && !P.onWall && inb(i, j + 1) && grid[idx(i, j)] === EMPTY && !spawnMask[idx(i, j)] && !built[idx(i, j + 1)] && dd >= 8 && dd <= 45 ? [i, j] : null; }
 function guestStep(dt) {
   setHidden('bPlant', !(phase === 'live' && guestPlantTile()));
   if (phase === 'over') { updateFx(dt); updateCamera(dt); return; }
@@ -2752,9 +2757,9 @@ $('sShake').addEventListener('change', () => { SET.shake = $('sShake').checked; 
 $('sLefty').addEventListener('change', () => { SET.lefty = $('sLefty').checked; applySet(); });
 setTimeout(drawRuns, 0);
 if ('serviceWorker' in navigator && /github\.io$|localhost$/.test(location.hostname)) navigator.serviceWorker.register('sw.js').catch(() => { });
-$('bHost').addEventListener('click', () => { audioInit(); if (netRole === 'host') showLobby(); else { if (net.peer) leaveRoom(); hostGame(); } });
+$('bHost').addEventListener('click', () => { audioInit(); if (!navigator.onLine) { coopStatus('Co-op needs an internet connection'); SFX.bonk(); return; } if (netRole === 'host') showLobby(); else { if (net.peer) leaveRoom(); hostGame(); } });
 $('bLobStart').addEventListener('click', () => startCoop(false)); $('bLobCont').addEventListener('click', () => startCoop(true)); $('bLobLeave').addEventListener('click', () => { SFX.click(); leaveRoom(); });
-$('bJoin').addEventListener('click', () => { audioInit(); joinGame($('joinCode').value); });
+$('bJoin').addEventListener('click', () => { audioInit(); if (!navigator.onLine) { coopStatus('Co-op needs an internet connection'); SFX.bonk(); return; } joinGame($('joinCode').value); });
 $('joinCode').addEventListener('keydown', e => { e.stopPropagation(); if (e.key === 'Enter') joinGame($('joinCode').value); });
 
 /* ---------- v0.22 save / continue ---------- */
@@ -3366,7 +3371,7 @@ function heroAI(n, dt, dp) {
   let tx = n.x, tz = n.z, spd = H.speed;
   if (!n.hired) { if ((n.wanderT -= dt) <= 0) { n.wanderT = 2 + Math.random() * 4; const a = Math.random() * 6.28, r = Math.random() * 3; n.tx = n.hx + Math.cos(a) * r; n.tz = n.hz + Math.sin(a) * r; } tx = n.tx; tz = n.tz; spd = 1.3; if (dp < 3.5) { tx = n.x; tz = n.z; n.face = angLerp(n.face, Math.atan2(P.x - n.x, P.z - n.z), 1 - Math.exp(-dt * 6)); } }
   else if (n.mode === 'follow' && !P.dead) { if (dp > 34) { n.x = P.x - 1; n.z = P.z + 1; } tx = P.x - Math.sin(P.face) * 1.6; tz = P.z - Math.cos(P.face) * 1.6; if (Math.hypot(tx - n.x, tz - n.z) < 0.8) { tx = n.x; tz = n.z; } }
-  else { if ((n.wanderT -= dt) <= 0 || Math.hypot(n.tx - cx, n.tz - cz) > 4.5) { n.wanderT = 3 + Math.random() * 3; const a = Math.random() * 6.28; n.tx = cx + Math.cos(a) * 3; n.tz = cz + Math.sin(a) * 3; } tx = n.tx; tz = n.tz; spd = 2; }
+  else { if ((n.wanderT -= dt) <= 0 || Math.hypot(n.tx - cx, n.tz - cz) > 4.5) { n.wanderT = 3 + Math.random() * 3; const a = Math.random() * 6.28; n.tx = cx + Math.cos(a) * 4.5; n.tz = cz + Math.sin(a) * 4.5; } tx = n.tx; tz = n.tz; spd = 2; }
   // abilities (hired only)
   if (n.heroType === 'bruce' && n.hired) { bruceAI(n, dt); return; }
   if (n.hired && phase === 'live' && HERO_AI[n.heroType] && !n.seat) { const w = HERO_AI[n.heroType](n, dt, cx, cz, H); if (w) { tx = w[0]; tz = w[1]; spd = w[2] || H.speed; } stepNpc(n, tx, tz, spd, dt, true); return; }
@@ -3561,14 +3566,14 @@ function structSign(k, at, h) {
   let sg = upSigns[k]; if (!sg) { sg = upSign.clone(); sg.scale.setScalar(1.2); scene.add(sg); upSigns[k] = sg; }
   const show = at >= 0 && SL[k].pts > 0 && phase === 'live' && !inBonus; sg.visible = show; if (show) { sg.position.set(tc(at % N), h + 0.6 + Math.sin(time * 4) * 0.12, tc((at / N) | 0)); sg.rotation.y += 0.03; }
 }
-const STRUCT_NAME = () => ({ [shedAt]: 'Workshop', [compAt]: 'Compiler', [siloAt]: 'Silo' });
+const STRUCT_NAME = () => ({ ...Object.fromEntries(sentries.map(q => [q, 'Sentry'])), [shedAt]: 'Workshop', [compAt]: 'Compiler', [siloAt]: 'Silo' });
 const isOff = n => n >= 0 && structHp.has(n) && structHp.get(n).off;
 function hitStruct(n, d) {
-  if (n < 0) return; let st = structHp.get(n); if (!st) { st = { hp: 220, max: 220, off: false }; structHp.set(n, st); } if (st.off) return;
+  if (n < 0) return; let st = structHp.get(n); if (!st) { const mx = grid[n] === SENTRY ? 320 : 220; st = { hp: mx, max: mx, off: false }; structHp.set(n, st); } if (st.off) return;
   st.hp -= d; if (Math.random() < 0.2) burst(tc(n % N), 0.8, tc((n / N) | 0), mat.wood, 2, 2);
   if (st.hp <= 0) { st.hp = 0; st.off = true; SFX.crumble(); shake = 0.3; banner((STRUCT_NAME()[n] || 'Building') + ' knocked out'); tempMark(tc(n % N), tc((n / N) | 0), '#ff6b5a', 'skull', 8); const o = tileObj[n]; if (o) o.rotation.z = 0.12; }
 }
-function repairStruct(n) { const st = structHp.get(n), c = Math.round(30 * priceK()); if (!st || !st.off) return; if (scrap < c) { SFX.bonk(); return; } scrap -= c; st.off = false; st.hp = st.max; const o = tileObj[n]; if (o) o.rotation.z = 0; SFX.repair(); burst(tc(n % N), 1, tc((n / N) | 0), mat.gold, 14, 3); }
+function repairStruct(n) { const st = structHp.get(n), c = grid[n] === SENTRY ? 50 : Math.round(30 * priceK()); if (!st || !st.off) return; if (scrap < c) { SFX.bonk(); return; } scrap -= c; st.off = false; st.hp = st.max; const o = tileObj[n]; if (o) o.rotation.z = 0; SFX.repair(); burst(tc(n % N), 1, tc((n / N) | 0), mat.gold, 14, 3); }
 function updateBaseItems(dt) {
   for (const [n, st] of structHp) if (st.off && Math.random() < dt * 4) puff(tc(n % N) + (Math.random() - 0.5) * 0.5, 1.1, tc((n / N) | 0), 0x3a3238);
   structSign('w', shedAt, shedAt >= 0 ? shedTop() + (towerOn ? 1.3 : 0.5) : 0); structSign('c', compAt, 1.3);
@@ -4019,7 +4024,9 @@ function hitNpc(n, dmg, nx, nz, gun) {
     if (Math.random() < 0.3) dropBone(n.x + 0.3, n.z);
   }
 }
+function keepClear(n, tx, tz) { if (n.hostile || n.raid || n.seat) return [tx, tz]; const spots = [[tc(crystal.i), tc(crystal.j) + 0.6, 3.0]]; for (const at of [shedAt, compAt, bellAt, siloAt]) if (at >= 0) spots.push([tc(at % N), tc((at / N) | 0), 2.4]); for (const [x, z, r] of spots) { const dx = tx - x, dz = tz - z, d = Math.hypot(dx, dz); if (d < r) { const nx = d > 0.01 ? dx / d : 1, nz = d > 0.01 ? dz / d : 0; tx = x + nx * (r + 0.3); tz = z + nz * (r + 0.3); } } return [tx, tz]; }
 function stepNpc(n, tx, tz, spd, dt, fp) {
+  if (crystal.planted && !(n.hired && n.mode === 'follow')) [tx, tz] = keepClear(n, tx, tz);
   const dx = tx - n.x, dz = tz - n.z, d = Math.hypot(dx, dz), want = d > 0.3 ? spd : 0, k = 1 - Math.exp(-dt * 8);
   n.vx += ((d > 0.01 ? dx / d : 0) * want - n.vx) * k; n.vz += ((d > 0.01 ? dz / d : 0) * want - n.vz) * k;
   { const ox = n.x, oz = n.z; moveEnt(n, n.vx * dt, n.vz * dt, 0.28, fp); const want = Math.hypot(n.vx, n.vz); if (want > 1 && Math.hypot(n.x - ox, n.z - oz) < want * dt * 0.2) { if ((n.stk = (n.stk || 0) + dt) > 2.5) { n.stk = 0; breakAhead(n, n.x + n.vx, n.z + n.vz); } } else n.stk = 0; }
@@ -4078,7 +4085,7 @@ function updateDecoy(dt) {
   setHidden('decoyPill', !decoy || phase !== 'live'); if (decoy) { setText('decoyN', fmtT(Math.ceil(decoy.t))); const dp = $('decoyPill'), hurt = decoy.hitT > 0; if (dp.classList.contains('hurt') !== hurt) dp.classList.toggle('hurt', hurt); dp.style.setProperty('--hp', Math.max(0, decoy.hp / decoy.max).toFixed(2)); }
 }
 function startLure() {
-  if (!lureOn || lureT > 0 || lureCd > 0 || phase !== 'live' || !crystal.planted || scrap < 300) { SFX.bonk(); return; }
+  if (shedAt < 0 || lureT > 0 || lureCd > 0 || phase !== 'live' || !crystal.planted || scrap < 300) { SFX.bonk(); return; }
   scrap -= 300; lureDir = lureSide(); lureT = 90; spawnBias = lureDir; openTree(false); SFX.raid(); shake = 0.3;
   banner('Lure · ' + compass(Math.cos(lureDir), Math.sin(lureDir))); tempMark(tc(crystal.i) + Math.cos(lureDir) * 40, tc(crystal.j) + Math.sin(lureDir) * 40, '#ff6b6b', 'skull', 90);
 }
@@ -4088,8 +4095,8 @@ function updateLure(dt) {
   lureBtn();
 }
 function lureBtn() {
-  const b = $('bLure'); if (!b) return; b.hidden = !lureOn; if (!lureOn) return;
-  b.disabled = lureT > 0 || lureCd > 0; $('lureTxt').textContent = lureT > 0 ? 'Lure ' + fmtT(Math.ceil(lureT)) : lureCd > 0 ? 'Lure in ' + fmtT(Math.ceil(lureCd)) : 'Lure Hoard 300 · ' + compass(Math.cos(lureSide()), Math.sin(lureSide()));
+  const b = $('bLure'); if (!b) return; b.hidden = shedAt < 0; if (shedAt < 0) return;
+  b.disabled = lureT > 0 || lureCd > 0 || scrap < 300; { const t = lureT > 0 ? 'Lure Hoard on · ' + fmtT(Math.ceil(lureT)) : lureCd > 0 ? 'Lure Hoard 300 · ' + fmtT(Math.ceil(lureCd)) : 'Lure Hoard 300 · ' + compass(Math.cos(lureSide()), Math.sin(lureSide())); if ($('lureTxt').textContent !== t) $('lureTxt').textContent = t; }
 }
 let padNodes = null;
 function pauseFx(on) {
@@ -4156,7 +4163,7 @@ function updateMusic(dt) {
   if (want !== musMode) { if (musMode !== 'none') { musGain.gain.setTargetAtTime(0, ac.currentTime, 0.25); musFade = 0.8; } if (musFade > 0) { musFade -= dt; if (musFade > 0) return; } musMode = want; musBar = 0; musVar = (musVar + 1 + ((Math.random() * 2) | 0)); musNext = ac.currentTime + 0.1; if (want !== 'none') musGain.gain.setTargetAtTime(want === 'event' ? 0.55 : want === 'title' ? 0.8 : 0.7, ac.currentTime, 0.4); }
   if (musMode === 'none') return; while (musNext < ac.currentTime + 0.35) musNext = musBarAt(Math.max(musNext, ac.currentTime + 0.02));
 }
-const PEACE_COST = 400, surgeOn = () => toSpawn > 0 && !hoardeOn;
+const PEACE_COST = 300, surgeOn = () => toSpawn > 0 && !hoardeOn;
 function startPeace() {
   if (peaceT > 0 || peaceCd > 0 || hoardeOn || (boss && !boss.dead) || surgeOn() || phase !== 'live' || scrap < PEACE_COST) { if (scrap < PEACE_COST && !hoardeOn && peaceCd <= 0 && bellAt >= 0) floater(tc(bellAt % N), tc((bellAt / N) | 0), 'Needs ' + PEACE_COST + ' scrap', '#ffd166'); SFX.bonk(); if (bellAt >= 0) { const o = tileObj[bellAt]; if (o) o.userData.nope = 0.4; } return; }
   scrap -= PEACE_COST; peaceT = bossPeace ? Math.max(210, peaceLen) : peaceLen; bossPeace = false; toSpawn = 0; spawnBias = null; raidPendT = -1; SFX.levelUp(); openTree(false); burst(tc(crystal.i), 1.4, tc(crystal.j), mat.gem, 24, 5);
@@ -4166,8 +4173,9 @@ function startPeace() {
 }
 function updatePeaceUI() {
   lureBtn();
+  { const qb = $('bQuake'); if (qb) { qb.disabled = quakeCd > 0 || scrap < 500; const t = quakeCd > 0 ? 'Earthquake 500 · ' + fmtT(Math.ceil(quakeCd)) : 'Earthquake 500'; if ($('quakeTxt').textContent !== t) $('quakeTxt').textContent = t; } }
   const b = $('bPeace'); if (!b) return; const ok = peaceT <= 0 && peaceCd <= 0 && !hoardeOn && !(boss && !boss.dead) && !surgeOn() && scrap >= PEACE_COST;
-  b.disabled = !ok; $('peaceTxt').textContent = peaceT > 0 ? 'Peaceful ' + fmtT(Math.ceil(peaceT)) : peaceCd > 0 ? 'Peace in ' + fmtT(Math.ceil(peaceCd)) : hoardeOn ? 'Not during a Hoarde' : boss && !boss.dead ? 'Not with a boss' : surgeOn() ? 'Not during a surge' : 'Peace ' + fmtT(peaceLen) + ' · ' + PEACE_COST;
+  b.disabled = !ok; $('peaceTxt').textContent = peaceT > 0 ? 'Peaceful ' + fmtT(Math.ceil(peaceT)) : peaceCd > 0 ? 'Peace ' + PEACE_COST + ' · ' + fmtT(Math.ceil(peaceCd)) : hoardeOn ? 'Not during a Hoarde' : boss && !boss.dead ? 'Not with a boss' : surgeOn() ? 'Not during a surge' : 'Peace ' + fmtT(peaceLen) + ' · ' + PEACE_COST;
   setHidden('peacePill', !(peaceT > 0) || phase !== 'live'); if (peaceT > 0) setText('peaceN', fmtT(Math.ceil(peaceT)));
 }
 function npcHurt(n, d) {
@@ -4207,6 +4215,7 @@ function updateNpcs(dt) {
       if (!n.hostile && dp < 4) { tx = n.x; tz = n.z; n.face = angLerp(n.face, Math.atan2(P.x - n.x, P.z - n.z), 1 - Math.exp(-dt * 6)); }
     }
     }
+    if (crystal.planted) [tx, tz] = keepClear(n, tx, tz);
     const dx = tx - n.x, dz = tz - n.z, d = Math.hypot(dx, dz), want = d > 0.4 ? spd : 0, k = 1 - Math.exp(-dt * 8);
     n.vx += ((d > 0.01 ? dx / d : 0) * want - n.vx) * k; n.vz += ((d > 0.01 ? dz / d : 0) * want - n.vz) * k;
     moveEnt(n, n.vx * dt, n.vz * dt, 0.28, true);
@@ -4445,6 +4454,13 @@ function vehMesh(kind, fixed) {
     const gun = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.45, 6).rotateX(Math.PI / 2), mat.black); gun.position.set(0, 0.3, 0.5);
     g.add(cab, glass, tail, fin, trot, mast, rotor, gun); g.userData.rotor = rotor; g.userData.trot = trot; }
   else if (kind === 'buggy') { const c = new THREE.Mesh(new THREE.BoxGeometry(0.75, 0.22, 1.05), body || mat.gold); c.position.y = 0.32; c.castShadow = true; const cage = new THREE.Mesh(new THREE.BoxGeometry(0.66, 0.36, 0.5), new THREE.MeshLambertMaterial({ color: 0x2c2c2a, wireframe: true })); cage.position.set(0, 0.6, -0.05); g.add(c, cage); for (const [x, z] of [[-0.42, 0.38], [0.42, 0.38], [-0.42, -0.38], [0.42, -0.38]]) g.add(wheel(x, z, 0.2)); }
+  else if (kind === 'tank') { const OL = body || M(0x4f5e34), DK = M(0x353d26);
+    const hull = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.5, 2.2), OL); hull.position.y = 0.5; const sk = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.12, 2.3), DK); sk.position.y = 0.28; g.add(hull, sk);
+    for (const sx of [-0.72, 0.72]) { const tr = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.4, 2.35), mat.black); tr.position.set(sx, 0.22, 0); g.add(tr); for (let q = 0; q < 4; q++) { const w = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.17, 0.36, 10).rotateZ(Math.PI / 2), DK); w.position.set(sx, 0.2, -0.8 + q * 0.53); g.add(w); } }
+    const tur = new THREE.Group(); tur.position.set(0, 0.85, -0.1); const tb = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.56, 0.36, 10), OL); const brl = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.09, 1.3, 8).rotateX(Math.PI / 2), DK); brl.position.set(0, 0.05, 0.85); const pod = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.26, 0.5), DK); pod.position.set(0.42, 0.12, 0.1); tur.add(tb, brl, pod); g.add(tur); g.userData.tur = tur;
+    const star = new THREE.Mesh(new THREE.CircleGeometry(0.16, 5), B(0xf1ead8)); star.position.set(0.71, 0.55, 0.3); star.rotation.y = Math.PI / 2; g.add(star); }
+  else if (kind === 'hover') { const HB = body || M(0x3f86b8), sk = new THREE.Mesh(new THREE.TorusGeometry(0.62, 0.17, 8, 18), mat.black); sk.rotation.x = Math.PI / 2; sk.scale.set(1, 1.5, 1); sk.position.y = 0.18; const deck = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.22, 1.5), HB); deck.position.y = 0.36; const cab = new THREE.Mesh(new THREE.SphereGeometry(0.32, 10, 8, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshLambertMaterial({ color: 0x9fd3f0, transparent: true, opacity: 0.75 })); cab.position.set(0, 0.47, 0.25);
+    const fan = new THREE.Group(); fan.position.set(0, 0.75, -0.62); const ring = new THREE.Mesh(new THREE.TorusGeometry(0.34, 0.04, 6, 16), mat.metalDark); fan.add(ring); for (let q = 0; q < 3; q++) { const bl = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.6, 0.02), mat.metal); bl.rotation.z = q * 1.05; fan.add(bl); } const gun = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.45, 6).rotateX(Math.PI / 2), mat.metalDark); gun.position.set(0, 0.58, 0.55); g.add(sk, deck, cab, fan, gun); g.userData.fan = fan; }
   else if (kind === 'truck') { const OL = body || M(0x5a6b3a), DK = M(0x3f4a2a), gl = new THREE.MeshLambertMaterial({ color: 0x2a3438 });
     const ch = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.25, 2.9), DK); ch.position.y = 0.45; const cab = new THREE.Mesh(new THREE.BoxGeometry(1.24, 0.8, 0.85), OL); cab.position.set(0, 0.98, 0.95); const ws = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.34, 0.03), gl); ws.position.set(0, 1.12, 1.385); const hood = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.42, 0.4), OL); hood.position.set(0, 0.78, 1.55);
     const bed = new THREE.Mesh(new THREE.BoxGeometry(1.28, 0.1, 1.95), OL); bed.position.set(0, 0.62, -0.5); g.add(ch, cab, ws, hood, bed);
@@ -4461,9 +4477,24 @@ function vehMesh(kind, fixed) {
   if (!fixed) { g.rotation.z = 0.12; g.scale.y = 0.85; }
   g.traverse(o => { if (o.isMesh) o.castShadow = true; }); return g;
 }
-const VEH = { truck: { cost: 120, speed: 9, water: false, seat: 0.95, name: 'Army truck' }, heli: { cost: 300, speed: 12, water: false, seat: 1.7, name: 'Helicopter', fly: true }, bike: { cost: 25, speed: 9, water: false, seat: 0.35, name: 'Bike' }, buggy: { cost: 80, speed: 11, water: false, seat: 0.45, name: 'Buggy', ram: true }, canoe: { cost: 0, speed: 4.5, water: true, seat: 0.12, name: 'Canoe' }, dinghy: { cost: 0, speed: 6.5, water: true, seat: 0.16, name: 'Dinghy' }, speedboat: { cost: 60, speed: 11, water: true, seat: 0.24, name: 'Speedboat' } };
+const VEH = { tank: { cost: 250, speed: 6, water: false, seat: 0.95, name: 'Tank' }, hover: { cost: 90, speed: 10.5, water: false, seat: 0.5, name: 'Hovercraft' }, truck: { cost: 120, speed: 9, water: false, seat: 0.95, name: 'Army truck' }, heli: { cost: 300, speed: 12, water: false, seat: 1.7, name: 'Helicopter', fly: true }, bike: { cost: 25, speed: 9, water: false, seat: 0.35, name: 'Bike' }, buggy: { cost: 80, speed: 11, water: false, seat: 0.45, name: 'Buggy', ram: true }, canoe: { cost: 0, speed: 4.5, water: true, seat: 0.12, name: 'Canoe' }, dinghy: { cost: 0, speed: 6.5, water: true, seat: 0.16, name: 'Dinghy' }, speedboat: { cost: 60, speed: 11, water: true, seat: 0.24, name: 'Speedboat' } };
+function tankUpdate(v, dt, spd) {
+  v.rcd = (v.rcd || 0) - dt; const u = v.mesh.userData; if (u.tur) { let ax = Math.sin(P.face), az = Math.cos(P.face); if (lastInput === 'mouse' && mouse.has && screenGround(mouse.x, mouse.y)) { const dx = hit.x - P.x, dz = hit.z - P.z, l = Math.hypot(dx, dz); if (l > 0.3) { ax = dx / l; az = dz / l; } } else { let best = null, bd = 11; for (const zb of zombies) { if (zb.dead) continue; const d = Math.hypot(zb.x - P.x, zb.z - P.z); if (d < bd) { bd = d; best = zb; } } if (best) { ax = (best.x - P.x) / bd; az = (best.z - P.z) / bd; } } v.aim = [ax, az]; u.tur.rotation.y = Math.atan2(ax, az) - v.face; }
+  if ((actHeld || touchAct) && v.rcd <= 0 && v.aim) { v.rcd = 4; const [ax, az] = v.aim; let tx = P.x + ax * 8, tz = P.z + az * 8; for (let d = 1.5; d <= 8; d += 0.5) { const x = P.x + ax * d, z = P.z + az * d; if (zombies.some(zb => !zb.dead && Math.hypot(zb.x - x, zb.z - z) < 1) || nests.some(nt => !nt.dead && Math.hypot(nt.x - x, nt.z - z) < 1.3)) { tx = x; tz = z; break; } }
+    const m = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.5, 6).rotateX(Math.PI / 2), mat.metalDark), sx = P.x, sz = P.z, t0 = time; m.position.set(sx, 1.3, sz); m.rotation.y = Math.atan2(ax, az); scene.add(m); SFX.surge(); shake = Math.max(shake, 0.25);
+    const fly = () => { const k = Math.min(1, (time - t0) / 0.35); m.position.set(sx + (tx - sx) * k, 1.3 - k * 0.9, sz + (tz - sz) * k); if (Math.random() < 0.6) puff(m.position.x, m.position.y, m.position.z, 0x9a9490); if (k < 1) { requestAnimationFrame(fly); return; } scene.remove(m); tankBlast(tx, tz); }; fly(); }
+  let mob = 0; for (const zb of zombies) if (!zb.dead && Math.hypot(zb.x - P.x, zb.z - P.z) < 1.7) mob++; v.mob = mob >= 6 ? (v.mob || 0) + dt : Math.max(0, (v.mob || 0) - dt); if (v.mob > 0 && Math.random() < dt * 8) burst(P.x, 0.9, P.z, mat.metalDark, 2, 2);
+  if (v.mob > 3) { v.mob = 0; dismount(); v.fixed = false; scene.remove(v.mesh); v.mesh = vehMesh('tank', false); v.mesh.position.set(v.x, 0, v.z); v.mesh.rotation.y = v.face; scene.add(v.mesh); banner('Tank disabled'); floater(v.x, v.z, 'Repair 250', '#ff8a7a'); SFX.crumble(); shake = 0.5; }
+}
+function tankBlast(x, z) {
+  SFX.boom(); shake = Math.max(shake, 0.7); burst(x, 0.6, z, B(0xff8a2a), 26, 6); burst(x, 0.4, z, mat.rock, 14, 5); for (let q = 0; q < 6; q++) puff(x + (Math.random() - 0.5) * 3, 0.5, z + (Math.random() - 0.5) * 3, 0x5a5250);
+  for (const zb of zombies) { if (zb.dead) continue; const d = Math.hypot(zb.x - x, zb.z - z); if (d < 2.4) hitZombie(zb, zb.boss ? 300 : 900, (zb.x - x) / (d || 1), (zb.z - z) / (d || 1), 'boom'); }
+  damageNestsNear(x, z, 2.2, 260); const ci = tt(x), cj = tt(z);
+  for (let j = cj - 2; j < cj + 2; j++) for (let i = ci - 2; i < ci + 2; i++) { if (!inb(i, j)) continue; const n = idx(i, j), g = grid[n]; if (!built[n] && (g === TREE || g === ROCK || g === CACTUS || g === SCRAPPILE || g === HAY || g === CRATE || g === RUIN || g === CAR || g === GRAVE)) { removeTile(n); clearDecorAt(n); } }
+  version++; flowDirty = true;
+}
 const TRUCK_SEATS = [[-0.3, -0.42], [0.3, -0.42], [-0.3, -1.1], [0.3, -1.1]];
-let truckGun = false, truckRam = false;
+let truckGun = false, truckRam = false, hoverDrone = false;
 function refreshTrucks() { for (const v of vehicles) if (v.kind === 'truck' && v.fixed) { scene.remove(v.mesh); v.mesh = vehMesh('truck', true); v.mesh.position.set(v.x, 0, v.z); v.mesh.rotation.y = v.face; scene.add(v.mesh); } }
 function seatPos(v, k) { const [sx, sz] = TRUCK_SEATS[k], c = Math.cos(v.face), sn = Math.sin(v.face); return [v.x + sx * c + sz * sn, v.z - sx * sn + sz * c]; }
 function boardTruck(v) { v.seats = v.seats || [null, null, null, null]; for (const n of npcs) { if (!n.hero || !n.hired || n.dead || n.down > 0 || n.fishing || n.mode !== 'follow' || n.seat) continue; if (Math.hypot(n.x - P.x, n.z - P.z) > 14) continue; const k = v.seats.indexOf(null); if (k < 0) break; v.seats[k] = n; n.seat = { v, k }; burst(n.x, 0.5, n.z, mat.white, 4, 1.5); } }
@@ -4537,14 +4568,14 @@ function heliUpdate(v, dt) {
 function droneUpdate(v, dt) {
   const cx = tc(crystal.i), cz = tc(crystal.j);
   if ((baseRT -= dt) <= 0) { baseRT = 3; calcBaseR(); }
-  if (!v.drone) { if (Math.hypot(v.x - cx, v.z - cz) < baseR + 10) { v.drone = true; v.wd = 1; v.stk = 0; v.wa = Math.atan2(v.z - cz, v.x - cx); tip('Drone buggy on patrol!', 'drone'); } else return; }
+  if (!v.drone) { if (Math.hypot(v.x - cx, v.z - cz) < baseR + 10) { v.drone = true; v.wd = 1; v.stk = 0; v.wa = Math.atan2(v.z - cz, v.x - cx); tip('Drone on patrol!', 'drone'); } else return; }
   const R = baseR, myA = Math.atan2(v.z - cz, v.x - cx);
   let tgt = null, bd = 5; for (const z of zombies) { if (z.dead) continue; const dc = Math.hypot(z.x - cx, z.z - cz); if (dc < R - 1.5 || dc > R + 9) continue; const d = Math.hypot(z.x - v.x, z.z - v.z); if (d < bd) { bd = d; tgt = z; } }
-  let tx, tz; if (pt.kind === 'zombie' && pt.follow && !tgt && !P.dead) { } else if (tgt) { tx = tgt.x; tz = tgt.z; } else { const a = myA + v.wd * 0.35; tx = cx + Math.cos(a) * R; tz = cz + Math.sin(a) * R; }
+  let tx, tz; if (tgt) { tx = tgt.x; tz = tgt.z; } else { const a = myA + v.wd * 0.35; tx = cx + Math.cos(a) * R; tz = cz + Math.sin(a) * R; }
   let dx = tx - v.x, dz = tz - v.z; const d = Math.hypot(dx, dz) || 1; dx /= d; dz /= d;
   const spd = tgt ? 4.2 : 2.8; let moved = false;
   for (const off of [0, 0.5, -0.5, 1.0, -1.0, 1.6, -1.6]) { const c = Math.cos(off), s2 = Math.sin(off), ux = dx * c - dz * s2, uz = dx * s2 + dz * c, nx = v.x + ux * spd * dt, nz = v.z + uz * spd * dt;
-    if (!vehBlocked(nx, nz, false)) { v.vx = ux * spd; v.vz = uz * spd; v.x = nx; v.z = nz; moved = true; break; } }
+    if (!vehBlocked(nx, nz, false, false, v.kind)) { v.vx = ux * spd; v.vz = uz * spd; v.x = nx; v.z = nz; moved = true; break; } }
   if (!moved) { v.vx = v.vz = 0; v.stk = (v.stk || 0) + dt; if (v.stk > 0.8) v.wd = -(v.wd || 1); if (v.stk > 3) { for (let t = 0; t < 24; t++) { const a = myA + (t % 2 ? 1 : -1) * Math.ceil(t / 2) * 0.25, rr = R + (t % 3), nx = cx + Math.cos(a) * rr, nz = cz + Math.sin(a) * rr; if (!vehBlocked(nx, nz, false)) { puff(v.x, 0.4, v.z, 0x8a8478); v.x = nx; v.z = nz; puff(nx, 0.4, nz, 0x8a8478); break; } } v.stk = 0; } } else v.stk = Math.max(0, (v.stk || 0) - dt);
   if (Math.hypot(v.vx, v.vz) > 0.3) v.face = angLerp(v.face, Math.atan2(v.vx, v.vz), 1 - Math.exp(-dt * 5));
   for (const z of zombies) { if (z.dead || (z.ramCd = (z.ramCd || 0) - dt) > 0) continue; const dd = Math.hypot(z.x - v.x, z.z - v.z); if (dd < 0.95) { z.ramCd = 0.5; hitZombie(z, 45, (z.x - v.x) / (dd || 1), (z.z - v.z) / (dd || 1), 'ram'); } }
@@ -4596,7 +4627,7 @@ function landNear(x, z) {
 }
 function dismount() {
   const v = P.mount; if (!v) return;
-  if (v.water) { const l = landNear(P.x, P.z); if (!l) { SFX.bonk(); return; } v.x = P.x; v.z = P.z; P.x = l[0]; P.z = l[1]; }
+  if (v.water || (v.kind === 'hover' && (() => { const g = grid[idx(tt(P.x), tt(P.z))]; return g === WATER || g === MOAT || g === PIT; })())) { const l = landNear(P.x, P.z); if (!l) { SFX.bonk(); return; } v.x = P.x; v.z = P.z; P.x = l[0]; P.z = l[1]; }
   else if (v.fly) { let l = null; for (let r2 = 0; r2 <= 3 && !l; r2++) for (let a = 0; a < 12 && !l; a++) { const x = P.x + Math.cos(a * 0.52) * r2, z = P.z + Math.sin(a * 0.52) * r2; if (!blocked(x, z, 0.3, true) && !vehBlocked(x, z, false)) l = [x, z]; } if (!l) { SFX.bonk(); return; } v.x = l[0]; v.z = l[1]; P.x = l[0] + 0.7; P.z = l[1]; if (blocked(P.x, P.z, 0.3, true)) P.x = l[0]; if (v.mesh) v.mesh.position.set(v.x, 0, v.z); }
   else { v.x = P.x; v.z = P.z; P.x += Math.cos(P.face) * 0.6; P.z -= Math.sin(P.face) * 0.6; }
   if (v.kind === 'wolf') { v.ridden = false; v.mode = 'guard'; tip('The wolf heads back to guard the crystal.'); }
@@ -4633,6 +4664,7 @@ function getInteract() {
   if (carried) return { label: 'Put down', act: () => { const pt = carried; carried = null; pt.post = true; pt.px = P.x + P.ax * 0.7; pt.pz = P.z + P.az * 0.7; if (blocked(pt.px, pt.pz, 0.2, true)) { pt.px = P.x; pt.pz = P.z; } pt.x = pt.px; pt.z = pt.pz; pt.tx = pt.px; pt.tz = pt.pz; hearts(pt.x, pt.z); SFX.click(); } };
   for (const pt of pets) if (pt.tamed && pt.kind === 'cat' && !pt.dead && !pt.down) consider(pt.x, pt.z, { label: 'Pick up', act: () => { carried = pt; pt.post = false; SFX.click(); hearts(pt.x, pt.z); } });
   if (cosmic && cosmic.t <= 0) consider(cosmic.x, cosmic.z, { label: 'Open', act: openCosmic });
+  for (const sn of sentries) if (isOff(sn)) consider(tc(sn % N), tc((sn / N) | 0), { label: 'Repair sentry 50', act: () => repairStruct(sn) });
   for (const sn of [compAt, shedAt, siloAt]) if (isOff(sn)) consider(tc(sn % N), tc((sn / N) | 0), { label: 'Repair ' + Math.round(30 * priceK()), act: () => repairStruct(sn) });
   if (compAt >= 0 && grid[compAt] === COMPILER && !isOff(compAt)) consider(tc(compAt % N), tc((compAt / N) | 0), { label: 'Compiler', act: () => openTree(true, 'comp') });
   if (bellAt >= 0 && grid[bellAt] === BELL) consider(tc(bellAt % N), tc((bellAt / N) | 0), { label: 'Ring', act: startPeace });
@@ -4653,7 +4685,8 @@ function getInteract() {
   if (!best && nearWater(2.2)) best = { label: 'Fish', act: startFishing };
   return best;
 }
-function vehBlocked(x, z, water, fly) {
+function vehBlocked(x, z, water, fly, kind) {
+  if (kind === 'tank' || kind === 'hover') { const r = kind === 'tank' ? 0.45 : 0.34; for (let i = tt(x - r); i <= tt(x + r); i++) for (let j = tt(z - r); j <= tt(z + r); j++) { if (!inb(i, j)) return true; const n = idx(i, j), g = grid[n]; if (g === PIT || g === MOAT || g === DRAWB) continue; if (g === WATER) { if (kind === 'hover') continue; return true; } if (kind === 'tank' && built[n] && (g === WALL || g === WIRE || g === HAY || g === TAR || g === SCARE || g === TOTEM)) continue; if (SOLID_Z[g] === 1) return true; } return false; }
   if (fly) return tt(x) < 3 || tt(z) < 3 || tt(x) > N - 4 || tt(z) > N - 4;
   const r = 0.32;
   for (let i = tt(x - r); i <= tt(x + r); i++) for (let j = tt(z - r); j <= tt(z + r); j++) {
@@ -4677,15 +4710,18 @@ function updateSpecialMove(dt, mx, mz, ml) {
     const v = P.mount, k = 1 - Math.exp(-dt * (v.kind === 'wolf' ? 12 : 5));
     const vsp = v.speed * [1, 1.15, 1.3, 1.45][spdTier]; P.vx += (mx * vsp - P.vx) * k; P.vz += (mz * vsp - P.vz) * k;
     const water = !!v.water, nx = P.x + P.vx * dt, nz = P.z + P.vz * dt;
-    if (!vehBlocked(nx, P.z, water, v.fly)) P.x = nx; else P.vx *= -0.2;
-    if (!vehBlocked(P.x, nz, water, v.fly)) P.z = nz; else P.vz *= -0.2;
+    if (!vehBlocked(nx, P.z, water, v.fly, v.kind)) P.x = nx; else P.vx *= -0.2;
+    if (!vehBlocked(P.x, nz, water, v.fly, v.kind)) P.z = nz; else P.vz *= -0.2;
+    if (v.kind === 'tank') { const ti = tt(P.x + Math.sin(v.face) * 0.6), tj = tt(P.z + Math.cos(v.face) * 0.6); if (inb(ti, tj)) { const n = idx(ti, tj), g = grid[n]; if (built[n] && (g === WALL || g === WIRE || g === HAY || g === TAR || g === SCARE || g === TOTEM)) { burst(tc(ti), 0.4, tc(tj), mat.wall, 12, 4); SFX.crumble(); shake = Math.max(shake, 0.3); removeTile(n); recount(); flowDirty = true; } } }
     const spd = Math.hypot(P.vx, P.vz); if (spd > 0.3) v.face = angLerp(v.face, Math.atan2(P.vx, P.vz), 1 - Math.exp(-dt * 8));
     P.face = v.face; v.x = P.x; v.z = P.z; P.y = v.seat; if (v.kind === 'truck') truckUpdate(v, dt, spd);
     if (v.ram || v.kind === 'wolf') for (const z of zombies) { if (z.dead || (z.ramCd = (z.ramCd || 0) - dt) > 0) continue; const d = Math.hypot(z.x - P.x, z.z - P.z); if (d < 0.95 && (v.kind === 'wolf' || spd > 4)) { z.ramCd = 0.5; hitZombie(z, v.kind === 'wolf' ? 35 : 60, (z.x - P.x) / (d || 1), (z.z - P.z) / (d || 1), 'ram'); } }
     if (v.mesh) { v.mesh.position.set(P.x, v.fly ? 1.3 + Math.sin(time * 2) * 0.08 : water ? Math.sin(time * 3) * 0.03 : 0, P.z); v.mesh.rotation.y = v.face; }
     if (v.mech && (v.lz = (v.lz || 0) - dt) <= 0) { let tg = null, tb = 8; for (const zb of zombies) { if (zb.dead) continue; const dd = Math.hypot(zb.x - P.x, zb.z - P.z); if (dd < tb) { tb = dd; tg = zb; } } if (tg) { v.lz = 0.9; laser(P.x, P.z, tg.x, tg.z); } }
     if (v.kind === 'bike' && uziOn && uziAuto && !(actHeld || touchAct)) autoGun(v, P.x, 0.6, P.z, 7, 0.09, 8 + level, dt);
-    if (mountGun(v) && (actHeld || touchAct) && (uziT -= dt) <= 0) { uziT = 0.09; let ax = P.ax, az = P.az; if (lastInput === 'mouse' && mouse.has && screenGround(mouse.x, mouse.y)) { const dx = hit.x - P.x, dz = hit.z - P.z, l = Math.hypot(dx, dz); if (l > 0.2) { ax = dx / l; az = dz / l; } } const sp = (Math.random() - 0.5) * 0.12, c = Math.cos(sp), s2 = Math.sin(sp); fireBullet(P.x + ax * 0.6, 0.6, P.z + az * 0.6, ax * c - az * s2, ax * s2 + az * c, 9 + level, true); if (gate('uzi', 70)) SFX.gun(); }
+    if (v.kind === 'tank') tankUpdate(v, dt, spd);
+    if (v.kind === 'hover') autoGun(v, P.x, 0.9, P.z, 8, 0.2, 18 + level * 1.5, dt);
+    if (v.kind !== 'tank' && mountGun(v) && (actHeld || touchAct) && (uziT -= dt) <= 0) { uziT = 0.09; let ax = P.ax, az = P.az; if (lastInput === 'mouse' && mouse.has && screenGround(mouse.x, mouse.y)) { const dx = hit.x - P.x, dz = hit.z - P.z, l = Math.hypot(dx, dz); if (l > 0.2) { ax = dx / l; az = dz / l; } } const sp = (Math.random() - 0.5) * 0.12, c = Math.cos(sp), s2 = Math.sin(sp); fireBullet(P.x + ax * 0.6, 0.6, P.z + az * 0.6, ax * c - az * s2, ax * s2 + az * c, 9 + level, true); if (gate('uzi', 70)) SFX.gun(); }
     if (v.fly && heliGun) autoGun(v, P.x, 1.6, P.z, 10, 0.08, 16 + level * 1.5, dt);
     finishMoveVisual(dt, spd); return true;
   }
@@ -4799,6 +4835,7 @@ function updateExtras(dt) {
  if (safGate) { safGate.mesh.userData.disc.rotation.z += dt * 2; const sOpen = stage === 'night' && !hoardeOn; safGate.mesh.userData.disc.material.opacity = sOpen ? 0.55 + Math.sin(time * 4) * 0.2 : 0.12; safGate.mesh.userData.sign.position.y = 4.4 + Math.sin(time * 2) * 0.08; if (safCd > 0) safCd -= dt; else if (!P.dead && !P.mount && phase === 'live' && Math.hypot(P.x - safGate.x, P.z - safGate.z) < 0.9) { if (!sOpen) { if (gate('safclosed', 2500)) floater(safGate.x, safGate.z, hoardeOn ? 'Closed during the hoarde' : 'Opens at night', '#ffd166'); } else if (scrap < 50) { if (gate('safpoor', 2500)) { floater(safGate.x, safGate.z, 'Entry costs 50 scrap', '#ffd166'); SFX.bonk(); } } else { scrap -= 50; floater(safGate.x, safGate.z, '-50', '#ffd166'); startSafari(); } } }
   if (gateway) { gateway.t -= dt; gateway.mesh.userData.disc.rotation.z += dt * 3; gateway.mesh.userData.disc.material.opacity = 0.55 + Math.sin(time * 4) * 0.2; if (gateway.t <= 0) { scene.remove(gateway.mesh); gateway = null; } else if (!P.dead && !P.mount && phase === 'live' && Math.hypot(P.x - gateway.x, P.z - gateway.z) < 0.9) startBonus(); } updateCopter(dt); if ((goalT -= dt) <= 0) { goalT = 0.25; updateGoals(); } if (phase === 'live') updateTraps(dt, netRole === 'guest'); updateMarkers(); updateNests(dt); if (phase === 'live' && (saveT -= dt) <= 0) { saveT = 20; saveGame(); } for (let q = animLm.length - 1; q >= 0; q--) { const a = animLm[q]; if (!inScene(a.obj)) { animLm.splice(q, 1); continue; } if (a.kind === 'spin') a.obj.rotation.z += dt * 1.2; else if ((a.t -= dt) <= 0 && Math.hypot(a.x - P.x, a.z - P.z) < 30) { a.t = 0.3; puff(a.x, a.y, a.z, a.col); } } updatePuffs(dt); for (const g of lootCrates) { const gl = g.getObjectByName('glint'); if (!g.parent) { lootCrates.delete(g); continue; } gl.rotation.y += dt * 2; gl.position.y = 0.85 + Math.sin(time * 3 + g.id) * 0.06; }
   for (const v of vehicles) if (v.kind === 'heli' && v.mesh) heliUpdate(v, dt);
+  for (const v of vehicles) if (v.kind === 'hover' && v.fixed) { const u = v.mesh.userData; if (u.fan) u.fan.rotation.z += dt * 20; if (v !== P.mount) { if (hoverDrone && crystal.planted && phase === 'live') { droneUpdate(v, dt); if (v.drone) autoGun(v, v.x, 0.9, v.z, 8, 0.25, 16 + level * 1.5, dt); } v.mesh.position.y = 0.12 + Math.sin(time * 3 + v.x) * 0.05; } else v.mesh.position.y = 0.15 + Math.sin(time * 3) * 0.05; }
   for (const v of vehicles) if (v.kind === 'buggy' && v.fixed && phase === 'live') { if (v !== P.mount && droneOn && crystal.planted) droneUpdate(v, dt); else v.drone = false; if (buggyGun && (v === P.mount || v.drone)) buggyGunUpdate(v, dt); }
   for (const v of vehicles) if (v !== P.mount && v.water) v.mesh.position.y = Math.sin(time * 2 + v.x) * 0.03;
   for (const jk of junks) { jk.mesh.position.y = Math.sin(time * 1.6 + jk.seed) * 0.04; jk.mesh.rotation.y += dt * 0.1; }
@@ -4845,7 +4882,7 @@ function updatePets(dt) {
         bd = 0; if (pt.agroT > 0 && pt.attacker && !pt.attacker.dead && Math.hypot(pt.attacker.x - pt.x, pt.attacker.z - pt.z) < 3.5) tgt = pt.attacker; }
       else if (pt.kind === 'zombie' && pt.follow && !P.dead) { bd = 5; for (const z of zombies) { if (z.dead) continue; const d = Math.hypot(z.x - P.x, z.z - P.z); if (d < bd) { bd = d; tgt = z; } } if (!tgt) { const k2 = pets.filter(q => q.follow).indexOf(pt), a2 = P.face + Math.PI + (k2 - 1) * 0.7; tx = P.x + Math.sin(a2) * 1.6; tz = P.z + Math.cos(a2) * 1.6; spd = Math.hypot(tx - pt.x, tz - pt.z) > 4 ? 6 : 3.5; bd = 0; } }
       if (bd > 0) for (const z of zombies) { if (z.dead) continue; const d = Math.hypot(z.x - cx, z.z - cz); if (d < bd) { bd = d; tgt = z; } }
-      if (tgt) { tx = tgt.x; tz = tgt.z; spd = (pt.kind === 'wolf' ? 6.5 : pt.kind === 'zombie' ? (pt.follow ? 4.5 : 3) : 5.5) * (pt.rare ? 1.25 : 1) * (pt.mech ? 2 : 1); if (pt.mech && (pt.lz = (pt.lz || 0) - dt) <= 0 && Math.hypot(tgt.x - pt.x, tgt.z - pt.z) < 8) { pt.lz = 1.1; laser(pt.x, pt.z, tgt.x, tgt.z); } const d = Math.hypot(tgt.x - pt.x, tgt.z - pt.z); if (d < 0.8 && pt.cd <= 0) { pt.cd = 0.6; hitZombie(tgt, (pt.kind === 'wolf' ? 40 : 25) * (pt.rare ? 2.5 : 1), (tgt.x - pt.x) / (d || 1), (tgt.z - pt.z) / (d || 1), 'pet'); if (!tgt.dead && pt.kind !== 'zombie') petHurt(pt, (tgt.dmg || 10) * (pt.mech ? 0.25 : pt.rare ? 0.35 : 0.55)); } }
+      if (pt.kind === 'zombie' && pt.follow && !tgt && !P.dead) { } else if (tgt) { tx = tgt.x; tz = tgt.z; spd = (pt.kind === 'wolf' ? 6.5 : pt.kind === 'zombie' ? (pt.follow ? 4.5 : 3) : 5.5) * (pt.rare ? 1.25 : 1) * (pt.mech ? 2 : 1); if (pt.mech && (pt.lz = (pt.lz || 0) - dt) <= 0 && Math.hypot(tgt.x - pt.x, tgt.z - pt.z) < 8) { pt.lz = 1.1; laser(pt.x, pt.z, tgt.x, tgt.z); } const d = Math.hypot(tgt.x - pt.x, tgt.z - pt.z); if (d < 0.8 && pt.cd <= 0) { pt.cd = 0.6; hitZombie(tgt, (pt.kind === 'wolf' ? 40 : 25) * (pt.rare ? 2.5 : 1), (tgt.x - pt.x) / (d || 1), (tgt.z - pt.z) / (d || 1), 'pet'); if (!tgt.dead && pt.kind !== 'zombie') petHurt(pt, (tgt.dmg || 10) * (pt.mech ? 0.25 : pt.rare ? 0.35 : 0.55)); } }
       else if (pt.kind === 'dog' && (pt.pit = (pt.pitT = (pt.pitT || 0) - dt) <= 0 ? (pt.pitT = 1, pitCache.filter(q => fill[q] > 0 && Math.hypot(tc(q % N) - cx, tc((q / N) | 0) - cz) < 16).sort((a, b) => Math.hypot(tc(a % N) - pt.x, tc((a / N) | 0) - pt.z) - Math.hypot(tc(b % N) - pt.x, tc((b / N) | 0) - pt.z))[0] ?? -1) : pt.pit) >= 0) {
         const q = pt.pit, px = tc(q % N), pz = tc((q / N) | 0), d = Math.hypot(px - pt.x, pz - pt.z); tx = px; tz = pz; spd = 4.5;
         if (d < 1.1) { spd = 0; pt.eatT = (pt.eatT || 0) + dt; pt.mesh.userData.legs.forEach(l => { l.rotation.x = 0; }); pt.mesh.rotation.x = Math.sin(time * 16) * 0.12;
@@ -4886,7 +4923,7 @@ function resetExtras() {
   for (const n of npcs) { scene.remove(n.pm.g); if (n.mule) scene.remove(n.mule.mesh); } npcs = []; closeTrade(); repu = 0; wandT = 160; heliMesh.visible = false; for (const el of markEls.values()) el.remove(); markEls.clear();
   vehicles = []; pets = []; junks = []; totems = []; mystery = null; P.mount = null; P.air = null; P.stuck = false; heliShadow.visible = false;
   combo = 0; comboT = 0; gunAmmo = 0; gunTier = 0; chainOn = false; weapon = 'scythe'; bowOwned = false; fuel = 0; molotovs = 0; slingT = 420; spinCharges = 0; nextSpinAt = 5; if (spinAim) setSpinAim(false); P.spin = null; for (const f of fires) scene.remove(f.m); fires = []; gear = { head: 0, chest: 0, legs: 0, feet: 0 }; fish = 0; bones = 0; bagNew = false; lootQ.length = 0; $('bag').hidden = true; $('bagDot').hidden = true; rollBase = 0.6; rollSpeedBase = 12.5; dropT = 300; roamT = 35; heli = { t: -1, next: 200 + Math.random() * 120, crate: -1, smokeT: 0 }; lavaT = 3;
-  tarOn = false; jumpOn = false; totemMax = 0; lavaPits = false; samOn = false; samKills = 0; respawnT = 30; peaceLen = 120; spinOn = false; spinLong = false; landOn = false; cactusBag = 0; hoardeWait = false; buggyGun = false; truckGun = false; truckRam = false; droneOn = false; rollHit = 0; kennelOn = false; leashOn = false; petCap = 3; kennelAt = -1; scareLv = 0; scares.clear(); peaceT = 0; peaceCd = 0; peaceFree = false; bossPeace = false; lureOn = false; lureT = 0; lureCd = 0; frenzyOn = false; frenzyCharge = 0; frenzyT = 0; copterOn = false; copterLong = false; copterCharge = 0; copterT = 0; powerT = 0; for (const pt of pets) if (pt.aura) scene.remove(pt.aura); bearOn = false; spinnerMax = 0; spinFast = false; reaperBlades = false; roadOn = false; roadSeen = -1; shedAt = -1; vetOn = false; titanOn = false; shedLv = 1; shedPay = 0; SL.w = { lv: 1, ch: 0, pts: 0, cd: 0 }; SL.c = { lv: 1, ch: 0, pts: 0, cd: 0 }; compAt = -1; bellAt = -1; structHp = new Map(); samKills = 0; jetOn = false; jetCharge = 0; jetT = 0; if (ship) { scene.remove(ship.shadow); if (ship.rocket) scene.remove(ship.rocket); } ship = null; spdTier = 0; jumpMax = 4; gravOn = false; padDir = new Map(); quakeCd = 0; dashOn = false; scyRare = 0; heirOn = false; teslaOn = false; teslaCd = 0; killTimes = []; towerOn = false; samT = -1; if (sam) scene.remove(sam.g); sam = null; setBladeLook(); uziOn = false; uziAuto = false; heliGun = false; skyOn = false; mechWolf = false; for (const b of beams) scene.remove(b.m); beams = []; moatOn = false; drawOn = false; deepMoat = false; bears.clear(); spinners = []; drawbs = []; siloOn = false; bakeOn = false; farmSpeed = 1; siloAt = -1; wheat = 0; bread = 0; farms.clear(); for (const b of breads) scene.remove(b.m); breads = []; applyGear();
+  tarOn = false; jumpOn = false; totemMax = 0; lavaPits = false; samOn = false; samKills = 0; respawnT = 30; peaceLen = 120; spinOn = false; spinLong = false; landOn = false; cactusBag = 0; hoardeWait = false; buggyGun = false; truckGun = false; truckRam = false; hoverDrone = false; droneOn = false; rollHit = 0; kennelOn = false; leashOn = false; petCap = 3; kennelAt = -1; scareLv = 0; scares.clear(); peaceT = 0; peaceCd = 0; peaceFree = false; bossPeace = false; lureOn = false; lureT = 0; lureCd = 0; frenzyOn = false; frenzyCharge = 0; frenzyT = 0; copterOn = false; copterLong = false; copterCharge = 0; copterT = 0; powerT = 0; for (const pt of pets) if (pt.aura) scene.remove(pt.aura); bearOn = false; spinnerMax = 0; spinFast = false; reaperBlades = false; roadOn = false; roadSeen = -1; shedAt = -1; vetOn = false; titanOn = false; shedLv = 1; shedPay = 0; SL.w = { lv: 1, ch: 0, pts: 0, cd: 0 }; SL.c = { lv: 1, ch: 0, pts: 0, cd: 0 }; compAt = -1; bellAt = -1; structHp = new Map(); samKills = 0; jetOn = false; jetCharge = 0; jetT = 0; if (ship) { scene.remove(ship.shadow); if (ship.rocket) scene.remove(ship.rocket); } ship = null; spdTier = 0; jumpMax = 4; gravOn = false; padDir = new Map(); quakeCd = 0; dashOn = false; scyRare = 0; heirOn = false; teslaOn = false; teslaCd = 0; killTimes = []; towerOn = false; samT = -1; if (sam) scene.remove(sam.g); sam = null; setBladeLook(); uziOn = false; uziAuto = false; heliGun = false; skyOn = false; mechWolf = false; for (const b of beams) scene.remove(b.m); beams = []; moatOn = false; drawOn = false; deepMoat = false; bears.clear(); spinners = []; drawbs = []; siloOn = false; bakeOn = false; farmSpeed = 1; siloAt = -1; wheat = 0; bread = 0; farms.clear(); for (const b of breads) scene.remove(b.m); breads = []; applyGear();
 }
 
 /* ---------- update ---------- */
@@ -5025,6 +5062,7 @@ function updateZombies(dt) {
         if (sd < 1.2) { tx = sx / sd * 0.05; tz = sz / sd * 0.05; const sc = scares.get(sn); if (sc) { sc.hp -= z.dps * dt * 0.8; const o = tileObj[sn]; if (o) { const f = Math.max(0.01, sc.hp / sc.max); o.userData.hpFg.scale.x = f; o.userData.hpFg.position.x = -0.45 * (1 - f); o.rotation.z = Math.sin(time * 30) * 0.03; } if (sc.hp <= 0) scareBreak(sn); } }
         else if (sd < 4 || !(nt >= 0)) { tx = sx / sd; tz = sz / sd; } else { tx = tx * 0.3 + sx / sd * 0.7; tz = tz * 0.3 + sz / sd * 0.7; const l = Math.hypot(tx, tz) || 1; tx /= l; tz /= l; } } }
       const T = nearestPlayer(z.x, z.z), dpx = T.x - z.x, dpz = T.z - z.z, dp = Math.hypot(dpx, dpz);
+      if (z.sentryHunt && sentries.length && !z.boss) { if ((z.snT = (z.snT || 0) - dt) <= 0) { z.snT = 1; z.sn = -1; let sbd = 14; for (const sn of sentries) { if (isOff(sn)) continue; const d = Math.hypot(tc(sn % N) - z.x, tc((sn / N) | 0) - z.z); if (d < sbd) { sbd = d; z.sn = sn; } } } if (z.sn >= 0 && grid[z.sn] === SENTRY && !isOff(z.sn)) { const sx = tc(z.sn % N) - z.x, sz = tc((z.sn / N) | 0) - z.z, sd = Math.hypot(sx, sz) || 1; if (sd < 1.15) { tx = sx / sd * 0.03; tz = sz / sd * 0.03; hitStruct(z.sn, (z.kind === 'brute' ? 40 : 14) * dt); z.inner.rotation.x = 0.4 + Math.sin(time * 14) * 0.2; } else { tx = sx / sd; tz = sz / sd; } } }
       if (z.hunt > 0) { z.hunt -= dt; if (!T.onWall && dp < 11 && dp > 0.01) { tx = dpx / dp; tz = dpz / dp; } }
       if (!T.onWall && dp < 1.8 && dp > 0.01) { const w = 0.6; tx = tx * (1 - w) + dpx / dp * w; tz = tz * (1 - w) + dpz / dp * w; const l = Math.hypot(tx, tz) || 1; tx /= l; tz /= l; }
       if (npcs.length && (z.npcT = (z.npcT || 0) - dt) <= 0) { z.npcT = 0.5; z.npc = null; let nb = Math.min(2, dp); for (const nn of npcs) { if (nn.dead || nn.down > 0 || nn.jump || nn.seat) continue; const d = Math.hypot(nn.x - z.x, nn.z - z.z) - (nn.heroType === 'henry' && nn.hired ? 4 : 0); if (d < nb) { nb = d; z.npc = nn; } } }
@@ -5092,7 +5130,7 @@ function updateBuild() {
 
 function updateBase(dt) {
   for (const n of sentries) {
-    const o = tileObj[n]; if (!o) continue; const sx = tc(n % N), sz = tc((n / N) | 0);
+    const o = tileObj[n]; if (!o) continue; const sx = tc(n % N), sz = tc((n / N) | 0); if (isOff(n)) continue;
     let best = null, bd = 7.5; for (const z of zombies) { if (z.dead) continue; const d = Math.hypot(z.x - sx, z.z - sz); if (d < bd) { bd = d; best = z; } }
     o.userData.cd -= dt;
     if (best) {
