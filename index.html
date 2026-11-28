@@ -505,7 +505,7 @@ body.attract #menu .card{background:rgba(30,20,40,.72);border-radius:22px;paddin
       <p class="cstat" id="coopStat" hidden></p>
     </div>
     <div class="runs" id="runs"></div>
-    <div class="keys">Best: <span id="menuBest">Lv 0</span><br>v0.73</div>
+    <div class="keys">Best: <span id="menuBest">Lv 0</span><br>v0.74</div>
   </div>
 </div>
 <div class="screen" id="over" hidden>
@@ -2250,6 +2250,7 @@ function hurtPlayer(d) {
   if (attract) return;
   if (P.dead || copterT > 0 || jetT > 0) return;
   if (P.dodgeT > 0 || P.onWall || P.air || P.spin || phase !== 'live') return;
+  if (hostHasGuests() && (treeOpen || spinAim || quitPause)) return;
   d *= (1 - 0.08 * gear.head) * (1 - 0.1 * gear.chest);
   P.hp -= d; P.hurtT = 0; shake = Math.max(shake, 0.25); SFX.hurt(); if (buildMode) setBuild(buildMode);
   const h = $('hurt'); h.classList.add('show'); setTimeout(() => h.classList.remove('show'), 120);
@@ -2591,15 +2592,28 @@ function sendWorld(only) {
   net.prevGrid = new Uint8Array(grid); net.prevFill = new Uint8Array(fill); roomPill();
 }
 function hostRecv(G, m) {
-  if (m.t === 'p') { G.x = m.x; G.z = m.z; G.face = m.f; G.ax = m.ax; G.az = m.az; G.onWall = !!m.w; G.rolling = !!m.r; G.spin = !!m.s; G.y = m.y || 0; }
+  if (m.t === 'p') { G.safe = !!m.sf; G.x = m.x; G.z = m.z; G.face = m.f; G.ax = m.ax; G.az = m.az; G.onWall = !!m.w; G.rolling = !!m.r; G.spin = !!m.s; G.y = m.y || 0; }
   else if (m.t === 'hello') lobbyBroadcast();
   else if (!G.inGame || phase !== 'live') return;
   else if (m.t === 'sw' && G.hp > 0) { asGuest(G, () => { P.x = m.x; P.z = m.z; P.ax = m.ax; P.az = m.az; doSwing(); }); G.swingT = 0.17; }
   else if (m.t === 'pl') asGuest(G, () => place(m.i, m.j, m.type));
   else if (m.t === 'spin' && spinCharges > 0) spinCharges--;
+  else if (m.t === 'act' && G.hp > 0) asGuestFull(G, () => { const it = getInteract(); if (it && it.act) it.act(); });
+  else if (m.t === 'buy' && G.trade && !G.trade.dead && Math.hypot(G.trade.x - G.x, G.trade.z - G.z) < 3.5) asGuestFull(G, () => buyOffer(G.trade, m.q));
+  else if (m.t === 'fire' && G.hp > 0) asGuestFull(G, () => { P.ax = m.ax; P.az = m.az; weapon = m.w; if (!wOwned(weapon)) return; if (weapon === 'bow') { if (gunTier) fireGun(); else fireArrow(); } else if (weapon === 'minigun') { gunAmmo--; fireBullet(P.x + P.ax * 0.6, 0.55, P.z + P.az * 0.6, P.ax, P.az, 28 * (1 + 0.04 * level), true); } else if (weapon === 'molotov') throwMolotov(); else if (weapon === 'flamer') { fuel = Math.max(0, fuel - 1.6); for (const z of zombies) { if (z.dead) continue; const dx = z.x - P.x, dz = z.z - P.z, d = Math.hypot(dx, dz); if (d < 3.6 && (d < 0.6 || (dx * P.ax + dz * P.az) / d > 0.45)) { z.hp -= (150 + 6 * level) * 0.1; z.burn = 4; if (z.hp <= 0) killZombie(z, 'fire'); } } } }, true);
   else if (m.t === 'unseat') { G.seat = false; for (const v of vehicles) if (v.seats) v.seats = v.seats.map(o => o === G ? null : o); }
   else if (m.t === 'plant' && !crystal2.planted && inb(m.i, m.j + 1) && grid[idx(m.i, m.j)] === EMPTY && !spawnMask[idx(m.i, m.j)] && !built[idx(m.i, m.j + 1)] && Math.hypot(m.i - crystal.i, m.j - crystal.j) >= 8 && Math.hypot(m.i - crystal.i, m.j - crystal.j) <= 45) plantCrystal2(m.i, m.j);
 }
+let guestCtx = null;
+const newInv = () => ({ fish: 0, bones: 0, wheat: 0, bread: 0, gunAmmo: 0, bowOwned: false, fuel: 0, molotovs: 0, weapon: 'scythe', scyRare: 0, jetOn: false, cactusBag: 0, gear: { head: 0, chest: 0, legs: 0, feet: 0 } });
+const invGet = () => ({ fish, bones, wheat, bread, gunAmmo, bowOwned, fuel, molotovs, weapon, scyRare, jetOn, cactusBag, gear });
+function invSet(o) { fish = o.fish; bones = o.bones; wheat = o.wheat; bread = o.bread; gunAmmo = o.gunAmmo; bowOwned = o.bowOwned; fuel = o.fuel; molotovs = o.molotovs; weapon = o.weapon; scyRare = o.scyRare; jetOn = o.jetOn; cactusBag = o.cactusBag; gear = o.gear; }
+function asGuestFull(G, fn, quiet) {
+  if (!G.inv) G.inv = newInv(); const mine = invGet(), mount = P.mount, hp = P.hp, dead = P.dead, prev = guestCtx; invSet(G.inv); guestCtx = G; P.mount = null; P.hp = G.hp; P.dead = G.hp <= 0;
+  try { asGuest(G, fn); } finally { G.inv = invGet(); invSet(mine); guestCtx = prev; G.hp = Math.min(100, Math.max(G.hp, P.hp)); P.hp = hp; P.mount = mount; P.dead = dead; }
+  if (!quiet) try { G.conn.send({ t: 'inv', inv: G.inv }); } catch (e) { }
+}
+function sendTrade(G, n) { try { G.conn.send({ t: 'trade', st: n.stock.map(st => [OFFERS.indexOf(st.o), st.left, st.o.give, st.o.get, st.o.txt]), x: n.x, z: n.z, tax: tradeTax }); } catch (e) { } }
 function asGuest(G, fn) {
   const keep = { x: P.x, z: P.z, ax: P.ax, az: P.az, face: P.face, swingCd: P.swingCd, swingT: P.swingT, buffer: P.buffer, onWall: P.onWall };
   P.x = G.x; P.z = G.z; P.ax = G.ax; P.az = G.az; P.onWall = G.onWall;
@@ -2607,20 +2621,21 @@ function asGuest(G, fn) {
 }
 const NOBODY = { x: 1e6, z: 1e6, onWall: true };
 function nearestPlayer(x, z) {
-  let best = P.dead ? NOBODY : P, bd = P.dead ? 1e9 : Math.hypot(P.x - x, P.z - z);
+  const away = P.dead || (hostHasGuests() && (treeOpen || quitPause)); let best = away ? NOBODY : P, bd = away ? 1e9 : Math.hypot(P.x - x, P.z - z);
   if (netRole === 'host') for (const G of liveGuests()) { if (G.hp <= 0) continue; const d = Math.hypot(G.x - x, G.z - z); if (d < bd) { bd = d; best = G; } }
   return best;
 }
 function remoteHurt(G, d) {
-  if (!G || !G.conn || G.rolling || G.spin || G.onWall || G.hp <= 0) return;
+  if (!G || !G.conn || G.rolling || G.spin || G.onWall || G.hp <= 0 || G.safe) return;
   G.hp -= d; G.flash = 0.12; G.hurtT = 0;
   if (G.hp <= 0) { G.hp = 0; G.downT = 30; try { G.conn.send({ t: 'down' }); } catch (e) { } }
 }
 function hostTick(dt) {
   const gs = liveGuests();
+  if ((net.iaT = (net.iaT || 0) - dt) <= 0) { net.iaT = 0.25; for (const G of gs) { let l = ''; if (G.hp > 0 && phase === 'live' && !G.seat) asGuestFull(G, () => { const it = getInteract(); l = it && it.act ? it.label : ''; }, true); if (l !== G.ia) { G.ia = l; try { G.conn.send({ t: 'ia', l }); } catch (e) { } } if (G.trade && (G.trade.dead || Math.hypot(G.trade.x - G.x, G.trade.z - G.z) > 3.5)) { G.trade = null; try { G.conn.send({ t: 'tradeX' }); } catch (e) { } } } }
   for (const G of gs) {
     G.hurtT = (G.hurtT || 0) + dt; if (G.hp > 0 && G.hp < 100 && G.hurtT > 3) G.hp = Math.min(100, G.hp + 6 * dt);
-    if (G.downT > 0 && (G.downT -= dt) <= 0) { G.hp = 100; const C = crystal2.planted ? crystal2 : crystal; try { G.conn.send({ t: 'respawn', x: tc(C.i), z: tc(C.j) + 1.5 }); } catch (e) { } }
+    if (G.downT > 0 && (G.downT -= dt) <= 0) { G.hp = 100; const C = crystal; try { G.conn.send(inBonus && BL ? { t: 'respawn', x: bwx(BL.start[0]), z: bwz(BL.start[1]) } : { t: 'respawn', x: tc(C.i), z: tc(C.j) + 1.5 }); } catch (e) { } }
     const a = G.av; a.g.visible = G.hp > 0; a.g.position.set(G.x, G.y || 0, G.z); a.g.rotation.y = G.spin ? a.g.rotation.y + dt * 38 : G.face;
     a.roll.position.y = 0.5 + (G.rolling ? 0 : Math.abs(Math.sin(time * 9)) * 0.04); a.inner.rotation.x = G.rolling ? (a.inner.rotation.x + dt * 20) : 0;
     if (G.flash > 0) { G.flash -= dt; a.body.material = G.flash > 0 ? mat.white : a.base; }
@@ -2642,7 +2657,7 @@ function hostTick(dt) {
     netSend({ t: 'a', npcs: npcs.filter(n => !n.dead).map(n => [n.hero ? 'hero:' + n.heroType : n.kind, +n.x.toFixed(2), +n.z.toFixed(2), +n.face.toFixed(2), n.hostile ? 1 : 0]),
       pets: pets.map(pt => [pt.kind, +pt.x.toFixed(2), +pt.z.toFixed(2), +(pt.face || 0).toFixed(2)]),
       veh: vehicles.map(v => [v.kind, +v.x.toFixed(2), +v.z.toFixed(2), +(v.face || 0).toFixed(2), v.fixed ? 1 : 0]),
-      nests: nests.filter(nt => !nt.dead).map(nt => [nt.tiles[0], Math.round(nt.hp), nt.max]), mys: mystery ? [mystery.x, mystery.z] : null, up: [...owned], c2: crystal2.planted ? [crystal2.i, crystal2.j, Math.round(crystal2.hp), crystal2.max] : null, c1: [crystal.i, crystal.j] });
+      bc: inBonus && BL && BL.chests ? BL.chests.map(c => c.open ? 1 : 0) : null, gw: gateway && !inBonus ? [+gateway.x.toFixed(2), +gateway.z.toFixed(2)] : null, nests: nests.filter(nt => !nt.dead).map(nt => [nt.tiles[0], Math.round(nt.hp), nt.max]), mys: mystery ? [mystery.x, mystery.z] : null, up: [...owned], c2: crystal2.planted ? [crystal2.i, crystal2.j, Math.round(crystal2.hp), crystal2.max] : null, c1: [crystal.i, crystal.j] });
   }
 }
 /* --- guest --- */
@@ -2675,6 +2690,13 @@ function guestRecv(m) {
   if (m.t === 'wc') { if (!net.chunks || net.chunks.id !== m.id) net.chunks = { id: m.id, n: m.n, got: 0, parts: [] }; const ck = net.chunks; if (ck.parts[m.q] === undefined) { ck.parts[m.q] = m.s; ck.got++; }
     if (ck.got === ck.n) { net.chunks = null; let d = null; try { d = JSON.parse(ck.parts.join('')); } catch (e) { } if (d) handleWorld(d); } return; }
   if (m.t === 'full') { leaveRoom('That room is full (5 players max).'); return; }
+  if (m.t === 'ia') { net.ia = m.l; return; }
+  if (m.t === 'loot') { showLoot(...m.a); return; }
+  if (m.t === 'inv') { const keepW = weapon; invSet(m.inv); if (wOwned(keepW)) weapon = keepW; applyGear(); setBladeLook(); setJetLook(); return; }
+  if (m.t === 'trade') { tradeTax = m.tax; for (const st of m.st) if (st[0] < 0 && !OFFERS.some(o => o.txt === st[4])) { } tradeWith = { guest: true, x: m.x, z: m.z, stock: m.st.map(([oi, left, give, get, txt]) => ({ o: oi >= 0 ? OFFERS[oi] : { give, get, txt }, left })) }; $('trade').hidden = false; renderTrade(); return; }
+  if (m.t === 'tradeX') { closeTrade(); return; }
+  if (m.t === 'bonus') { guestBonus(m); return; }
+  if (m.t === 'bonusEnd') { guestBonusEnd(m); return; }
   if (m.t === 'seat') { P.seatK = m.k; P.vx = P.vz = 0; SFX.climb(); return; }
   if (m.t === 'unseat') { P.seatK = undefined; P.y = 0; if (m.x !== undefined) { P.x = m.x; P.z = m.z; } SFX.drop(); return; }
   if (phase === 'menu' || attract) return;
@@ -2713,6 +2735,8 @@ function reconcile(list, data, make, kill, keyOf) {
   if (list.length !== data.length || list.some((o, q) => keyOf(o) !== data[q][0])) { for (const o of list) kill(o); list.length = 0; for (const d of data) list.push(make(d)); }
 }
 function guestActors(m) {
+  if (m.bc && inBonus && BL && BL.chests) m.bc.forEach((o, q) => { const c = BL.chests[q]; if (c && o && !c.open) { c.open = true; c.mesh.rotation.z = 0.5; c.mesh.position.y = 0.05; burst(c.mesh.position.x, 0.6, c.mesh.position.z, mat.gold, 14, 3); } });
+  if (m.gw && !inBonus) { if (!net.gw) { net.gw = makeGateMesh(2); scene.add(net.gw); } net.gw.position.set(m.gw[0], 0, m.gw[1]); net.gw.userData.disc.rotation.z += 0.2; } else if (net.gw) { scene.remove(net.gw); net.gw = null; }
   if (m.c1 && (m.c1[0] !== crystal.i || m.c1[1] !== crystal.j)) { if (grid[idx(crystal.i, crystal.j)] === CRYS) grid[idx(crystal.i, crystal.j)] = EMPTY; crystal.i = m.c1[0]; crystal.j = m.c1[1]; crystal.g.position.set(tc(crystal.i), 0, tc(crystal.j)); glow.position.set(tc(crystal.i), 0.01, tc(crystal.j)); }
   if (m.c2) { if (!crystal2.planted || crystal2.i !== m.c2[0] || crystal2.j !== m.c2[1]) plantCrystal2(m.c2[0], m.c2[1]); crystal2.hp = m.c2[2]; crystal2.max = m.c2[3]; } else if (crystal2.planted) loseCrystal2();
   if (m.up) { let ch = false; for (const id of m.up) if (!owned.has(id)) for (const br of UPG) for (const nd of br.nodes) if (nd[0] === id) { owned.add(id); nd[3](); ch = true; } if (ch) updateBuildButtons(); }
@@ -2744,9 +2768,10 @@ function guestStep(dt) {
   for (const v of vehicles) if (v.gx !== undefined) { v.x += (v.gx - v.x) * k; v.z += (v.gz2 - v.z) * k; v.mesh.position.set(v.x, 0, v.z); v.mesh.rotation.y = v.face; }
   for (const nt of nests) { const u = nt.mesh.userData; u.hpFg.scale.x = Math.max(0.01, nt.hp / nt.max); u.hpFg.position.x = -0.8 * (1 - u.hpFg.scale.x); }
   if (mystery) { mystery.q.position.y = 1.35 + Math.sin(time * 3) * 0.1; mystery.q.rotation.y += dt * 2; }
+  if (inBonus && BL && BL.chests) { for (const c of BL.chests) if (c.mesh && !c.open) c.mesh.rotation.y += dt * 0.6; if (BL.exitRing) BL.exitRing.rotation.z += dt * 2; }
   if (P.dead) { P.deadT -= dt; const el = $('respawn'); el.hidden = false; el.style.setProperty('--p', ((respawnT - P.deadT) / respawnT * 100).toFixed(1)); $('respawnN').textContent = Math.max(0, Math.ceil(P.deadT)); } else $('respawn').hidden = true;
   updateTraps(dt, true); updateComboHud(); updateSpinFx(dt); updateFx(dt); updateFog(); updateLight(dt); updateCamera(dt); updateHud(dt); updatePuffs(dt);
-  if ((net.posT -= dt) <= 0 && net.conn && net.conn.open) { net.posT = 0.05; netSend({ t: 'p', x: +P.x.toFixed(2), z: +P.z.toFixed(2), f: +P.face.toFixed(2), ax: +P.ax.toFixed(2), az: +P.az.toFixed(2), w: P.onWall ? 1 : 0, r: P.dodgeT > 0 ? 1 : 0, s: P.spin ? 1 : 0, y: +(P.y || 0).toFixed(2) }); }
+  if ((net.posT -= dt) <= 0 && net.conn && net.conn.open) { net.posT = 0.05; netSend({ t: 'p', x: +P.x.toFixed(2), z: +P.z.toFixed(2), f: +P.face.toFixed(2), ax: +P.ax.toFixed(2), az: +P.az.toFixed(2), w: P.onWall ? 1 : 0, r: P.dodgeT > 0 ? 1 : 0, s: P.spin ? 1 : 0, y: +(P.y || 0).toFixed(2), sf: spinAim || quitPause || !$('trade').hidden ? 1 : 0 }); }
 }
 $('bCoop').addEventListener('click', () => { $('coopBox').hidden = !$('coopBox').hidden; $('setBox').hidden = true; });
 $('bSet').addEventListener('click', () => { $('setBox').hidden = !$('setBox').hidden; $('coopBox').hidden = true; });
@@ -2922,7 +2947,7 @@ function makeGateMesh(side) {
   g.rotation.y = [0, -Math.PI / 2, Math.PI, Math.PI / 2][side]; return g;
 }
 function openGateway(type) {
-  if (gateway || inBonus || netRole || !crystal.planted || phase !== 'live') return;
+  if (gateway || inBonus || netRole === 'guest' || !crystal.planted || phase !== 'live') return;
   type = type || ['dungeon', 'city', 'canyon', 'swamp', 'ice', 'grave', 'train', 'stealth', 'safari'][(Math.random() * 9) | 0];
   for (let t = 0; t < 80; t++) {
     const side = (Math.random() * 4) | 0, k = 30 + ((Math.random() * 156) | 0), [i, j] = side === 0 ? [k, 4] : side === 1 ? [N - 5, k] : side === 2 ? [k, N - 5] : [4, k], n = idx(i, j);
@@ -3021,10 +3046,7 @@ function genBonus(type) {
   }
   return Object.assign({ type, w, h, G, start, exit, en, chests, shooters, heroes, pets }, BLx);
 }
-function startBonus() {
-  if (!gateway || inBonus) return; const type = gateway.type, ret = { x: gateway.x, z: gateway.z }; scene.remove(gateway.mesh); gateway = null;
-  setBuild(0); closeTrade(); cancelFishing(); if (spinAim) setSpinAim(false); if (treeOpen) openTree(false);
-  BL = genBonus(type); BL.ret = ret; BL.t = 210; BL.zf = 0; BL.made = [];
+function buildBonusGeo(type) {
   const g = new THREE.Group(), cfg = { dungeon: [0x3a3440, 0x5a5262, 1.7], city: [0x55555a, 0x8a8478, 1.5], canyon: [0xc9a06a, 0xa6744a, 3.0], swamp: [0x4f5a34, 0x3d4a2a, 0.9], stealth: [0x5d6b3e, 0x6b5a48, 1.6], ice: [0x9fc8e0, 0x6f8fb0, 1.8], grave: [0x4a5240, 0x7d7f88, 0.9], train: [0x6a6258, 0x8a5a3a, 1.2], safari: [0x2f3a26, 0x3d4a32, 1.1] }[type];
   const floor = new THREE.Mesh(new THREE.PlaneGeometry(BL.w, BL.h).rotateX(-Math.PI / 2), new THREE.MeshLambertMaterial({ color: cfg[0] })); floor.position.set(bwx(0) - 0.5 + BL.w / 2, -0.01, bwz(0) - 0.5 + BL.h / 2); floor.receiveShadow = true; g.add(floor);
   let walls = 0, water = 0; for (let q = 0; q < BL.G.length; q++) { if (BL.G[q] === 1) walls++; else if (BL.G[q] >= 2) water++; }
@@ -3037,6 +3059,13 @@ function startBonus() {
   const ex = new THREE.Mesh(new THREE.TorusGeometry(0.6, 0.08, 8, 24), new THREE.MeshBasicMaterial({ color: 0xc86bff })); ex.rotation.x = -Math.PI / 2; ex.position.set(bwx(BL.exit[0]), 0.1, bwz(BL.exit[1])); g.add(ex); BL.exitRing = ex;
   const beam = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 12, 12, 1, true), new THREE.MeshBasicMaterial({ color: 0xc86bff, transparent: true, opacity: 0.2, depthWrite: false, side: THREE.DoubleSide })); beam.position.set(ex.position.x, 6, ex.position.z); g.add(beam);
   scene.add(g); BL.group = g;
+}
+function startBonus() {
+  if (!gateway || inBonus) return; const type = gateway.type, ret = { x: gateway.x, z: gateway.z }; scene.remove(gateway.mesh); gateway = null;
+  setBuild(0); closeTrade(); cancelFishing(); if (spinAim) setSpinAim(false); if (treeOpen) openTree(false);
+  const bkey = (Math.random() * 1e9) | 0; BL = seeded(bkey, () => genBonus(type)); BL.ret = ret; BL.t = 210; BL.zf = 0; BL.made = [];
+  if (hostHasGuests()) { let q = 0; for (const G of liveGuests()) { q++; try { G.conn.send({ t: 'bonus', type, key: bkey, lv: level, ret, q }); } catch (e) { } } }
+  buildBonusGeo(type); const g = BL.group;
   savedZombies = zombies; zombies = []; inBonus = true;
   for (const [k, i, j] of BL.en) { const kind = k === 'golden' || k === 'crawler' || k === 'frozen' ? 'walker' : k; spawnZombie(kind, bwx(i), bwz(j)); const z = zombies[zombies.length - 1]; if (!z) continue; z.hoarde = false;
     if (k === 'golden') { z.golden = true; z.hp *= 3; z.baseMat = GOLD_M; z.body.material = GOLD_M; z.g.scale.setScalar(1.15); }
@@ -3096,31 +3125,38 @@ function endBonus(won) {
   for (const pt of pets) if (pt.bonus || pt.x > tc(BX) - 6) { if (pt.tamed) { pt.x = cx + 2; pt.z = cz + 1; pt.hx = pt.x; pt.hz = pt.z; pt.bonus = false; pt.mesh.position.set(pt.x, 0, pt.z); } else { pt.dead = true; scene.remove(pt.mesh); } }
   pets = pets.filter(pt => !pt.dead); npcs = npcs.filter(n => !n.dead);
   for (const d of gearDrops) if (d.x > tc(BX) - 6) { d.x = cx + 1 + Math.random(); d.z = cz - 1.5 - Math.random(); d.mesh.position.set(d.x, 0, d.z); }
-  P.x = BL.ret.x; P.z = BL.ret.z + (BL.ret.z < 0 ? 1.5 : -1.5); P.vx = P.vz = 0; camTarget.set(P.x, 0, P.z); BL = null; setHidden('bonusPill', true);
+  P.x = BL.ret.x; P.z = BL.ret.z + (BL.ret.z < 0 ? 1.5 : -1.5); P.vx = P.vz = 0; camTarget.set(P.x, 0, P.z); if (netRole === 'host') { let q = 0; for (const G of liveGuests()) { q++; try { G.conn.send({ t: 'bonusEnd', x: P.x + (q % 2 ? 1.2 : -1.2), z: P.z + 0.4 * q }); } catch (e) { } } } BL = null; setHidden('bonusPill', true);
   if (saf) { if (won) { banner('Escaped'); SFX.levelUp(); } }
   else if (won) { banner('Escaped'); SFX.levelUp(); scrap += 25 + level * 5; }
   if (freedBruce && !npcs.some(n => n.heroType === 'bruce' && !n.dead)) { const b = addHero('bruce', cx + 2, cz + 2); b.hired = true; b.mode = 'guard'; setTimeout(() => showLoot('heart', 'Biker Bruce joined', 'He patrols your base', '#ffd166'), 600); }
 }
+function guestBonus(m) {
+  const lv = level; level = m.lv || level; try { BL = seeded(m.key, () => genBonus(m.type)); } finally { level = lv; } BL.ret = m.ret; buildBonusGeo(m.type); inBonus = true;
+  BL.chests = BL.chests.map(([i, j, tier]) => { const cm = makeCrate(); if (tier === 2) { cm.scale.setScalar(1.25); cm.children[0].material = GOLD_M; } cm.position.set(bwx(i), 0, bwz(j)); BL.group.add(cm); return { mesh: cm }; });
+  for (const [i, j] of BL.shooters) { const pm = makeNpcMesh('raider'); pm.g.position.set(bwx(i), 3.0, bwz(j)); BL.group.add(pm.g); } setBuild(0); closeTrade();
+  P.x = bwx(BL.start[0]) + (m.q % 2 ? 0.8 : -0.8); P.z = bwz(BL.start[1]) + 0.3 * m.q; P.vx = P.vz = 0; camTarget.set(P.x, 0, P.z); banner(BONUS_NAME[m.type] || 'Bonus');
+}
+function guestBonusEnd(m) { if (BL && BL.group) scene.remove(BL.group); inBonus = false; BL = null; P.x = m.x; P.z = m.z; P.vx = P.vz = 0; camTarget.set(P.x, 0, P.z); }
 function bonusStep(dt) {
   if (BL.safari) { BL.t += dt; const sk = kills - BL.kills0; setText('bonusN', BL.done ? 'Exit open!' : Math.min(100, sk) + ' / 100'); BL.exitRing.visible = !!BL.done; if (!BL.done && sk >= 100) { BL.done = true; const rw = Math.round((120 + 12 * level) * lootK()); scrap += rw; banner('Safari'); SFX.levelUp(); showLoot('gem', '100 zombies down!', '+' + rw + ' scrap · the exit is open', '#8fa8ff'); BL.exitRing.position.set(P.x + 2, 0.1, P.z); } if (safLight) safLight.position.set(P.x, 2.4, P.z);
     if ((BL.sp -= dt) <= 0 && zombies.length < Math.min(110, 34 + BL.t / 5)) { BL.sp = Math.max(0.3, 1.3 - BL.t / 200); for (let tr = 0, got = 0, want = zombies.length < 18 ? 3 : 1; tr < 12 && got < want; tr++) { const an = Math.random() * 6.283, d = 15 + Math.random() * 8, x = P.x + Math.cos(an) * d, z = P.z + Math.sin(an) * d; if (bTile(x, z) !== 0) continue;
       const r = Math.random(), kind = BL.t > 150 && r < 0.06 ? 'brute' : r < 0.2 + Math.min(0.35, BL.t / 600) ? 'runner' : 'walker'; spawnZombie(kind, x, z); const z2 = zombies[zombies.length - 1]; if (z2) { z2.hoarde = false; z2.speed *= 1 + Math.min(0.5, BL.t / 500); } got++; } } }
   else { BL.t -= dt; setText('bonusN', fmtT(Math.max(0, Math.ceil(BL.t)))); if (BL.t <= 0) { endBonus(false); return; } }
   if (!P.dead) updatePlayer(dt);
-  if ((!BL.safari || BL.done) && Math.hypot(P.x - BL.exitRing.position.x, P.z - BL.exitRing.position.z) < 0.9) { endBonus(true); return; }
+  if ((!BL.safari || BL.done) && [P, ...(netRole === 'host' ? liveGuests() : [])].some(q => q.hp !== 0 && Math.hypot(q.x - BL.exitRing.position.x, q.z - BL.exitRing.position.z) < 0.9)) { endBonus(true); return; }
   BL.exitRing.rotation.z += dt * 2;
   for (let a = 0; a < zombies.length; a++) {
     const z = zombies[a]; if (z.dead) continue; z.hitCd -= dt; if (z.flash > 0 && (z.flash -= dt) <= 0) z.body.material = z.baseMat;
-    const dx = P.x - z.x, dz = P.z - z.z, dp = Math.hypot(dx, dz);
+    const tg = hostHasGuests() ? nearestPlayer(z.x, z.z) : P, dx = tg.x - z.x, dz = tg.z - z.z, dp = Math.hypot(dx, dz);
     if (z.ice) { if (dp < 3.6) { z.ice = false; z.g.remove(z.blk); z.body.material = z.baseMat; burst(z.x, 0.6, z.z, mat.ice, 12, 3); SFX.crumble(); } else { z.g.position.set(z.x, 0, z.z); continue; } }
     if (z.sub) { if (dp < 4.2) { z.sub = false; burst(z.x, 0.2, z.z, M(0x3e5a3a), 8, 2); SFX.crumble(); } else { z.g.position.set(z.x, -0.75, z.z); continue; } }
     const wet = bTile(z.x, z.z) === 2 ? 0.55 : 1; let tx = 0, tz = 0;
     if (BL.safari && dp > 42) { z.dead = true; scene.remove(z.g); continue; }
-    if (dp < (BL.safari ? 16 : 11) && !P.dead) { tx = dx / (dp || 1); tz = dz / (dp || 1); } else { if ((z.wT = (z.wT || 0) - dt) <= 0) { z.wT = 2 + Math.random() * 3; const an = Math.random() * 6.28; z.wx = Math.cos(an) * 0.4; z.wz = Math.sin(an) * 0.4; } tx = z.wx || 0; tz = z.wz || 0; }
+    if (dp < (BL.safari ? 16 : 11) && tg !== NOBODY && !(tg === P && P.dead)) { tx = dx / (dp || 1); tz = dz / (dp || 1); } else { if ((z.wT = (z.wT || 0) - dt) <= 0) { z.wT = 2 + Math.random() * 3; const an = Math.random() * 6.28; z.wx = Math.cos(an) * 0.4; z.wz = Math.sin(an) * 0.4; } tx = z.wx || 0; tz = z.wz || 0; }
     const k = 1 - Math.exp(-dt * (bTile(z.x, z.z) === 3 ? 1.2 : 6)); z.vx += (tx * z.speed * wet - z.vx) * k; z.vz += (tz * z.speed * wet - z.vz) * k; moveEnt(z, z.vx * dt, z.vz * dt, z.r, false);
     for (let b = a + 1; b < zombies.length; b++) { const o = zombies[b]; if (o.dead || o.sub) continue; const ex = o.x - z.x, ez = o.z - z.z, d2 = ex * ex + ez * ez; if (d2 < 0.3 && d2 > 1e-6) { const d = Math.sqrt(d2), pp = (0.55 - d) * 0.5 / d; moveEnt(z, -ex * pp, -ez * pp, 0.26, false); moveEnt(o, ex * pp, ez * pp, 0.26, false); } }
     if (Math.hypot(z.vx, z.vz) > 0.1) z.face = Math.atan2(z.vx, z.vz); z.g.position.set(z.x, 0, z.z); z.g.rotation.y = z.face; z.roll.position.y = 0.5 + Math.abs(Math.sin(time * 7 + z.seed)) * 0.05;
-    if (dp < 0.72 && z.hitCd <= 0 && !P.dead) { z.hitCd = 0.9; hurtPlayer(z.dmg); if (!inBonus) return; }
+    if (dp < 0.72 && z.hitCd <= 0 && tg !== NOBODY) { z.hitCd = 0.9; if (tg !== P) { remoteHurt(tg, z.dmg); continue; } if (!P.dead) { hurtPlayer(z.dmg); if (!inBonus) return; } }
   }
   zombies = zombies.filter(z => !z.dead);
   for (const sh of BL.shooters) { const dp = Math.hypot(P.x - sh.x, P.z - sh.z); sh.pm.g.rotation.y = Math.atan2(P.x - sh.x, P.z - sh.z); if (sh.pm.flame) sh.pm.flame.scale.y = 1.4 + Math.sin(time * 20) * 0.3; sh.cd -= dt;
@@ -3240,7 +3276,7 @@ function addHero(type, x, z) {
 }
 function hireHero(n) {
   const H = HEROES[n.heroType]; const hc = Math.round(H.cost * priceK()); if (scrap < hc) { SFX.bonk(); tip('scrap'); return; }
-  scrap -= hc; n.hired = true; cnt.hires++; n.mode = 'follow'; if (n.heroType === 'ian' && !cosmic) setTimeout(placeCosmic, 1500); hearts(n.x, n.z); SFX.levelUp(); showLoot('heart', H.full + ' joined', 'Following you', '#ffd166'); updateBuildButtons();
+  scrap -= hc; n.hired = true; cnt.hires++; n.mode = 'follow'; n.owner = guestCtx; if (n.heroType === 'ian' && !cosmic) setTimeout(placeCosmic, 1500); hearts(n.x, n.z); SFX.levelUp(); showLoot('heart', H.full + ' joined', 'Following you', '#ffd166'); updateBuildButtons();
 }
 function heroBolt(x, z) {
   const m = new THREE.Mesh(new THREE.BoxGeometry(0.14, 10, 0.14), new THREE.MeshBasicMaterial({ color: 0xbfefff, transparent: true, opacity: 1 })); m.position.set(x, 5, z); scene.add(m);
@@ -3291,7 +3327,7 @@ function updateShip(dt) {
       if (Math.random() < 0.1) spawnGearItem('jetpack', 1, ship.x - 1.3, ship.z + 0.8); else { const v = 60 + ((Math.random() * 60) | 0); setTimeout(() => { scrap += v; floater(ship ? ship.x : P.x, ship ? ship.z : P.z, '+' + v); }, 0); }
       setTimeout(() => { ship = null; }, 100); } }
 }
-function setJetLook() { if (!player.jet) { const g = new THREE.Group(); for (const sx of [-0.12, 0.12]) { const t2 = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.36, 8), M(0xd8dce2)); t2.position.set(sx, 0.05, -0.3); const nz = new THREE.Mesh(new THREE.ConeGeometry(0.07, 0.12, 8), mat.metalDark); nz.rotation.x = Math.PI; nz.position.set(sx, -0.18, -0.3); g.add(t2, nz); } const fl = new THREE.Mesh(new THREE.ConeGeometry(0.12, 0.6, 8), B(0x5fe0ff)); fl.rotation.x = Math.PI; fl.position.set(0, -0.5, -0.3); g.add(fl); g.userData.fl = fl; player.roll.add(g); player.jet = g; } player.jet.visible = jetOn; player.jet.userData.fl.visible = jetT > 0; }
+function setJetLook() { if (guestCtx) return; if (!player.jet) { const g = new THREE.Group(); for (const sx of [-0.12, 0.12]) { const t2 = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.36, 8), M(0xd8dce2)); t2.position.set(sx, 0.05, -0.3); const nz = new THREE.Mesh(new THREE.ConeGeometry(0.07, 0.12, 8), mat.metalDark); nz.rotation.x = Math.PI; nz.position.set(sx, -0.18, -0.3); g.add(t2, nz); } const fl = new THREE.Mesh(new THREE.ConeGeometry(0.12, 0.6, 8), B(0x5fe0ff)); fl.rotation.x = Math.PI; fl.position.set(0, -0.5, -0.3); g.add(fl); g.userData.fl = fl; player.roll.add(g); player.jet = g; } player.jet.visible = jetOn; player.jet.userData.fl.visible = jetT > 0; }
 function startJet() { if (!jetCharge || P.dead || P.mount || phase !== 'live') return; jetCharge = 0; jetT = 5; if (spinAim) setSpinAim(false); setJetLook(); SFX.surge(); shake = 0.4; burst(P.x, 0.3, P.z, M(0x5fe0ff), 20, 4); }
 function updateJet(dt) {
   if (jetT <= 0) return; jetT -= dt; const up = Math.min(1, (5 - jetT) / 0.5, jetT / 0.5), y = 3.2 * Math.max(0, up);
@@ -3370,7 +3406,7 @@ function heroAI(n, dt, dp) {
   // movement
   let tx = n.x, tz = n.z, spd = H.speed;
   if (!n.hired) { if ((n.wanderT -= dt) <= 0) { n.wanderT = 2 + Math.random() * 4; const a = Math.random() * 6.28, r = Math.random() * 3; n.tx = n.hx + Math.cos(a) * r; n.tz = n.hz + Math.sin(a) * r; } tx = n.tx; tz = n.tz; spd = 1.3; if (dp < 3.5) { tx = n.x; tz = n.z; n.face = angLerp(n.face, Math.atan2(P.x - n.x, P.z - n.z), 1 - Math.exp(-dt * 6)); } }
-  else if (n.mode === 'follow' && !P.dead) { if (dp > 34) { n.x = P.x - 1; n.z = P.z + 1; } tx = P.x - Math.sin(P.face) * 1.6; tz = P.z - Math.cos(P.face) * 1.6; if (Math.hypot(tx - n.x, tz - n.z) < 0.8) { tx = n.x; tz = n.z; } }
+  else if (n.mode === 'follow' && (() => { if (n.owner && !(n.owner.conn && net.guests.has(n.owner.conn))) n.owner = null; const L = n.owner || P; return n.owner ? n.owner.hp > 0 : !P.dead; })()) { const L = n.owner || P, dl = Math.hypot(L.x - n.x, L.z - n.z); if (dl > 34) { n.x = L.x - 1; n.z = L.z + 1; } tx = L.x - Math.sin(L.face) * 1.6; tz = L.z - Math.cos(L.face) * 1.6; if (Math.hypot(tx - n.x, tz - n.z) < 0.8) { tx = n.x; tz = n.z; } }
   else { if ((n.wanderT -= dt) <= 0 || Math.hypot(n.tx - cx, n.tz - cz) > 4.5) { n.wanderT = 3 + Math.random() * 3; const a = Math.random() * 6.28; n.tx = cx + Math.cos(a) * 4.5; n.tz = cz + Math.sin(a) * 4.5; } tx = n.tx; tz = n.tz; spd = 2; }
   // abilities (hired only)
   if (n.heroType === 'bruce' && n.hired) { bruceAI(n, dt); return; }
@@ -3743,7 +3779,8 @@ function updateGun(dt) {
   setHidden('ammoPill', weapon === 'scythe' || phase !== 'live'); setText('ammoN', String(cnt));
   const wl = WEAPONS.filter(wOwned).length; setHidden('bWpn', wl < 2 || phase !== 'live'); setHidden('pcWpn', wl < 2 || phase !== 'live');
   { const wk = weapon === 'bow' && gunTier ? 'g' + gunTier : weapon; if ($('bWpn').dataset.w !== wk) { $('bWpn').dataset.w = wk; $('bWpn').innerHTML = '<svg viewBox="0 0 24 24" width="30" height="30">' + (W_ICON[wk] || W_ICON.minigun) + '</svg>'; $('bWpn').classList.toggle('mol', weapon === 'molotov'); } }
-  gunT -= dt; const held = (actHeld || touchAct) && !buildMode && !P.dead && phase === 'live' && !P.mount && netRole !== 'guest'; const press = held && !wPrev; wPrev = held;
+  gunT -= dt; const held = (actHeld || touchAct) && !buildMode && !P.dead && phase === 'live' && !P.mount && !net.ia;
+  if (netRole === 'guest') { if (!held || weapon === 'scythe' || !wOwned(weapon)) { wPrev = held; return; } const press = !wPrev; wPrev = held; const rate = weapon === 'bow' ? (gunTier ? GUNS[gunTier].rate : 0.55) : weapon === 'minigun' ? 0.07 : weapon === 'flamer' ? 0.1 : 0.6; if (weapon === 'molotov' && !press) return; if (gunT > 0) return; gunT = rate; netSend({ t: 'fire', w: weapon, ax: +P.ax.toFixed(3), az: +P.az.toFixed(3) }); if (weapon === 'flamer') { for (let q = 0; q < 3; q++) puff(P.x + P.ax * (0.7 + Math.random() * 2.6), 0.45, P.z + P.az * (0.7 + Math.random() * 2.6), Math.random() < 0.5 ? 0xff9f43 : 0xffd166); } else if (weapon !== 'molotov') { fireBullet(P.x + P.ax * 0.6, 0.55, P.z + P.az * 0.6, P.ax, P.az, 0, true); bullets[bullets.length - 1].foe = true; } if (gate('gpew', 80)) SFX.gun(); P.swingCd = 0.15; return; } const press = held && !wPrev; wPrev = held;
   if (!held || weapon === 'scythe') return;
   if (weapon === 'minigun' && gunT <= 0) { gunT = 0.055; gunAmmo--; const ax = P.ax, az = P.az, sp = (Math.random() - 0.5) * 0.12, c = Math.cos(sp), s2 = Math.sin(sp); fireBullet(P.x + ax * 0.6, 0.55, P.z + az * 0.6, ax * c - az * s2, ax * s2 + az * c, 28 * (1 + 0.04 * level), true); SFX.gun(); gunMesh.userData.brl.rotation.z += 1.2; shake = Math.max(shake, 0.05); }
   else if (weapon === 'bow' && gunT <= 0) { if (gunTier) fireGun(); else { gunT = 0.55; fireArrow(); } }
@@ -3978,10 +4015,14 @@ function renderTrade() {
 }
 $('tradeList').addEventListener('pointerdown', e => {
   const b = e.target.closest('.offer'); if (!b || !tradeWith) return; e.stopPropagation(); e.preventDefault();
-  const st = tradeWith.stock[+b.dataset.q], o = st.o;
+  if (netRole === 'guest') { netSend({ t: 'buy', q: +b.dataset.q }); SFX.click(); return; }
+  buyOffer(tradeWith, +b.dataset.q);
+});
+function buyOffer(tw, q) {
+  const st = tw.stock[q], o = st.o;
   if (st.left <= 0 || !o.give.every(([k, c]) => haveOf(k) >= tq(k, c))) { SFX.bonk(); return; }
   if ((o.get[0] === 'recruit' && recruitCount() >= 3) || (o.get[0] === 'bow' && bowOwned)) { SFX.bonk(); showLoot('scrap', o.get[0] === 'recruit' ? 'You already have 3 guards' : 'You already have a bow', 'Nothing was charged', '#ff8a7a'); return; }
-  payOffer(o); st.left--; cnt.trades++; const [k, v] = o.get, x = tradeWith.x, z = tradeWith.z; SFX.trade();
+  payOffer(o); st.left--; cnt.trades++; const [k, v] = o.get, x = tw.x, z = tw.z; SFX.trade();
   if (k === 'scrap') { scrap += v; showLoot('scrap', '+' + v + ' scrap', 'Trade'); }
   else if (k === 'gear') dropGear(x, z, 0.7);
   else if (k === 'fish') { fish += v; showLoot('fish', v + ' fish', 'Trade', '#8fd3f0'); }
@@ -3996,11 +4037,12 @@ $('tradeList').addEventListener('pointerdown', e => {
   else if (k === 'recruit') { if (recruitCount() >= 3) { scrap += 80; st.left++; tip('You can only have 3 guards.'); renderTrade(); return; } const g2 = addNpc('recruit', tc(crystal.i) + 1.2, tc(crystal.j) + 1.2); g2.hostile = false; banner('Guard hired!', 'They wait at your crystal', 2.2); SFX.levelUp(); }
   else if (k === 'charge') { const b2 = charge; charge += v; if (levelCd > 0) charge = Math.min(charge, need(level)); showLoot('gem', 'Crystal +' + Math.round(charge - b2), 'Trade', '#43c6ea'); }
   else { P.hp = 100; showLoot('heart', 'Full heal', 'Trade', '#ff7aa8'); }
-  gotItem(); renderTrade(); hearts(x, z);
-});
+  gotItem(); if (guestCtx) sendTrade(guestCtx, tw); else renderTrade(); hearts(x, z);
+};
 function openTrade(n) {
   if (repu <= -3) { tip('Word got around. Traders won\'t deal with you.'); SFX.bonk(); return; }
   if (repu >= 2 && !n.stock.some(st => st.o.get[0] === 'recruit')) n.stock.push({ o: { give: [['scrap', 80]], get: ['recruit'], txt: 'Hire a guard' }, left: 1 });
+  if (guestCtx) { guestCtx.trade = n; sendTrade(guestCtx, n); return; }
   tradeWith = n; $('trade').hidden = false; renderTrade(); SFX.click(); tip('Traders swap goods. Hit one and it turns on you.', 'trade'); }
 function closeTrade() { tradeWith = null; $('trade').hidden = true; }
 $('bTradeX').addEventListener('pointerdown', e => { e.stopPropagation(); closeTrade(); });
@@ -4352,7 +4394,7 @@ const ICON = {
 };
 let bones = 0, lootT = 0, bagNew = false;
 const lootQ = [];
-function showLoot(icon, name, sub, col) { lootQ.push([icon, name, sub, col]); if (lootQ.length > 3) lootQ.shift(); }
+function showLoot(icon, name, sub, col) { if (guestCtx) { try { guestCtx.conn.send({ t: 'loot', a: [icon, name, sub, col] }); } catch (e) { } return; } lootQ.push([icon, name, sub, col]); if (lootQ.length > 3) lootQ.shift(); }
 function updateLoot(dt) {
   lootT -= dt;
   if (lootT <= 0 && lootQ.length) {
@@ -4385,7 +4427,7 @@ const gearMesh = {};
   const boots = new THREE.Group(); for (const sx of [-1, 1]) { const b = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.1, 0.2), mat.metalDark.clone()); b.position.set(0.12 * sx, 0.05, 0.03); boots.add(b); }
   boots.visible = false; player.inner.add(boots); Object.assign(gearMesh, { helm, pants, boots, chestMat: mat.player.clone() }); player.body.material = gearMesh.chestMat;
 }
-function applyGear() {
+function applyGear() { if (guestCtx) return;
   rollCd = rollBase; rollSpeed = rollSpeedBase;
   gearMesh.helm.visible = gear.head > 0; if (gear.head) gearMesh.helm.material.color.setHex(TIER_COL[gear.head]); player.hatParts.forEach(h => { h.visible = !gear.head; });
   gearMesh.pants.visible = gear.legs > 0; if (gear.legs) gearMesh.pants.material.color.setHex(TIER_COL[gear.legs]);
@@ -4401,7 +4443,7 @@ function dropGear(x, z, bias) {
 }
 let gearDrops = [];
 const SCY_COL = [0, 0xd9a24a, 0xb36bff];
-function setBladeLook() { if (!player.blade) return; player.blade.material = scyRare ? new THREE.MeshLambertMaterial({ color: SCY_COL[scyRare], emissive: scyRare === 2 ? 0x3a1066 : 0x2a1a00 }) : mat.blade; player.blade.scale.setScalar([1, 1.3, 1.6][scyRare]); }
+function setBladeLook() { if (guestCtx) return; if (!player.blade) return; player.blade.material = scyRare ? new THREE.MeshLambertMaterial({ color: SCY_COL[scyRare], emissive: scyRare === 2 ? 0x3a1066 : 0x2a1a00 }) : mat.blade; player.blade.scale.setScalar([1, 1.3, 1.6][scyRare]); }
 const GEAR_GEO = { head: new THREE.SphereGeometry(0.2, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2), chest: new THREE.BoxGeometry(0.34, 0.3, 0.2), legs: new THREE.BoxGeometry(0.12, 0.32, 0.12), feet: new THREE.BoxGeometry(0.14, 0.1, 0.24) };
 const ARR_GEO = new THREE.ConeGeometry(0.13, 0.26, 4), ARR_UP = new THREE.MeshBasicMaterial({ color: 0x5fe08a }), ARR_DN = new THREE.MeshBasicMaterial({ color: 0xff5a4a }), ARR_EQ = new THREE.MeshBasicMaterial({ color: 0xc9c2b4 });
 function spawnGearItem(sl, t, x, z) {
@@ -4497,7 +4539,7 @@ const TRUCK_SEATS = [[-0.3, -0.42], [0.3, -0.42], [-0.3, -1.1], [0.3, -1.1]];
 let truckGun = false, truckRam = false, hoverDrone = false;
 function refreshTrucks() { for (const v of vehicles) if (v.kind === 'truck' && v.fixed) { scene.remove(v.mesh); v.mesh = vehMesh('truck', true); v.mesh.position.set(v.x, 0, v.z); v.mesh.rotation.y = v.face; scene.add(v.mesh); } }
 function seatPos(v, k) { const [sx, sz] = TRUCK_SEATS[k], c = Math.cos(v.face), sn = Math.sin(v.face); return [v.x + sx * c + sz * sn, v.z - sx * sn + sz * c]; }
-function boardTruck(v) { v.seats = v.seats || [null, null, null, null]; for (const n of npcs) { if (!n.hero || !n.hired || n.dead || n.down > 0 || n.fishing || n.mode !== 'follow' || n.seat) continue; if (Math.hypot(n.x - P.x, n.z - P.z) > 14) continue; const k = v.seats.indexOf(null); if (k < 0) break; v.seats[k] = n; n.seat = { v, k }; burst(n.x, 0.5, n.z, mat.white, 4, 1.5); } }
+function boardTruck(v) { v.seats = v.seats || [null, null, null, null]; for (const n of npcs) { if (!n.hero || !n.hired || n.dead || n.down > 0 || n.fishing || n.mode !== 'follow' || n.seat || n.owner) continue; if (Math.hypot(n.x - P.x, n.z - P.z) > 14) continue; const k = v.seats.indexOf(null); if (k < 0) break; v.seats[k] = n; n.seat = { v, k }; burst(n.x, 0.5, n.z, mat.white, 4, 1.5); } }
 function unboardTruck(v) { if (!v.seats) return; v.seats.forEach((o, k) => { if (!o) return; const [x, z] = seatPos(v, k), a = v.face + Math.PI / 2 * (k % 2 ? -1 : 1); if (o.hero) { o.seat = null; o.x = x + Math.sin(a) * 1.1; o.z = z + Math.cos(a) * 1.1; if (blocked(o.x, o.z, 0.28, true)) { o.x = v.x; o.z = v.z; } o.pm.g.position.set(o.x, 0, o.z); } else if (o.conn) { o.seat = null; try { o.conn.send({ t: 'unseat', x: x + Math.sin(a) * 1.1, z: z + Math.cos(a) * 1.1 }); } catch (e) { } } }); v.seats = [null, null, null, null]; }
 function truckUpdate(v, dt, spd) {
   v.seats = v.seats || [null, null, null, null];
@@ -4648,7 +4690,7 @@ function reel() {
   cancelFishing();
 }
 function getInteract() {
-  if (netRole === 'guest') return null;
+  if (netRole === 'guest') return net.ia ? { label: net.ia, act: () => { netSend({ t: 'act' }); net.ia = ''; } } : null;
   if (inBonus && BL && BL.cage && !BL.freed && !BL.alarm && Math.hypot(bwx(BL.cage[0]) - P.x, bwz(BL.cage[1]) - P.z) < 1.5) return { label: 'Free Bruce', act: () => { BL.freed = true; BL.cageMesh.visible = false; banner('Bruce freed'); SFX.levelUp(); hearts(P.x, P.z); } };
   if (inBonus && BL) { let bc = null, bd = 1.4; for (const c of BL.chests) { if (c.open) continue; const d = Math.hypot(c.x - P.x, c.z - P.z); if (d < bd) { bd = d; bc = c; } } if (bc) return { label: 'Open', act: () => openChest(bc) }; }
   if (P.mount && P.mount.water) { let gd = null, gb = 1.7; for (const d of gearDrops) { if (d.dead) continue; const dd = Math.hypot(d.x - P.x, d.z - P.z); if (dd < gb) { gb = dd; gd = d; } } if (gd) return { label: 'Grab', act: () => equipDrop(gd) }; }
@@ -4670,17 +4712,17 @@ function getInteract() {
   if (bellAt >= 0 && grid[bellAt] === BELL) consider(tc(bellAt % N), tc((bellAt / N) | 0), { label: 'Ring', act: startPeace });
   if (shedAt >= 0 && grid[shedAt] === SHED && !isOff(shedAt)) consider(tc(shedAt % N), tc((shedAt / N) | 0), { label: 'Workshop', act: () => openTree(true, 'shed') });
   if (!decoy && decoyCd <= 0 && phase === 'live' && crystal.planted && !hoardeOn) for (const c of sabCamps) if (!c.used) consider(c.x, c.z, { label: 'Decoy ' + DECOY_COST, act: () => plantDecoy(c) });
-  for (const v of vehicles) if (v !== P.mount && !v.water) consider(v.x, v.z, { label: v.fixed ? 'Ride' : 'Fix ' + Math.round(v.cost * priceK()), act: () => useVehicle(v) });
-  for (const v of vehicles) if (v.water) { const l = Math.hypot(v.x - P.x, v.z - P.z); if (l < 1.9 && l < bd + 0.4) { bd = l; best = { label: v.fixed ? 'Board' : 'Fix ' + Math.round(v.cost * priceK()), act: () => useVehicle(v) }; } }
+  if (!guestCtx) for (const v of vehicles) if (v !== P.mount && !v.water) consider(v.x, v.z, { label: v.fixed ? 'Ride' : 'Fix ' + Math.round(v.cost * priceK()), act: () => useVehicle(v) });
+  if (!guestCtx) for (const v of vehicles) if (v.water) { const l = Math.hypot(v.x - P.x, v.z - P.z); if (l < 1.9 && l < bd + 0.4) { bd = l; best = { label: v.fixed ? 'Board' : 'Fix ' + Math.round(v.cost * priceK()), act: () => useVehicle(v) }; } }
   for (const pt of pets) {
     if (!pt.tamed) consider(pt.x, pt.z, { label: pt.kind === 'dog' ? 'Give bone' : 'Give fish', act: () => feedPet(pt) });
-    else if (pt.tamed && pt.kind === 'wolf' && !pt.ridden) consider(pt.x, pt.z, { label: 'Ride wolf', act: () => mountWolf(pt) });
+    else if (pt.tamed && pt.kind === 'wolf' && !pt.ridden && !guestCtx) consider(pt.x, pt.z, { label: 'Ride wolf', act: () => mountWolf(pt) });
     else if (pt.tamed && pt.kind === 'zombie') consider(pt.x, pt.z, { label: pt.follow ? 'Zombie: guard base' : 'Zombie: follow me', act: () => { pt.follow = !pt.follow; hearts(pt.x, pt.z); SFX.click(); } });
   }
   if (mystery) consider(mystery.x, mystery.z, { label: 'Open 20', act: openMystery });
   if (radio && radio.mesh.parent) consider(radio.x, radio.z + 0.75, { label: tuning ? 'Tune!' : !radio.fixed ? 'Fix radio 60' : radio.cd > 0 ? 'Radio ' + fmtT(Math.ceil(radio.cd)) : 'Call drop', act: useRadio });
   if (siloAt >= 0 && bakeOn) consider(tc(siloAt % N), tc((siloAt / N) | 0), { label: 'Bake', act: bake });
-  for (const n of npcs) if (n.hero && !n.dead && !(n.down > 0)) { const H = HEROES[n.heroType]; consider(n.x, n.z, n.free ? { label: 'Rejoin ' + H.name, act: () => { n.free = false; n.fishing = false; n.hired = true; n.mode = 'guard'; if (n.rod) n.rod.visible = false; hearts(n.x, n.z); SFX.levelUp(); showLoot('heart', H.full + ' is heading home', '', '#ffd166'); } } : !n.hired ? { label: 'Hire ' + H.name + ' ' + Math.round(H.cost * priceK()), act: () => hireHero(n) } : { label: n.mode === 'follow' ? H.name + ': guard base' : H.name + ': follow me', act: () => { n.mode = n.mode === 'follow' ? 'guard' : 'follow'; SFX.click(); hearts(n.x, n.z); } }); }
+  for (const n of npcs) if (n.hero && !n.dead && !(n.down > 0)) { const H = HEROES[n.heroType]; consider(n.x, n.z, n.free ? { label: 'Rejoin ' + H.name, act: () => { n.free = false; n.fishing = false; n.hired = true; n.mode = 'guard'; if (n.rod) n.rod.visible = false; hearts(n.x, n.z); SFX.levelUp(); showLoot('heart', H.full + ' is heading home', '', '#ffd166'); } } : !n.hired ? { label: 'Hire ' + H.name + ' ' + Math.round(H.cost * priceK()), act: () => hireHero(n) } : n.mode === 'follow' && (n.owner || null) !== guestCtx ? { label: H.name + ': follow me', act: () => { n.owner = guestCtx; SFX.click(); hearts(n.x, n.z); } } : { label: n.mode === 'follow' ? H.name + ': guard base' : H.name + ': follow me', act: () => { n.mode = n.mode === 'follow' ? 'guard' : 'follow'; n.owner = guestCtx; SFX.click(); hearts(n.x, n.z); } }); }
   { const bd0 = bd; bd = Math.max(bd, 2.3); let tb = null; for (const n of npcs) if (!n.hostile && !n.dead && (n.kind === 'trader' || (n.sling && n.stock))) { const d = Math.hypot(n.x - P.x, n.z - P.z); if (d < bd) { bd = d; tb = n; } } if (tb) best = { label: 'Trade', act: () => tradeWith === tb ? closeTrade() : openTrade(tb) }; else bd = bd0; }
   if (!best && nearWater(2.2)) best = { label: 'Fish', act: startFishing };
   return best;
@@ -4833,7 +4875,7 @@ function updateExtras(dt) {
     if (hoardeStall > 45) { for (const z of zombies) z.hoarde = false; hoardeLeft = 0; endHoarde(); } } else hoardeStall = 0; updateGlobs(dt); updatePathVis(dt);
   if (boss && boss.dead) boss = null; setHidden('bossBar', !boss || phase !== 'live'); if (boss) $('bossFill').style.width = (Math.max(0, boss.hp / boss.maxHp) * 100).toFixed(1) + '%';
  if (safGate) { safGate.mesh.userData.disc.rotation.z += dt * 2; const sOpen = stage === 'night' && !hoardeOn; safGate.mesh.userData.disc.material.opacity = sOpen ? 0.55 + Math.sin(time * 4) * 0.2 : 0.12; safGate.mesh.userData.sign.position.y = 4.4 + Math.sin(time * 2) * 0.08; if (safCd > 0) safCd -= dt; else if (!P.dead && !P.mount && phase === 'live' && Math.hypot(P.x - safGate.x, P.z - safGate.z) < 0.9) { if (!sOpen) { if (gate('safclosed', 2500)) floater(safGate.x, safGate.z, hoardeOn ? 'Closed during the hoarde' : 'Opens at night', '#ffd166'); } else if (scrap < 50) { if (gate('safpoor', 2500)) { floater(safGate.x, safGate.z, 'Entry costs 50 scrap', '#ffd166'); SFX.bonk(); } } else { scrap -= 50; floater(safGate.x, safGate.z, '-50', '#ffd166'); startSafari(); } } }
-  if (gateway) { gateway.t -= dt; gateway.mesh.userData.disc.rotation.z += dt * 3; gateway.mesh.userData.disc.material.opacity = 0.55 + Math.sin(time * 4) * 0.2; if (gateway.t <= 0) { scene.remove(gateway.mesh); gateway = null; } else if (!P.dead && !P.mount && phase === 'live' && Math.hypot(P.x - gateway.x, P.z - gateway.z) < 0.9) startBonus(); } updateCopter(dt); if ((goalT -= dt) <= 0) { goalT = 0.25; updateGoals(); } if (phase === 'live') updateTraps(dt, netRole === 'guest'); updateMarkers(); updateNests(dt); if (phase === 'live' && (saveT -= dt) <= 0) { saveT = 20; saveGame(); } for (let q = animLm.length - 1; q >= 0; q--) { const a = animLm[q]; if (!inScene(a.obj)) { animLm.splice(q, 1); continue; } if (a.kind === 'spin') a.obj.rotation.z += dt * 1.2; else if ((a.t -= dt) <= 0 && Math.hypot(a.x - P.x, a.z - P.z) < 30) { a.t = 0.3; puff(a.x, a.y, a.z, a.col); } } updatePuffs(dt); for (const g of lootCrates) { const gl = g.getObjectByName('glint'); if (!g.parent) { lootCrates.delete(g); continue; } gl.rotation.y += dt * 2; gl.position.y = 0.85 + Math.sin(time * 3 + g.id) * 0.06; }
+  if (gateway) { gateway.t -= dt; gateway.mesh.userData.disc.rotation.z += dt * 3; gateway.mesh.userData.disc.material.opacity = 0.55 + Math.sin(time * 4) * 0.2; if (gateway.t <= 0) { scene.remove(gateway.mesh); gateway = null; } else if (!P.dead && !P.mount && phase === 'live' && Math.hypot(P.x - gateway.x, P.z - gateway.z) < 0.9) { const gs = liveGuests().filter(G => G.hp > 0), here = gs.filter(G => Math.hypot(G.x - gateway.x, G.z - gateway.z) < 2.4).length; if (here === gs.length) startBonus(); else if (gate('gwwait', 1500)) floater(gateway.x, gateway.z, 'Everyone to the gateway (' + (here + 1) + '/' + (gs.length + 1) + ')', '#e2b8ff'); } } updateCopter(dt); if ((goalT -= dt) <= 0) { goalT = 0.25; updateGoals(); } if (phase === 'live') updateTraps(dt, netRole === 'guest'); updateMarkers(); updateNests(dt); if (phase === 'live' && (saveT -= dt) <= 0) { saveT = 20; saveGame(); } for (let q = animLm.length - 1; q >= 0; q--) { const a = animLm[q]; if (!inScene(a.obj)) { animLm.splice(q, 1); continue; } if (a.kind === 'spin') a.obj.rotation.z += dt * 1.2; else if ((a.t -= dt) <= 0 && Math.hypot(a.x - P.x, a.z - P.z) < 30) { a.t = 0.3; puff(a.x, a.y, a.z, a.col); } } updatePuffs(dt); for (const g of lootCrates) { const gl = g.getObjectByName('glint'); if (!g.parent) { lootCrates.delete(g); continue; } gl.rotation.y += dt * 2; gl.position.y = 0.85 + Math.sin(time * 3 + g.id) * 0.06; }
   for (const v of vehicles) if (v.kind === 'heli' && v.mesh) heliUpdate(v, dt);
   for (const v of vehicles) if (v.kind === 'hover' && v.fixed) { const u = v.mesh.userData; if (u.fan) u.fan.rotation.z += dt * 20; if (v !== P.mount) { if (hoverDrone && crystal.planted && phase === 'live') { droneUpdate(v, dt); if (v.drone) autoGun(v, v.x, 0.9, v.z, 8, 0.25, 16 + level * 1.5, dt); } v.mesh.position.y = 0.12 + Math.sin(time * 3 + v.x) * 0.05; } else v.mesh.position.y = 0.15 + Math.sin(time * 3) * 0.05; }
   for (const v of vehicles) if (v.kind === 'buggy' && v.fixed && phase === 'live') { if (v !== P.mount && droneOn && crystal.planted) droneUpdate(v, dt); else v.drone = false; if (buggyGun && (v === P.mount || v.drone)) buggyGunUpdate(v, dt); }
@@ -4993,7 +5035,7 @@ function updatePlayer(dt) {
   const it = phase === 'live' && !onPad() ? getInteract() : null;
   if (it && it.act && (touchAct || (P.buffer > 0 && lastInput !== 'mouse'))) { P.buffer = 0; touchAct = false; it.act(); }
   else if (wantAct && padAct && (!buildMode || lastInput !== 'mouse') && (touchAct || (P.buffer > 0 && lastInput !== 'mouse'))) { P.buffer = 0; touchAct = false; openTree(true); }
-  else if (weapon !== 'scythe' && netRole !== 'guest') { P.buffer = 0; }
+  else if (weapon !== 'scythe') { P.buffer = 0; }
   else if (wantAct && P.swingCd <= 0 && !(lastInput === 'mouse' && buildMode)) { if (P.onWall && !longScy) { P.buffer = 0; if (gate('nowallw', 2500)) floater(P.x, P.z, 'Get a gun or the Long scythe', '#ffd166'); } else doSwing(); }
   if (P.hurtT > 3 && P.hp < 100) P.hp = Math.min(100, P.hp + 6 * dt);
 
@@ -5166,6 +5208,7 @@ pulseRing.visible = false; scene.add(pulseRing);
 function updateFx(dt) {
   for (const b of bullets) {
     b.t += dt; b.x += b.vx * dt; b.z += b.vz * dt; b.m.position.x = b.x; b.m.position.z = b.z;
+    if (netRole === 'guest') { if (b.t > (b.life || 0.55)) { scene.remove(b.m); b.dead = true; } continue; }
     for (const z of zombies) { if (z.dead || (b.hits && b.hits.has(z))) continue; const dx = z.x - b.x, dz = z.z - b.z; if (dx * dx + dz * dz < 0.16) { hitZombie(z, b.dmg || 30, b.vx / 20, b.vz / 20, 'gun'); if (b.pierce > 0) { b.pierce--; b.hits.add(z); } else { b.dead = true; break; } } }
     if (!b.dead && !b.foe) for (const n of npcs) { if (n.dead || !n.hostile || (b.hits && b.hits.has(n))) continue; const dx = n.x - b.x, dz = n.z - b.z; if (dx * dx + dz * dz < 0.2) { hitNpc(n, b.dmg || 30, b.vx / 60, b.vz / 60, true); if (b.pierce > 0) { b.pierce--; b.hits.add(n); } else { b.dead = true; break; } } }
     if (!b.dead && !b.foe) for (const nt of nests) { if (nt.dead) continue; if (Math.hypot(nt.x - b.x, nt.z - b.z) < 1.25) { hitNest(nt, (b.dmg || 30) * 0.12); b.dead = true; break; } }
@@ -5230,6 +5273,7 @@ function updateLight(dt) {
 function updateWorld(dt) {
   for (const pk of pickups) {
     pk.m.position.y = 0.45 + Math.sin(time * 3 + pk.seed) * 0.08; pk.m.rotation.y += dt * 2;
+    if (phase === 'live' && !pk.dead && pk.kind === 'bone' && netRole === 'host') { const G = liveGuests().find(G2 => G2.hp > 0 && Math.hypot(G2.x - pk.x, G2.z - pk.z) < 0.7); if (G) { pk.dead = true; scene.remove(pk.m); asGuestFull(G, () => { bones++; showLoot('bone', '+1 bone', '', '#f1ead8'); }); continue; } }
     if (phase === 'live' && !pk.dead && Math.hypot(P.x - pk.x, P.z - pk.z) < 0.7) {
       pk.dead = true; scene.remove(pk.m); SFX.coin(); burst(pk.x, 0.5, pk.z, pk.m.material, 6, 2);
       if (pk.kind === 'drop') collectDrop(pk);
@@ -5307,7 +5351,7 @@ function updateHud(dt) {
 
 function step(dt) {
   if (attract && attPhase && phase === 'menu') { attractStep(dt); if (ac) updateMusic(dt); return; }
-  if (inBonus && BL) { bonusStep(dt); return; }
+  if (inBonus && BL && netRole !== 'guest') { bonusStep(dt); if (netRole === 'host' && inBonus) hostTick(dt); return; }
   if (document.body.classList.contains('inmenu') !== (phase === 'menu')) document.body.classList.toggle('inmenu', phase === 'menu');
   if (flowDirty && crystal.planted) computeFlow();
   if (netRole === 'guest' && phase !== 'menu') { guestStep(dt); return; }
